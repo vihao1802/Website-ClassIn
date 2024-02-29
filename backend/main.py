@@ -1,12 +1,11 @@
 from fastapi import FastAPI
-from hume import HumeStreamClient
-from hume.models.config import LanguageConfig
 from collections import defaultdict
 import os
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from dotenv import load_dotenv
+import uvicorn
 
 app = FastAPI()
 
