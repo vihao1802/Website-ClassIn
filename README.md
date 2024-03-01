@@ -18,5 +18,6 @@ python main.py
 Client:
 ```
 cd frontend
-npm start
+npm install    # Install packages
+npm start      # Run app
 ```
