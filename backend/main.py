@@ -5,8 +5,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from dotenv import load_dotenv
-from router.router1 import router1
-from router.router2 import router2
+from router import router1,router2
 import uvicorn
 
 app = FastAPI()
