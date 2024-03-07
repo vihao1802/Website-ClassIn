@@ -1,5 +1,4 @@
 {
-  "python.analysis.extraPaths": [
-    "./backend/api"
-  ]
+  "python.analysis.extraPaths": ["./backend/api"],
+  "cSpell.words": ["sqlalchemy"]
 }
