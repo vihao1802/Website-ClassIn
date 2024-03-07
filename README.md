@@ -1,21 +1,29 @@
 # Website-ClassIn
+
 Website class management
 
-##  Installation
+## Installation
+
 Set up Virtual Environment(venv):
+
 ```
 sudo apt install python3.10-venv     # Install venv on Linux
-python3 -m venv venv                 # Init venv folder 
+python3 -m venv venv                 # Init venv folder
 source ./venv/bin/activate           # Activate venv
 pip install -r ./requirements.txt    # Install all packages in requirements.txt
 ```
-##  How to run
+
+## How to run
+
 Server:
+
 ```
 cd backend
-python main.py
+uvicorn main:app --reload
 ```
+
 Client:
+
 ```
 cd frontend
 npm install    # Install packages
