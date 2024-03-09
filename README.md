@@ -15,17 +15,17 @@ pip install -r ./requirements.txt    # Install all packages in requirements.txt
 
 ## How to run
 
-Server:
-
-```
-cd backend
-uvicorn main:app --reload
-```
-
 Client:
 
 ```
 cd frontend
 npm install    # Install packages
 npm start      # Run app
+```
+
+Server:
+
+```
+cd backend
+uvicorn main:app --reload
 ```

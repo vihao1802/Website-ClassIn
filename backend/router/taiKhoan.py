@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
-from typing import List, Optional
 from email_validator import validate_email, EmailNotValidError
 import models, schemas
 import database
@@ -11,8 +10,8 @@ router = APIRouter(
 )
 
 
-@router.post("/{id}",status_code=status.HTTP_201_CREATED,response_model=schemas.TaiKhoan)
-async def create(schema_object: schemas.TaiKhoanCreate,id: str, db: Session = Depends(database.get_db)):
+@router.post("/{ma_nhomQuyen}",status_code=status.HTTP_201_CREATED,response_model=schemas.TaiKhoan)
+async def create(schema_object: schemas.TaiKhoanCreate,ma_nhomQuyen: str, db: Session = Depends(database.get_db)):
     # Validate the email field
     try:
         validate_email(schema_object.email)
@@ -20,11 +19,11 @@ async def create(schema_object: schemas.TaiKhoanCreate,id: str, db: Session = De
         raise HTTPException(status_code=400, detail="Invalid email address")
 
     # check ma_nhomQuyen
-    db_object_check = db.query(models.NhomQuyen).filter(models.NhomQuyen.ma_nhomQuyen == id).first()
+    db_object_check = db.query(models.NhomQuyen).filter(models.NhomQuyen.ma_nhomQuyen == ma_nhomQuyen).first()
     if db_object_check is None:
         raise HTTPException(status_code=400, detail="ma_nhomQuyen not found")
     
-    db_object = models.TaiKhoan(**schema_object.dict(), ma_nhomQuyen=id)
+    db_object = models.TaiKhoan(**schema_object.dict(), ma_nhomQuyen=ma_nhomQuyen)
     db.add(db_object)
     db.commit()
     db.refresh(db_object)
