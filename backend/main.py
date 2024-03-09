@@ -2,7 +2,7 @@ from fastapi import FastAPI,APIRouter,Depends,status,HTTPException
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from router import router1,router2,nhomQuyen,taiKhoan
+from router import router1,router2,nhomQuyen,taiKhoan,lopHoc
 from sqlalchemy.orm import Session
 from database import engine, get_db
 import schemas, models, uvicorn, load_env_global
@@ -25,7 +25,7 @@ main_route.include_router(router1,prefix="/api1")
 main_route.include_router(router2,prefix="/api2")
 main_route.include_router(nhomQuyen.router)
 main_route.include_router(taiKhoan.router)
-
+main_route.include_router(lopHoc.router)
 
 app.include_router(main_route,prefix="/api")
 @app.get("/")
