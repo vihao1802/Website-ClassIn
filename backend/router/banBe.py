@@ -42,22 +42,11 @@ async def read( db: Session = Depends(database.get_db)):
     return db_object
 
 
-@router.get("/{ma_banBe}",status_code=status.HTTP_200_OK)
-async def read(ma_banBe: str, db: Session = Depends(database.get_db)):
-    try:
-        db_object = db.query(models.BanBe).filter(models.BanBe.ma_banBe == ma_banBe).first()
-    except Exception as e:
-        print(e)
-    if not db_object:
-        raise HTTPException(status_code=400, detail="BanBe not found")
-    return db_object
-
 @router.get("/taiKhoan/{ma_taiKhoanHienHanh}",response_model=list[schemas.BanBe],status_code=status.HTTP_200_OK)
 async def read(ma_taiKhoanHienHanh: str, db: Session = Depends(database.get_db)):
-    taiKhoan_exists = db.query(exists().where(models.TaiKhoan.ma_taiKhoan == ma_taiKhoanHienHanh)).scalar()
-
-    if not taiKhoan_exists:
-        raise HTTPException(status_code=404, detail=f"ma_taiKhoan '{ma_taiKhoanHienHanh}' not found in taiKhoan")
+    db_object = db.query(models.TaiKhoan).filter(models.TaiKhoan.ma_taiKhoan == ma_taiKhoanHienHanh).first()
+    if db_object is None:
+        raise HTTPException(status_code=400, detail="ma_taiKhoanHienHanh not found")
 
     db_object = db.query(models.BanBe).filter(
         or_(
@@ -66,5 +55,3 @@ async def read(ma_taiKhoanHienHanh: str, db: Session = Depends(database.get_db))
         )
     ).all()
     return db_object
-"""     if not db_object:
-        raise HTTPException(status_code=400, detail="ma_lopHoc not found") """

@@ -2,7 +2,7 @@ from fastapi import FastAPI,APIRouter,Depends,status,HTTPException
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from router import chiTietBaiLamKiemTra,baiLamKiemTra,chiTietBaiKiemTra,cauTraLoi,cauHoi,deKiemTra,fileBaiLamBaiTap,baiLamBaiTap,fileBaiTap,router1,router2,nhomQuyen,taiKhoan,lopHoc,thamGiaLopHoc,nhomChat,tinNhan,chuong, hocLieu,fileHocLieu, banBe, tinNhanBanBe, baiTap, dapAnBaiTap, fileDapAnBaiTap
+from router import luuVetBaiLamKiemTra,chiTietBaiLamKiemTra,baiLamKiemTra,chiTietBaiKiemTra,cauTraLoi,cauHoi,deKiemTra,fileBaiLamBaiTap,baiLamBaiTap,fileBaiTap,nhomQuyen,taiKhoan,lopHoc,thamGiaLopHoc,nhomChat,tinNhan,chuong, hocLieu,fileHocLieu, banBe, tinNhanBanBe, baiTap
 from sqlalchemy.orm import Session
 from database import engine, get_db
 import schemas, models, uvicorn, load_env_global
@@ -21,8 +21,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-main_route.include_router(router1,prefix="/api1")
-main_route.include_router(router2,prefix="/api2")
 main_route.include_router(nhomQuyen.router)
 main_route.include_router(taiKhoan.router)
 main_route.include_router(lopHoc.router)
@@ -35,8 +33,6 @@ main_route.include_router(fileHocLieu.router)
 main_route.include_router(banBe.router)
 main_route.include_router(tinNhanBanBe.router)
 main_route.include_router(baiTap.router)
-main_route.include_router(dapAnBaiTap.router)
-main_route.include_router(fileDapAnBaiTap.router)
 main_route.include_router(fileBaiTap.router)
 main_route.include_router(baiLamBaiTap.router)
 main_route.include_router(fileBaiLamBaiTap.router)
@@ -46,6 +42,7 @@ main_route.include_router(cauTraLoi.router)
 main_route.include_router(chiTietBaiKiemTra.router)
 main_route.include_router(baiLamKiemTra.router)
 main_route.include_router(chiTietBaiLamKiemTra.router)
+main_route.include_router(luuVetBaiLamKiemTra.router)
 
 app.include_router(main_route,prefix="/api")
 @app.get("/")
