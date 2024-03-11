@@ -19,7 +19,7 @@ def create(schema_object: schemas.NhomQuyenCreate, db: Session = Depends(databas
 
 @router.get("/",response_model=list[schemas.NhomQuyen]  ,status_code=status.HTTP_200_OK)
 async def read( db: Session = Depends(database.get_db)):
-    db_object = db.query(models.NhomQuyen).offset(0).limit(100).all()
+    db_object = db.query(models.NhomQuyen).all()
     return db_object
 
 
