@@ -1,16 +1,17 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-import os
-from dotenv import load_dotenv
+from sqlalchemy.orm import sessionmaker
+import load_env_global
 
-dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-load_dotenv(dotenv_path=dotenv_path)
+engine = create_engine(load_env_global.get_URL_DATABASE(),connect_args={"check_same_thread": False})
 
-URL_DATABASE = os.getenv("URL_DATABASE")
-
-engine = create_engine(URL_DATABASE)
-
-SessionLocal =  sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
