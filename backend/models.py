@@ -94,7 +94,7 @@ class BanBe(Base):
 
     ma_banBe = Column(String,primary_key=True,default=generate_uuid)
     thoiGianKetBan = Column(DateTime,default=datetime.now)
-    anBanBe = Column(Integer,default=0)
+    daKetBan = Column(Integer,default=0)
 
     ma_nguoiKetBan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
     ma_nguoiDuocKetBan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
@@ -106,9 +106,9 @@ class TinNhanBanBe(Base):
     thoiGianGui = Column(DateTime,default=datetime.now)
     anTinNhan = Column(Integer,default=0)
 
-    ma_nguoiBanBe = Column(String, ForeignKey("banBe.ma_banBe"),primary_key=True)
-    ma_nguoiNguoiGui = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)  
-    ma_nguoiNguoiNhan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)
+    ma_banBe = Column(String, ForeignKey("banBe.ma_banBe"),primary_key=True)
+    ma_nguoiGui = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)  
+    ma_nguoiNhan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)
 
 class BaiTap(Base):
     __tablename__ = "baiTap"
@@ -150,7 +150,7 @@ class BaiLamBaiTap(Base):
 
     ma_baiLamBaiTap = Column(String,primary_key=True,default=generate_uuid)
     noiDung = Column(String(500))
-    thoiGianNopBai = Column(DateTime)
+    thoiGianNopBai = Column(DateTime,default=datetime.now)
     nhanXet = Column(String(200))
     diem = Column(Integer)
 
@@ -169,7 +169,7 @@ class DeKiemTra(Base):
 
     ma_deKiemTra = Column(String,primary_key=True,default=generate_uuid)
     tieuDe = Column(String(50))
-    thoiGianTao = Column(DateTime)
+    thoiGianTao = Column(DateTime,default=datetime.now)
     thoiGianBatDau = Column(DateTime)
     thoiGianNopBai = Column(DateTime)
     xemDiem = Column(Integer)
@@ -223,4 +223,4 @@ class ChiTietBaiLamKiemTra(Base):
 
     ma_baiLamKiemTra = Column(String, ForeignKey("baiLamKiemTra.ma_baiLamKiemTra"),primary_key=True)  
     ma_cauHoi = Column(String, ForeignKey("cauHoi.ma_cauHoi"),primary_key=True)  
-    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"),primary_key=True)  
+    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"))  

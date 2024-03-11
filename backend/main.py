@@ -2,7 +2,7 @@ from fastapi import FastAPI,APIRouter,Depends,status,HTTPException
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from router import router1,router2,nhomQuyen,taiKhoan,lopHoc
+from router import chiTietBaiLamKiemTra,baiLamKiemTra,chiTietBaiKiemTra,cauTraLoi,cauHoi,deKiemTra,fileBaiLamBaiTap,baiLamBaiTap,fileBaiTap,router1,router2,nhomQuyen,taiKhoan,lopHoc,thamGiaLopHoc,nhomChat,tinNhan,chuong, hocLieu,fileHocLieu, banBe, tinNhanBanBe, baiTap, dapAnBaiTap, fileDapAnBaiTap
 from sqlalchemy.orm import Session
 from database import engine, get_db
 import schemas, models, uvicorn, load_env_global
@@ -26,12 +26,32 @@ main_route.include_router(router2,prefix="/api2")
 main_route.include_router(nhomQuyen.router)
 main_route.include_router(taiKhoan.router)
 main_route.include_router(lopHoc.router)
+main_route.include_router(thamGiaLopHoc.router)
+main_route.include_router(nhomChat.router)
+main_route.include_router(tinNhan.router)
+main_route.include_router(chuong.router)
+main_route.include_router(hocLieu.router)
+main_route.include_router(fileHocLieu.router)
+main_route.include_router(banBe.router)
+main_route.include_router(tinNhanBanBe.router)
+main_route.include_router(baiTap.router)
+main_route.include_router(dapAnBaiTap.router)
+main_route.include_router(fileDapAnBaiTap.router)
+main_route.include_router(fileBaiTap.router)
+main_route.include_router(baiLamBaiTap.router)
+main_route.include_router(fileBaiLamBaiTap.router)
+main_route.include_router(deKiemTra.router)
+main_route.include_router(cauHoi.router)
+main_route.include_router(cauTraLoi.router)
+main_route.include_router(chiTietBaiKiemTra.router)
+main_route.include_router(baiLamKiemTra.router)
+main_route.include_router(chiTietBaiLamKiemTra.router)
 
 app.include_router(main_route,prefix="/api")
 @app.get("/")
 async def hello():
     return {"message": "Hello world"}
 
-print("Notice:\t Server is running at http://localhost:" + load_env_global.get_PORT() + "/docs")
+print("\nNotice:\t Server is running at http://localhost:" + load_env_global.get_PORT() + "/docs\n")
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=load_env_global.get_PORT(), reload=True)
