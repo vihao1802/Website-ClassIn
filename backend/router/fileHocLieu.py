@@ -32,6 +32,10 @@ async def read( db: Session = Depends(database.get_db)):
 
 @router.get("/{ma_hocLieu}",status_code=status.HTTP_200_OK)
 async def read(ma_hocLieu: str, db: Session = Depends(database.get_db)):
+    # check ma_hocLieu exists
+    db_object = db.query(models.HocLieu).filter(models.HocLieu.ma_hocLieu == ma_hocLieu).first()
+    if db_object is None:
+        raise HTTPException(status_code=400, detail="ma_hocLieu not found")
     try:
         db_object = db.query(models.FileHocLieu).filter(models.FileHocLieu.ma_hocLieu == ma_hocLieu).first()
     except Exception as e:

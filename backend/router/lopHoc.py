@@ -11,18 +11,18 @@ router = APIRouter(
     tags=['lopHoc']
 )
 
-@router.post("/{ma_taiKhoan}",status_code=status.HTTP_201_CREATED,response_model=schemas.LopHoc)
-async def create(schema_object: schemas.LopHocCreate,ma_taiKhoan: str, db: Session = Depends(database.get_db)):
+@router.post("/{ma_giangVien}",status_code=status.HTTP_201_CREATED,response_model=schemas.LopHoc)
+async def create(schema_object: schemas.LopHocCreate,ma_giangVien: str, db: Session = Depends(database.get_db)):
     # Validate the email field
     if schema_object.ten.strip() == "":    
         raise HTTPException(status_code=400, detail="Invalid ten")
 
     # check ma_giangVien
-    db_object_check = db.query(models.TaiKhoan).filter(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan).first()
+    db_object_check = db.query(models.TaiKhoan).filter(models.TaiKhoan.ma_taiKhoan == ma_giangVien).first()
     if db_object_check is None:
-        raise HTTPException(status_code=400, detail="ma_taiKhoan not found")
+        raise HTTPException(status_code=400, detail="ma_giangVien not found")
     
-    db_object = models.LopHoc(**schema_object.dict(), ma_taiKhoan=ma_taiKhoan)
+    db_object = models.LopHoc(**schema_object.dict(), ma_taiKhoan=ma_giangVien)
     db.add(db_object)
     db.commit()
     db.refresh(db_object)
@@ -36,14 +36,12 @@ async def read( db: Session = Depends(database.get_db)):
 
 @router.get("/taiKhoan/{ma_taiKhoan}",response_model=list[schemas.LopHoc],status_code=status.HTTP_200_OK)
 async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
-    taiKhoan_exists = db.query(exists().where(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan)).scalar() # return a boolean result
-
-    if not taiKhoan_exists:
-        raise HTTPException(status_code=404, detail=f"ma_taiKhoan '{ma_taiKhoan}' not found in taiKhoan")
+    # check ma_taiKhoan exists
+    db_object = db.query(models.TaiKhoan).filter(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan).first()
+    if db_object is None:
+        raise HTTPException(status_code=400, detail="ma_taiKhoan not found")
     
     db_object = db.query(models.LopHoc).filter(models.LopHoc.ma_taiKhoan == ma_taiKhoan).all()
-    """ if not db_object:
-        raise HTTPException(status_code=400, detail="ma_taiKhoan not found") """
     return db_object
 
 @router.get("/lopHoc/{ma_lopHoc}",status_code=status.HTTP_200_OK)

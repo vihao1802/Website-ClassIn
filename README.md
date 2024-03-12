@@ -5,12 +5,21 @@ Website class management
 ## Installation
 
 Set up Virtual Environment(venv):
-
+#### Install venv on Linux
 ```
-sudo apt install python3.10-venv     # Install venv on Linux
-python3 -m venv venv                 # Init venv folder
-source ./venv/bin/activate           # Activate venv
-pip install -r ./requirements.txt    # Install all packages in requirements.txt
+sudo apt install python3.10-venv
+```
+#### Init venv folder
+```
+python3 -m venv venv                 
+```
+#### Activate venv
+```
+source ./venv/bin/activate           
+```
+#### Install all packages in requirements.txt
+```
+pip install -r ./requirements.txt    
 ```
 
 ## How to run
@@ -19,13 +28,22 @@ Client:
 
 ```
 cd frontend
-npm install    # Install packages
-npm start      # Run app
+```
+#### Install required packages
+```
+npm install    
+```
+#### Run app
+```
+npm start      
 ```
 
 Server:
 
 ```
 cd backend
+```
+#### Run app
+```
 uvicorn main:app --reload
 ```

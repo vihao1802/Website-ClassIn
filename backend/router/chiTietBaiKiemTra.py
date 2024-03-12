@@ -12,8 +12,15 @@ router = APIRouter(
 @router.post("/",status_code=status.HTTP_201_CREATED,response_model=schemas.ChiTietBaiKiemTra)
 async def create(schema_object: schemas.ChiTietBaiKiemTraCreate,db: Session = Depends(database.get_db)):
     thuTu = schema_object.thuTu
+    ma_dapAnChon = str(schema_object.ma_dapAnChon)
     ma_deKiemTra = str(schema_object.ma_deKiemTra)
     ma_cauHoi = str(schema_object.ma_cauHoi)
+
+    # check ma_dapAnChon exists
+    db_object_check = db.query(models.CauTraLoi).filter(models.CauTraLoi.ma_cauTraLoi == ma_dapAnChon).first()
+    if db_object_check is None:
+        raise HTTPException(status_code=400, detail="ma_dapAnChon not found")
+
     # check ma_deKiemTra
     db_object_check = db.query(models.DeKiemTra).filter(models.DeKiemTra.ma_deKiemTra == ma_deKiemTra).first()
     if db_object_check is None:
@@ -26,6 +33,7 @@ async def create(schema_object: schemas.ChiTietBaiKiemTraCreate,db: Session = De
     
     db_object = models.ChiTietBaiKiemTra(**schema_object.dict())
     db_object.thuTu = thuTu
+    db_object.ma_dapAnChon = ma_dapAnChon
     db_object.ma_cauHoi = ma_cauHoi
     db_object.ma_deKiemTra = ma_deKiemTra
     
@@ -42,6 +50,11 @@ async def read( db: Session = Depends(database.get_db)):
 
 @router.get("/deKiemTra/{ma_deKiemTra}",status_code=status.HTTP_200_OK)
 async def read(ma_deKiemTra: str, db: Session = Depends(database.get_db)):
+    # check ma_deKiemTra
+    db_object_check = db.query(models.DeKiemTra).filter(models.DeKiemTra.ma_deKiemTra == ma_deKiemTra).first()
+    if db_object_check is None:
+        raise HTTPException(status_code=400, detail="ma_deKiemTra not found")
+
     db_object = db.query(models.ChiTietBaiKiemTra).filter(models.ChiTietBaiKiemTra.ma_deKiemTra == ma_deKiemTra).all()
     if not db_object:
         raise HTTPException(status_code=400, detail="DeKiemTra not found")
