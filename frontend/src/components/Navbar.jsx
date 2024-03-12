@@ -24,11 +24,20 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   return (
     <AppBar
       sx={{
-        position: "static",
+        position: "sticky",
         background: "none",
+        borderBottom: "1px solid #e7e7e7",
+        boxShadow: "none",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar
+        sx={{
+          justifyContent: "space-between",
+          minHeight: "50px",
+          height: "50px",
+        }}
+        variant="dense"
+      >
         {/* LEFT SIDE */}
         <FlexBetween gap="1rem">
           <IconButton
@@ -41,7 +50,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography fontWeight="bold" color="#009265" fontSize="38px">
+          <Typography fontWeight="bold" color="#009265" fontSize="30px">
             ClassIn
           </Typography>
         </FlexBetween>
@@ -56,10 +65,11 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               alignItems: "center",
               textTransform: "none",
               gap: "1rem",
-              backgroundColor: "#009265",
+              backgroundColor: "white",
               "&:hover": {
-                backgroundColor: "#007850",
+                backgroundColor: "#e7e7e7",
               },
+              height: "40px",
             }}
           >
             <Box
@@ -75,12 +85,12 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               <Typography
                 fontWeight="bold"
                 fontSize="0.85rem"
-                sx={{ color: "white" }}
+                sx={{ color: "#009265" }}
               >
                 Huchuynh
               </Typography>
             </Box>
-            <ArrowDropDownOutlined sx={{ color: "white", fontSize: "25px" }} />
+            {/* <ArrowDropDownOutlined sx={{ color: "white", fontSize: "25px" }} /> */}
           </Button>
           <Menu
             anchorEl={anchorEl}
@@ -88,7 +98,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             onClose={handleClose}
             anchorOrigin={{
               vertical: "bottom",
-              horizontal: "center",
+              horizontal: "left",
             }}
           >
             <MenuItem onClick={handleClose}>Your Account</MenuItem>

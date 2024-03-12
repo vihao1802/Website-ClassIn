@@ -18,9 +18,9 @@ const HomeNavbar = ({ IsLoginPage }) => {
     <FlexBetween
       sx={{
         width: "100%",
-        height: "70px",
+        height: "50px",
         backgroundColor: "white",
-        boxShadow: "0 0 4px 0",
+        borderBottom: "1px solid #e7e7e7",
         padding: "0 50px",
       }}
     >
@@ -31,12 +31,11 @@ const HomeNavbar = ({ IsLoginPage }) => {
             onClick={() => navigate(`/`)}
           />
         )}
-
         <Typography
           sx={{
             fontWeight: "bold",
             color: "#009265",
-            fontSize: "38px",
+            fontSize: "30px",
             marginLeft: "30px",
           }}
         >
@@ -45,13 +44,14 @@ const HomeNavbar = ({ IsLoginPage }) => {
       </FlexBetween>
       {!IsLoginPage && (
         <>
-          <Box sx={{ width: 300 }}>
+          <Box sx={{ width: "300px", height: "40px" }}>
             <BottomNavigation
               showLabels
               value={value}
               onChange={(event, newValue) => {
                 setValue(newValue);
               }}
+              sx={{ height: "40px" }}
             >
               <BottomNavigationAction
                 label="Home"
@@ -86,13 +86,13 @@ const HomeNavbar = ({ IsLoginPage }) => {
               />
             </BottomNavigation>
           </Box>
-          <FlexBetween sx={{ width: "20%" }}>
+          <FlexBetween sx={{ width: "20%", padding: "0 35px" }}>
             <Button
               variant="contained"
               sx={{
                 backgroundColor: "#009265",
-                width: "150px",
-                height: "40px",
+                width: "100px",
+                height: "35px",
                 "&:hover": {
                   backgroundColor: "#007850",
                 },
@@ -106,9 +106,8 @@ const HomeNavbar = ({ IsLoginPage }) => {
               sx={{
                 border: "1px solid #009265",
                 color: "#009265",
-                width: "150px",
-                marginLeft: "15px",
-                height: "40px",
+                width: "100px",
+                height: "35px",
                 "&:hover": {
                   border: "1px solid #009265",
                 },
