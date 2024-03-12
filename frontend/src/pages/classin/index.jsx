@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Box,
@@ -83,6 +83,16 @@ const Clasin = () => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const [active, setActive] = useState("");
+  const [lophoc, setLophoc] = useState([]);
+
+  /*   useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/lopHoc")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setLophoc(data);
+      });
+  }, []); */
 
   return (
     <Box sx={{ display: "flex", flexDirection: "row" }}>
@@ -104,7 +114,7 @@ const Clasin = () => {
               marginLeft: "10px",
             }}
           >
-            Your classes
+            Your Classes
           </Typography>
           <FlexBetween>
             <Button
@@ -175,30 +185,30 @@ const Clasin = () => {
             },
           }}
         >
-          {classItems.map(({ name, image }) => {
+          {classItems.map((item) => {
             return (
-              <ListItem key={name} disablePadding>
+              <ListItem key={item.name} disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    setActive(name);
+                    setActive(item.name);
                   }}
                   sx={{
                     backgroundColor:
-                      active === name ? "#e7e7e7" : "transparent",
-                    color: active === name ? "black" : "#666666",
+                      active === item.name ? "#e7e7e7" : "transparent",
+                    color: active === item.name ? "black" : "#666666",
                   }}
                 >
                   <Box
                     component="img"
                     alt="profile"
-                    src={image}
-                    height="32px"
-                    width="32px"
+                    src={item.image}
+                    height="48px"
+                    width="48px"
                     borderRadius="50%"
                     sx={{ objectFit: "cover" }}
                   />
                   <ListItemText
-                    primary={name}
+                    primary={item.name}
                     sx={{ paddingLeft: "10px" }}
                     primaryTypographyProps={{
                       style: {

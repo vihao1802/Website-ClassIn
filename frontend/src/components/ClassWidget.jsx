@@ -107,7 +107,7 @@ const ClassWidget = () => {
             height: "100%",
           }}
         >
-          <Box sx={{ height: "80%" }}>Text</Box>
+          <Box sx={{ minHeight: "430px" }}>Text</Box>
           <Box sx={{ height: "20%" }}>
             <FlexBetween
               backgroundColor="white"
@@ -185,12 +185,19 @@ const ClassWidget = () => {
                         fontWeight: "bold",
                         fontSize: "14px",
                         textAlign: "center",
+                        marginLeft: "5px",
                       }}
                     >
                       Create
                     </Typography>
                   </Box>
-                  <Add sx={{ color: "white", fontSize: "18px" }} />
+                  <Add
+                    sx={{
+                      color: "white",
+                      fontSize: "18px",
+                      marginRight: "10px",
+                    }}
+                  />
                 </Button>
                 <Menu
                   anchorEl={anchorEl}
@@ -233,56 +240,63 @@ const ClassWidget = () => {
               },
             }}
           >
-            <Accordion defaultExpanded>
-              <AccordionSummary
-                expandIcon={<ExpandMore />}
-                aria-controls="panel3-content"
-                id="panel3-header"
-              >
-                Accordion Actions
-              </AccordionSummary>
+            <Accordion sx={{ border: "1px solid #e7e7e7" }}>
+              <FlexBetween>
+                <AccordionSummary
+                  expandIcon={<ExpandMore />}
+                  aria-controls="panel3-content"
+                  id="panel3-header"
+                  sx={{ flexDirection: "row-reverse" }}
+                >
+                  Lesson 1
+                </AccordionSummary>
+                <IconButton
+                  sx={{
+                    color: "#009265",
+                    width: "40px",
+                    marginRight: "30px",
+                  }}
+                >
+                  <MoreHorizOutlined />
+                </IconButton>
+              </FlexBetween>
               <AccordionDetails sx={{ padding: "unset" }}>
                 <List>
                   <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton sx={{ height: "80px" }}>
                       <ListItemIcon>
                         <Inbox />
                       </ListItemIcon>
-                      <ListItemText primary="Inbox" />
+                      <Box>
+                        <Typography variant="h6">
+                          Test 1: Introduce about Brute-Force
+                        </Typography>
+                        <Typography color="#666666">
+                          Deadline: 10pm 21-03-2024
+                        </Typography>
+                      </Box>
                     </ListItemButton>
                   </ListItem>
+                  `
                   <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton sx={{ height: "80px" }}>
                       <ListItemIcon>
-                        <Drafts />
+                        <Inbox />
                       </ListItemIcon>
-                      <ListItemText primary="Drafts" />
+                      {/* <ListItemText primary="Inbox" /> */}
+                      <Box>
+                        <Typography variant="h6">
+                          Test 1: Introduce about Brute-Force
+                        </Typography>
+                        <Typography color="#666666">
+                          Deadline: 10pm 21-03-2024
+                        </Typography>
+                      </Box>
                     </ListItemButton>
                   </ListItem>
+                  `
                 </List>
               </AccordionDetails>
-              <AccordionActions>
-                <Button>Cancel</Button>
-                <Button>Agree</Button>
-              </AccordionActions>
-            </Accordion>
-            <Accordion defaultExpanded>
-              <AccordionSummary
-                expandIcon={<ExpandMore />}
-                aria-controls="panel3-content"
-                id="panel3-header"
-              >
-                Accordion Actions
-              </AccordionSummary>
-              <AccordionDetails>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-              </AccordionDetails>
-              <AccordionActions>
-                <Button>Cancel</Button>
-                <Button>Agree</Button>
-              </AccordionActions>
             </Accordion>
           </Box>
         </TabPanel>
