@@ -1,0 +1,65 @@
+
+.container{
+    padding: 0;
+    max-width: none;
+    width: 100%;
+    align-items: center;
+}
+.header{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 30px;
+    height: 70px;
+    font-weight: bold;
+    padding: 0 25px;
+    color: #009265;
+    box-shadow:0 0 4px 0 black;
+}
+.header img {
+    width: 40px;
+    height: 40px;
+}
+.header .logo-text {
+    font-size: 40px;
+}
+.form-main{
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    height: 100vh; 
+}
+.form-main .my-form {
+    width: 400px; /* Độ rộng của form */
+    height: 500px;
+    margin-top: auto; /* Cách lề trên là auto, tự động căn giữa theo chiều dọc */
+    margin-bottom: auto; /* Cách lề dưới là auto, tự động căn giữa theo chiều dọc */
+    padding: 20px; /* Khoảng cách từ lề đến các phần tử trong form */
+    border: none; /* Viền của form */
+    border-radius:none; /* Đường viền cong của form */
+    background-color: #f9f9f9; /* Màu nền của form */
+    align-items: center;
+}
+.sign-in-label{
+    text-align: center;
+    margin-left: 30%;
+    font-size: 40px;
+    margin-bottom: 30px;
+    font-weight: 3px;
+}
+.forgot-password-label {
+    margin-top: 40px;
+    /* text-align: center; */
+    margin-left: 35%;
+    font-size: 15px;
+    color: #009265;
+}
+.no-account-label{
+    margin-top: 10px;
+    text-align: center;
+    margin-left: 30%;
+    font-size: 15px;
+}
+.no-account-label span{
+    color: #009265;
+}
