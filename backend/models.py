@@ -35,8 +35,9 @@ class LopHoc(Base):
     ten = Column(String)
     moTa = Column(String(500))
     anLopHoc = Column(Integer,default=0)
+    anhDaiDien = Column(String)
 
-    ma_taiKhoan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
+    ma_giangVien = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
 
 class ThamGiaLopHoc(Base):
     __tablename__ = "thamGiaLopHoc"
@@ -79,69 +80,61 @@ class HocLieu(Base):
     ma_hocLieu = Column(String,primary_key=True,default=generate_uuid)
     tieuDe = Column(String(100))
     noiDung = Column(String(300))
+    thoiGianTao = Column(DateTime,default=datetime.now)
+    daXoa = Column(Integer,default=0)
 
     ma_chuong = Column(String, ForeignKey("chuong.ma_chuong"))
 
 class FileHocLieu(Base):
     __tablename__ = "fileHocLieu"
 
-    link = Column(String)
+    ma_file = Column(String,primary_key=True,default=generate_uuid)
+    tenFile = Column(String)
 
-    ma_hocLieu = Column(String, ForeignKey("hocLieu.ma_hocLieu"),primary_key=True)
+    ma_hocLieu = Column(String, ForeignKey("hocLieu.ma_hocLieu"))
 
 class BanBe(Base):
     __tablename__ = "banBe"
 
-    ma_banBe = Column(String,primary_key=True,default=generate_uuid)
     thoiGianKetBan = Column(DateTime,default=datetime.now)
-    anBanBe = Column(Integer,default=0)
+    daKetBan = Column(Integer,default=0)
 
-    ma_nguoiKetBan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
-    ma_nguoiDuocKetBan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
+    ma_nguoiKetBan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)
+    ma_nguoiDuocKetBan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)
 
 class TinNhanBanBe(Base):
     __tablename__ = "tinNhanBanBe"
 
     noiDung = Column(String(300))
     thoiGianGui = Column(DateTime,default=datetime.now)
-    anTinNhan = Column(Integer,default=0)
+    daXoa = Column(Integer,default=0)
 
-    ma_nguoiBanBe = Column(String, ForeignKey("banBe.ma_banBe"),primary_key=True)
-    ma_nguoiNguoiGui = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)  
-    ma_nguoiNguoiNhan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"),primary_key=True)
+    ma_tinNhan = Column(String, primary_key=True,default=generate_uuid)
+    ma_nguoiGui = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))  
+    ma_nguoiNhan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
 
 class BaiTap(Base):
     __tablename__ = "baiTap"
 
     ma_baiTap = Column(String,primary_key=True,default=generate_uuid)
     tieuDe = Column(String(100))
-    noiDung = Column(String(300))
+    noiDungBaiTap = Column(String(300))
+    noiDungDapAn = Column(String(300))
     thoiGianTao = Column(DateTime,default=datetime.now)
-    thoiHan = Column(DateTime)
-    daHoanThanh = Column(Integer,default=0)
+    thoiGianBatDau = Column(DateTime)
+    thoiGianKetThuc = Column(DateTime)
+    congKhaiDapAn = Column(Integer)
+    daXoa = Column(Integer,default=0)
+    nopBu = Column(Integer,default=0)
 
     ma_chuong = Column(String, ForeignKey("chuong.ma_chuong"))
-
-class DapAnBaiTap(Base):
-    __tablename__ = "dapAnBaiTap"
-
-    ma_dapAnBaiTap = Column(String,primary_key=True,default=generate_uuid)
-    noiDung = Column(String(300))
-    xemDapAn = Column(Integer,default=0)
-
-    ma_baiTap = Column(String, ForeignKey("baiTap.ma_baiTap"))   
-
-class FileDapAnBaiTap(Base):
-    __tablename__ = "fileDapAnBaiTap"
-
-    link = Column(String(100))
-
-    ma_dapAnBaiTap = Column(String, ForeignKey("dapAnBaiTap.ma_dapAnBaiTap"),primary_key=True)    
 
 class FileBaiTap(Base):
     __tablename__ = "fileBaiTap"
 
-    link = Column(String(100))
+    ma_file = Column(String,primary_key=True,default=generate_uuid)
+    tenFile = Column(String(100))
+    laFileDapAn = Column(Integer)
 
     ma_baiTap = Column(String, ForeignKey("baiTap.ma_baiTap"),primary_key=True)    
 
@@ -150,9 +143,10 @@ class BaiLamBaiTap(Base):
 
     ma_baiLamBaiTap = Column(String,primary_key=True,default=generate_uuid)
     noiDung = Column(String(500))
-    thoiGianNopBai = Column(DateTime)
+    thoiGianNopBai = Column(DateTime,default=datetime.now)
     nhanXet = Column(String(200))
     diem = Column(Integer)
+    nopTre = Column(Integer)
 
     ma_taiKhoan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
     ma_baiTap = Column(String, ForeignKey("baiTap.ma_baiTap")) 
@@ -160,7 +154,8 @@ class BaiLamBaiTap(Base):
 class FileBaiLamBaiTap(Base):
     __tablename__ = "fileBaiLamBaiTap"
 
-    link = Column(String(100))
+    ma_file = Column(String,primary_key=True,default=generate_uuid)
+    tenFile = Column(String(100))
 
     ma_baiLamBaiTap = Column(String, ForeignKey("baiLamBaiTap.ma_baiLamBaiTap"),primary_key=True)   
 
@@ -169,14 +164,13 @@ class DeKiemTra(Base):
 
     ma_deKiemTra = Column(String,primary_key=True,default=generate_uuid)
     tieuDe = Column(String(50))
-    thoiGianTao = Column(DateTime)
+    thoiGianTao = Column(DateTime,default=datetime.now)
     thoiGianBatDau = Column(DateTime)
-    thoiGianNopBai = Column(DateTime)
-    xemDiem = Column(Integer)
+    thoiGianKetThuc = Column(DateTime)
     xemDapAn = Column(Integer)
     tronCauHoi = Column(Integer)
-    daHoanThanh = Column(Integer,default=0)
-    anDeKiemTra = Column(Integer,default=0)
+    daXoa = Column(Integer,default=0)
+    hinhPhat = Column(Integer)
 
     ma_chuong = Column(String, ForeignKey("chuong.ma_chuong"))
 
@@ -185,8 +179,7 @@ class CauHoi(Base):
 
     ma_cauHoi = Column(String,primary_key=True,default=generate_uuid)
     noiDung = Column(String(300))
-    giaiThich = Column(String(300))
-    anCauHoi = Column(Integer,default=0)
+    daXoa = Column(Integer,default=0)
 
     ma_taiKhoan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
 
@@ -203,6 +196,7 @@ class ChiTietBaiKiemTra(Base):
     __tablename__ = "chiTietBaiKiemTra"
 
     thuTu = Column(Integer)
+    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"))
 
     ma_deKiemTra = Column(String, ForeignKey("deKiemTra.ma_deKiemTra"),primary_key=True)  
     ma_cauHoi = Column(String, ForeignKey("cauHoi.ma_cauHoi"),primary_key=True)  
@@ -211,16 +205,28 @@ class BaiLamKiemTra(Base):
     __tablename__ = "baiLamKiemTra"
 
     ma_baiLamKiemTra = Column(String,primary_key=True,default=generate_uuid)
-    thoiGianBatDauLam = Column(DateTime)
     thoiGianNop = Column(DateTime)
     diem = Column(Integer)
+    nopTre = Column(Integer)
     soCauDung = Column(Integer)
 
+    ma_deKiemTra = Column(String, ForeignKey("deKiemTra.ma_deKiemTra"))
     ma_taiKhoan = Column(String, ForeignKey("taiKhoan.ma_taiKhoan"))
 
 class ChiTietBaiLamKiemTra(Base):
     __tablename__ = "chiTietBaiLamKiemTra"
 
+    thuTu = Column(Integer)
+
     ma_baiLamKiemTra = Column(String, ForeignKey("baiLamKiemTra.ma_baiLamKiemTra"),primary_key=True)  
     ma_cauHoi = Column(String, ForeignKey("cauHoi.ma_cauHoi"),primary_key=True)  
-    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"),primary_key=True)  
+    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"))  
+
+class LuuVetBaiLamKiemTra(Base):
+    __tablename__ = "luuVetBaiLamKiemTra"
+
+    email = Column(String,primary_key=True)
+
+    ma_deKiemTra = Column(String, ForeignKey("deKiemTra.ma_deKiemTra"))
+    ma_cauHoi = Column(String, ForeignKey("cauHoi.ma_cauHoi"))  
+    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"))  
