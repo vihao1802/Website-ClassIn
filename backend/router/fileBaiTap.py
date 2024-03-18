@@ -1,42 +1,63 @@
-from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
+import database
+import models
+import schemas
+from email_validator import EmailNotValidError, validate_email
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
-from email_validator import validate_email, EmailNotValidError
-import models, schemas
-import database
 
-router = APIRouter(
-    prefix="/fileBaiTap",
-    tags=['fileBaiTap']
+router = APIRouter(prefix="/fileBaiTap", tags=["fileBaiTap"])
+
+
+@router.post(
+    "/{ma_baiTap}",
+    status_code=status.HTTP_201_CREATED,
+    response_model=schemas.FileBaiTap,
 )
-
-
-@router.post("/{ma_baiTap}",status_code=status.HTTP_201_CREATED,response_model=schemas.FileBaiTap)
-async def create(schema_object: schemas.FileBaiTapCreate,ma_baiTap: str, db: Session = Depends(database.get_db)):
+async def create(
+    schema_object: schemas.FileBaiTapCreate,
+    ma_baiTap: str,
+    db: Session = Depends(database.get_db),
+):
     # Check ma_baiTap exists
-    db_object_check = db.query(models.BaiTap).filter(models.BaiTap.ma_baiTap == ma_baiTap).first()
+    db_object_check = (
+        db.query(models.BaiTap)
+        .filter(models.BaiTap.ma_baiTap == ma_baiTap)
+        .first()
+    )
     if db_object_check is None:
         raise HTTPException(status_code=400, detail="ma_baiTap not found")
-    
+
     db_object = models.FileBaiTap(**schema_object.dict(), ma_baiTap=ma_baiTap)
     db.add(db_object)
     db.commit()
     db.refresh(db_object)
     return db_object
 
-@router.get("/",response_model=list[schemas.FileBaiTap],status_code=status.HTTP_200_OK)
-async def read( db: Session = Depends(database.get_db)):
+
+@router.get(
+    "/", response_model=list[schemas.FileBaiTap], status_code=status.HTTP_200_OK
+)
+async def read(db: Session = Depends(database.get_db)):
     db_object = db.query(models.FileBaiTap).all()
     return db_object
 
 
-@router.get("/{ma_baiTap}",status_code=status.HTTP_200_OK)
+@router.get("/{ma_baiTap}", status_code=status.HTTP_200_OK)
 async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
     # Check ma_baiTap exists
-    db_object_check = db.query(models.BaiTap).filter(models.BaiTap.ma_baiTap == ma_baiTap).first()
+    db_object_check = (
+        db.query(models.BaiTap)
+        .filter(models.BaiTap.ma_baiTap == ma_baiTap)
+        .first()
+    )
     if db_object_check is None:
         raise HTTPException(status_code=400, detail="ma_baiTap not found")
-    
-    db_object = db.query(models.FileBaiTap).filter(models.FileBaiTap.ma_baiTap == ma_baiTap).all()
+
+    db_object = (
+        db.query(models.FileBaiTap)
+        .filter(models.FileBaiTap.ma_baiTap == ma_baiTap)
+        .all()
+    )
 
     return db_object
