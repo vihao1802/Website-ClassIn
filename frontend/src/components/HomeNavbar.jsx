@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
-const HomeNavbar = ({ IsLoginPage }) => {
+const HomeNavbar = ({ IsNotHomePage }) => {
   const [value, setValue] = React.useState(0);
   const navigate = useNavigate();
 
@@ -25,10 +25,10 @@ const HomeNavbar = ({ IsLoginPage }) => {
       }}
     >
       <FlexBetween>
-        {IsLoginPage && (
+        {IsNotHomePage && (
           <WestOutlinedIcon
             sx={{ color: "#009265", fontSize: "30px", cursor: "pointer" }}
-            onClick={() => navigate(`/`)}
+            onClick={() => navigate(-1)}
           />
         )}
         <Typography
@@ -42,7 +42,7 @@ const HomeNavbar = ({ IsLoginPage }) => {
           ClassIn
         </Typography>
       </FlexBetween>
-      {!IsLoginPage && (
+      {!IsNotHomePage && (
         <>
           <Box sx={{ width: "300px", height: "40px" }}>
             <BottomNavigation

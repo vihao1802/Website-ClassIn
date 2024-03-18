@@ -8,6 +8,7 @@ import Todo from "pages/todo";
 import Chats from "pages/chats";
 import Questions from "pages/questions";
 import Tests from "pages/tests";
+import AddTestForm from "pages/tests/AddTestForm";
 function App() {
   return (
     <div className="app">
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/tests/add" element={<AddTestForm />} />
           <Route element={<Layout />}>
             <Route path="/classin" element={<Classin />} />
             <Route path="/todo" element={<Todo />} />

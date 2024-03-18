@@ -5,7 +5,7 @@ import HomeNavbar from "components/HomeNavbar";
 const Login = () => {
   return (
     <Box>
-      <HomeNavbar IsLoginPage={true} />
+      <HomeNavbar IsNotHomePage={true} />
     </Box>
   );
 };
