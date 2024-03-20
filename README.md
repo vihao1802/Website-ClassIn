@@ -39,7 +39,7 @@ npm start
 ```
 ### Import Dependencies
 ```
-npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mui/joy @mui/lab @mui/x-charts @mui/data-grid @mui/x-date-pickers @reduxjs/toolkit dayjs dotenv formik react-beautiful-dnd react-chat-elements react-countdown react-dropzone react-redux react-router-dom redux-persist
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mui/joy @mui/lab @mui/x-charts @mui/data-grid @mui/x-date-pickers @reduxjs/toolkit dayjs dotenv formik yup react-beautiful-dnd react-chat-elements react-countdown react-dropzone react-redux react-router-dom redux-persist
 ```
 
 Server:
