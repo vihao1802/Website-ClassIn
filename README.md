@@ -11,15 +11,15 @@ sudo apt install python3.10-venv
 ```
 #### Init venv folder
 ```
-python3 -m venv venv                 
+python3 -m venv venv
 ```
 #### Activate venv
 ```
-source ./venv/bin/activate           
+source ./venv/bin/activate
 ```
 #### Install all packages in requirements.txt
 ```
-pip install -r ./requirements.txt    
+pip install -r ./requirements.txt
 ```
 
 ## How to run
@@ -31,11 +31,11 @@ cd frontend
 ```
 #### Install required packages
 ```
-npm install    
+npm install
 ```
 #### Run app
 ```
-npm start      
+npm start
 ```
 
 Server:
