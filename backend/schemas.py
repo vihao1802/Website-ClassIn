@@ -1,8 +1,10 @@
-from pydantic import BaseModel, Field
-from uuid import UUID
 from datetime import datetime
+from uuid import UUID
+
+from pydantic import BaseModel, Field
 
 # For Swagger docs
+
 
 class NhomQuyenBase(BaseModel):
     ten_nhomQuyen: str = Field(examples=["Admin"])
@@ -13,7 +15,7 @@ class NhomQuyenCreate(NhomQuyenBase):
 
 
 class NhomQuyen(NhomQuyenBase):
-    ma_nhomQuyen: UUID 
+    ma_nhomQuyen: UUID
 
     class Config:
         from_attributes = True
@@ -26,14 +28,21 @@ class TaiKhoanBase(BaseModel):
     dienThoai: str = Field(examples=["0912345678"])
     anhDaiDien: str = Field(examples=["link_to_somewhere"])
 
+
 # when receive form data or API request, this should validate and parse data to database
 class TaiKhoanCreate(TaiKhoanBase):
-    matKhau: str  
+    matKhau: str
+
+
+class TaiKhoanUpdate(TaiKhoanBase):
+    matKhau: str
+    ma_nhomQuyen: UUID
+
 
 # Represents instances retrieved from the database, interaction with SQLAlchemy ORM objects.
 class TaiKhoan(TaiKhoanBase):
-    ma_taiKhoan: UUID 
-    ma_nhomQuyen: UUID 
+    ma_taiKhoan: UUID
+    ma_nhomQuyen: UUID
 
     class Config:
         from_attributes = True
@@ -49,21 +58,32 @@ class LopHocCreate(LopHocBase):
     pass
 
 
+class LopHocUpdate(LopHocBase):
+    anLopHoc: int
+    ma_giangVien: str
+
+
 class LopHoc(LopHocBase):
-    ma_lopHoc: UUID 
-    anLopHoc: int 
-    ma_giangVien: UUID 
+    ma_lopHoc: UUID
+    anLopHoc: int
+    ma_giangVien: UUID
 
     class Config:
         from_attributes = True
 
+
 class ThamGiaLopHocBase(BaseModel):
-    ma_lopHoc: UUID 
-    ma_taiKhoan: UUID 
+    ma_lopHoc: UUID
+    ma_taiKhoan: UUID
 
 
 class ThamGiaLopHocCreate(ThamGiaLopHocBase):
     pass
+
+
+class ThamGiaLopHocUpdate(ThamGiaLopHocBase):
+    ma_lopHoc: str
+    ma_taiKhoan: str
 
 
 class ThamGiaLopHoc(ThamGiaLopHocBase):
@@ -80,8 +100,8 @@ class NhomChatCreate(NhomChatBase):
 
 
 class NhomChat(NhomChatBase):
-    ma_nhomChat: UUID 
-    ma_lopHoc: UUID 
+    ma_nhomChat: UUID
+    ma_lopHoc: UUID
 
     class Config:
         from_attributes = True
@@ -89,9 +109,8 @@ class NhomChat(NhomChatBase):
 
 class TinNhanBase(BaseModel):
     noiDung: str
-    ma_nhomChat: UUID 
-    ma_taiKhoan: UUID 
-
+    ma_nhomChat: UUID
+    ma_taiKhoan: UUID
 
 
 class TinNhanCreate(TinNhanBase):
@@ -99,7 +118,7 @@ class TinNhanCreate(TinNhanBase):
 
 
 class TinNhan(TinNhanBase):
-    ma_tinNhan: UUID 
+    ma_tinNhan: UUID
     thoiGianGui: datetime
     anTinNhan: int
 
@@ -116,8 +135,8 @@ class ChuongCreate(ChuongBase):
 
 
 class Chuong(ChuongBase):
-    ma_chuong: UUID 
-    ma_lopHoc: UUID 
+    ma_chuong: UUID
+    ma_lopHoc: UUID
     thoiGianTao: datetime
     anChuong: int
 
@@ -135,8 +154,8 @@ class HocLieuCreate(HocLieuBase):
 
 
 class HocLieu(HocLieuBase):
-    ma_hocLieu: UUID 
-    ma_chuong: UUID 
+    ma_hocLieu: UUID
+    ma_chuong: UUID
     daXoa: int
     thoiGianTao: datetime
 
@@ -154,14 +173,16 @@ class FileHocLieuCreate(FileHocLieuBase):
 
 class FileHocLieu(FileHocLieuBase):
     ma_file: UUID
-    ma_hocLieu: UUID 
+    ma_hocLieu: UUID
 
     class Config:
         from_attributes = True
 
+
 class BanBeBase(BaseModel):
-    ma_nguoiKetBan: UUID 
-    ma_nguoiDuocKetBan: UUID 
+    ma_nguoiKetBan: UUID
+    ma_nguoiDuocKetBan: UUID
+
 
 class BanBeCreate(BanBeBase):
     pass
@@ -176,8 +197,8 @@ class BanBe(BanBeBase):
 
 
 class TinNhanBanBeBase(BaseModel):
-    ma_nguoiGui: UUID 
-    ma_nguoiNhan: UUID 
+    ma_nguoiGui: UUID
+    ma_nguoiNhan: UUID
     noiDung: str
 
 
@@ -203,14 +224,13 @@ class BaiTapBase(BaseModel):
     congKhaiDapAn: int
 
 
-
 class BaiTapCreate(BaiTapBase):
     pass
 
 
 class BaiTap(BaiTapBase):
-    ma_baiTap: UUID 
-    ma_chuong: UUID 
+    ma_baiTap: UUID
+    ma_chuong: UUID
     thoiGianTao: datetime
     daXoa: int
     nopBu: int
@@ -230,7 +250,7 @@ class FileBaiTapCreate(FileBaiTapBase):
 
 class FileBaiTap(FileBaiTapBase):
     ma_file: UUID
-    ma_baiTap: UUID 
+    ma_baiTap: UUID
 
     class Config:
         from_attributes = True
@@ -238,12 +258,11 @@ class FileBaiTap(FileBaiTapBase):
 
 class BaiLamBaiTapBase(BaseModel):
     noiDung: str
-    ma_taiKhoan: UUID 
-    ma_baiTap: UUID 
+    ma_taiKhoan: UUID
+    ma_baiTap: UUID
     nhanXet: str
     diem: int
     nopTre: int
-
 
 
 class BaiLamBaiTapCreate(BaiLamBaiTapBase):
@@ -251,7 +270,7 @@ class BaiLamBaiTapCreate(BaiLamBaiTapBase):
 
 
 class BaiLamBaiTap(BaiLamBaiTapBase):
-    ma_baiLamBaiTap: UUID 
+    ma_baiLamBaiTap: UUID
     thoiGianNopBai: datetime
 
     class Config:
@@ -268,7 +287,7 @@ class FileBaiLamBaiTapCreate(FileBaiLamBaiTapBase):
 
 class FileBaiLamBaiTap(FileBaiLamBaiTapBase):
     ma_file: UUID
-    ma_baiLamBaiTap: UUID 
+    ma_baiLamBaiTap: UUID
 
     class Config:
         from_attributes = True
@@ -288,8 +307,8 @@ class DeKiemTraCreate(DeKiemTraBase):
 
 
 class DeKiemTra(DeKiemTraBase):
-    ma_deKiemTra: UUID 
-    ma_chuong: UUID 
+    ma_deKiemTra: UUID
+    ma_chuong: UUID
     thoiGianTao: datetime
     daXoa: int
 
@@ -306,8 +325,8 @@ class CauHoiCreate(CauHoiBase):
 
 
 class CauHoi(CauHoiBase):
-    ma_cauHoi: UUID 
-    ma_taiKhoan: UUID 
+    ma_cauHoi: UUID
+    ma_taiKhoan: UUID
     daXoa: int
 
     class Config:
@@ -324,16 +343,16 @@ class CauTraLoiCreate(CauTraLoiBase):
 
 
 class CauTraLoi(CauTraLoiBase):
-    ma_cauTraLoi: UUID 
-    ma_cauHoi: UUID 
+    ma_cauTraLoi: UUID
+    ma_cauHoi: UUID
 
     class Config:
         from_attributes = True
 
 
 class ChiTietBaiKiemTraBase(BaseModel):
-    ma_deKiemTra: UUID 
-    ma_cauHoi: UUID 
+    ma_deKiemTra: UUID
+    ma_cauHoi: UUID
     ma_dapAnChon: UUID
     thuTu: int
 
@@ -343,13 +362,12 @@ class ChiTietBaiKiemTraCreate(ChiTietBaiKiemTraBase):
 
 
 class ChiTietBaiKiemTra(ChiTietBaiKiemTraBase):
-
     class Config:
         from_attributes = True
 
 
 class BaiLamKiemTraBase(BaseModel):
-    ma_taiKhoan: UUID 
+    ma_taiKhoan: UUID
     ma_deKiemTra: UUID
     thoiGianNop: datetime
     diem: int
@@ -357,13 +375,12 @@ class BaiLamKiemTraBase(BaseModel):
     soCauDung: int
 
 
-
 class BaiLamKiemTraCreate(BaiLamKiemTraBase):
     pass
 
 
 class BaiLamKiemTra(BaiLamKiemTraBase):
-    ma_baiLamKiemTra: UUID 
+    ma_baiLamKiemTra: UUID
 
     class Config:
         from_attributes = True
@@ -372,7 +389,7 @@ class BaiLamKiemTra(BaiLamKiemTraBase):
 class ChiTietBaiLamKiemTraBase(BaseModel):
     ma_baiLamKiemTra: UUID
     ma_cauHoi: UUID
-    ma_dapAnChon: UUID # ma_cauTraLoi
+    ma_dapAnChon: UUID  # ma_cauTraLoi
     thuTu: int
 
 
@@ -386,9 +403,9 @@ class ChiTietBaiLamKiemTra(ChiTietBaiLamKiemTraBase):
 
 
 class LuuVetBaiLamKiemTraBase(BaseModel):
-    ma_deKiemTra: UUID 
+    ma_deKiemTra: UUID
     ma_cauHoi: UUID
-    ma_dapAnChon: UUID # ma_cauTraLoi
+    ma_dapAnChon: UUID  # ma_cauTraLoi
     email: str = Field(examples=["abc@gmail.com"])
 
 

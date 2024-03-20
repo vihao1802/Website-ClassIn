@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import FlexBetween from "components/FlexBetween";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,9 +10,44 @@ import {
 } from "@mui/material";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
-const HomeNavbar = ({ IsNotHomePage }) => {
-  const [value, setValue] = React.useState(0);
+const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
+  const [value, setValue] = useState(0);
   const navigate = useNavigate();
+
+  const [isAtTop, setIsAtTop] = useState(true);
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if scrollTop is at top of the page
+      setIsAtTop(window.scrollY === 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // Automatically select Home when scrolled to top
+  useEffect(() => {
+    if (isAtTop) {
+      setValue("Home");
+    }
+  }, [isAtTop]);
+  useEffect(() => {
+    const handleScrollToAboutUs = () => {
+      if (window.scrollY >= 400) {
+        setValue("AboutUs");
+      }
+    };
+
+    window.addEventListener("scroll", handleScrollToAboutUs);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollToAboutUs);
+    };
+  }, []);
 
   return (
     <FlexBetween
@@ -22,6 +57,9 @@ const HomeNavbar = ({ IsNotHomePage }) => {
         backgroundColor: "white",
         borderBottom: "1px solid #e7e7e7",
         padding: "0 50px",
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
       }}
     >
       <FlexBetween>
@@ -69,6 +107,10 @@ const HomeNavbar = ({ IsNotHomePage }) => {
                     color: "#009265",
                   },
                 }}
+                onClick={() => {
+                  handleHomeClick();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
               />
               <BottomNavigationAction
                 label="About Us"
@@ -83,6 +125,7 @@ const HomeNavbar = ({ IsNotHomePage }) => {
                     fontWeight: "bold",
                   },
                 }}
+                onClick={handleAboutUsClick}
               />
             </BottomNavigation>
           </Box>
@@ -97,7 +140,7 @@ const HomeNavbar = ({ IsNotHomePage }) => {
                   backgroundColor: "#007850",
                 },
               }}
-              onClick={() => navigate(`/login`)}
+              onClick={() => navigate(`/signin`)}
             >
               Login
             </Button>
@@ -112,7 +155,7 @@ const HomeNavbar = ({ IsNotHomePage }) => {
                   border: "1px solid #009265",
                 },
               }}
-              onClick={() => navigate(`/login`)}
+              onClick={() => navigate(`/signup`)}
             >
               Sign Up
             </Button>

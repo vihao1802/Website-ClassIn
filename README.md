@@ -11,15 +11,15 @@ sudo apt install python3.10-venv
 ```
 #### Init venv folder
 ```
-python3 -m venv venv                 
+python3 -m venv venv
 ```
 #### Activate venv
 ```
-source ./venv/bin/activate           
+source ./venv/bin/activate
 ```
 #### Install all packages in requirements.txt
 ```
-pip install -r ./requirements.txt    
+pip install -r ./requirements.txt
 ```
 
 ## How to run
@@ -31,11 +31,15 @@ cd frontend
 ```
 #### Install required packages
 ```
-npm install    
+npm install
 ```
 #### Run app
 ```
-npm start      
+npm start
+```
+### Import Dependencies
+```
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mui/joy @mui/lab @mui/x-charts @mui/data-grid @mui/x-date-pickers @reduxjs/toolkit dayjs dotenv formik react-beautiful-dnd react-chat-elements react-countdown react-dropzone react-redux react-router-dom redux-persist
 ```
 
 Server:

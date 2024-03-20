@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Box,
@@ -6,14 +6,12 @@ import {
   MenuItem,
   Button,
   TextField,
-  Tab,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { Add, MoreHorizOutlined } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import ClassWidget from "components/ClassWidget";
@@ -82,7 +80,6 @@ const Clasin = () => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const [active, setActive] = useState("");
-  const [lophoc, setLophoc] = useState([]);
 
   /*   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/lopHoc")

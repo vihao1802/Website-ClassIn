@@ -1,16 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
-import {
-  Box,
-  Button,
-  Paper,
-  TextField,
-  Typography,
-  Divider,
-} from "@mui/material";
-import { AccessAlarmsRounded } from "@mui/icons-material";
+import React, { useState, useMemo } from "react";
+import { Box, Button, Paper, Typography, Divider } from "@mui/material";
 import { RadioGroup, Radio, radioClasses, Sheet, Link } from "@mui/joy";
-import FlexBetween from "components/FlexBetween";
 import Countdown from "components/CountDown";
+
 const questionItems = [
   {
     id: "1",
@@ -211,7 +203,7 @@ const questionItems = [
 
 const DoTestForm = () => {
   const [isChoose, setIsChoose] = useState(
-    Array(questionItems.length).fill(false)
+    Array(questionItems.length).fill(false),
   );
 
   const CountDown = useMemo(() => {
