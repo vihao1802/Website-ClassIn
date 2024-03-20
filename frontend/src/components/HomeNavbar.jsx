@@ -10,14 +10,48 @@ import {
 } from "@mui/material";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
-const HomeNavbar = ({ IsLoginPage }) => {
+const HomeNavbar = ({ IsLoginPage, handleAboutUsClick, handleHomeClick }) => {
   const [value, setValue] = React.useState(0);
+  const [isAtTop, setIsAtTop] = React.useState(true);
   const navigate = useNavigate();
+  React.useEffect(() => {
+    const handleScroll = () => {
+      // Check if scrollTop is at top of the page
+      setIsAtTop(window.scrollY === 0);
+    };
 
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // Automatically select Home when scrolled to top
+  React.useEffect(() => {
+    if (isAtTop) {
+      setValue("Home");
+    }
+  }, [isAtTop]);
+  React.useEffect(() => {
+    const handleScrollToAboutUs = () => {
+      if (window.scrollY >= 400) {
+        setValue("AboutUs");
+      }
+    };
+
+    window.addEventListener("scroll", handleScrollToAboutUs);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollToAboutUs);
+    };
+  }, []);
   return (
     <FlexBetween
       sx={{
-        width: "100%",
+
+        //width: "100%",
         height: "50px",
         backgroundColor: "white",
         borderBottom: "1px solid #e7e7e7",
@@ -55,6 +89,7 @@ const HomeNavbar = ({ IsLoginPage }) => {
             >
               <BottomNavigationAction
                 label="Home"
+                value="Home"
                 sx={{
                   color: "#009265",
                   width: "100px",
@@ -69,9 +104,14 @@ const HomeNavbar = ({ IsLoginPage }) => {
                     color: "#009265",
                   },
                 }}
+                onClick={() => {
+                  handleHomeClick();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
               />
               <BottomNavigationAction
                 label="About Us"
+                value="AboutUs"
                 sx={{
                   color: "#009265",
                   width: "100px",
@@ -83,6 +123,7 @@ const HomeNavbar = ({ IsLoginPage }) => {
                     fontWeight: "bold",
                   },
                 }}
+                onClick={handleAboutUsClick}
               />
             </BottomNavigation>
           </Box>
@@ -97,7 +138,7 @@ const HomeNavbar = ({ IsLoginPage }) => {
                   backgroundColor: "#007850",
                 },
               }}
-              onClick={() => navigate(`/login`)}
+              onClick={() => navigate(`/signin`)}
             >
               Login
             </Button>
@@ -112,7 +153,7 @@ const HomeNavbar = ({ IsLoginPage }) => {
                   border: "1px solid #009265",
                 },
               }}
-              onClick={() => navigate(`/login`)}
+              onClick={() => navigate(`/signup`)}
             >
               Sign Up
             </Button>
