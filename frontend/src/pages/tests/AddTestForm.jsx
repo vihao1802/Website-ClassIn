@@ -25,6 +25,7 @@ import dayjs from "dayjs";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import HomeNavbar from "components/HomeNavbar";
 import FlexBetween from "components/FlexBetween";
+import AddQuestionForm from "pages/questions/AddQuestionForm";
 
 const questionItems = [
   {
@@ -220,6 +221,10 @@ const AddTestForm = () => {
     }
   };
 
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <Box height="100%">
       <HomeNavbar IsNotHomePage={true} />
@@ -255,6 +260,7 @@ const AddTestForm = () => {
               Select Questions
             </Typography>
             <Button
+              onClick={handleOpen}
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -278,6 +284,7 @@ const AddTestForm = () => {
                 New Question
               </Typography>
             </Button>
+            <AddQuestionForm open={open} handleClose={handleClose} />
           </FlexBetween>
           <TextField
             fullWidth
@@ -290,7 +297,7 @@ const AddTestForm = () => {
           />
           <List
             sx={{
-              height: "500px",
+              height: "100%",
               overflowY: "scroll",
               marginTop: "10px",
               "::-webkit-scrollbar": { width: "10px" },
@@ -469,6 +476,8 @@ const AddTestForm = () => {
             width: "20%",
             padding: "10px",
             borderLeft: "1px solid #e7e7e7",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <Typography color="#009265" variant="h6" fontWeight="bold">
@@ -524,6 +533,16 @@ const AddTestForm = () => {
               sx={{ marginTop: "20px", width: 280 }}
             />
           </LocalizationProvider>
+          <TextField
+            fullWidth
+            label="Duration (Min)"
+            variant="outlined"
+            size="small"
+            color="success"
+            sx={{ marginTop: "20px" }}
+            type="number"
+            defaultValue={15}
+          />
           <Typography color="#009265" variant="h6" fontWeight="bold" mt="10px">
             Features
           </Typography>
@@ -537,6 +556,24 @@ const AddTestForm = () => {
               label="Random Question"
             />
           </FormGroup>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "right",
+              marginTop: "auto",
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#009265",
+                "&:hover": { backgroundColor: "#007850" },
+                width: "100%",
+              }}
+            >
+              Add Test
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
