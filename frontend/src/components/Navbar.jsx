@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import FlexBetween from "components/FlexBetween";
-import { Menu as MenuIcon, ArrowDropDownOutlined } from "@mui/icons-material";
+import { Menu as MenuIcon, Person, Logout } from "@mui/icons-material";
 
 import {
   Box,
@@ -25,7 +25,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     <AppBar
       sx={{
         position: "sticky",
-        background: "none",
+        backgroundColor: "white",
         borderBottom: "1px solid #e7e7e7",
         boxShadow: "none",
       }}
@@ -101,8 +101,18 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               horizontal: "left",
             }}
           >
-            <MenuItem onClick={handleClose}>Your Account</MenuItem>
-            <MenuItem onClick={handleClose}>Log Out</MenuItem>
+            <MenuItem onClick={handleClose}>
+              <FlexBetween color="#009265">
+                <Person />
+                <Typography ml="5px">Your Account</Typography>
+              </FlexBetween>
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <FlexBetween color="red">
+                <Logout />
+                <Typography ml="5px">Log Out</Typography>
+              </FlexBetween>
+            </MenuItem>
           </Menu>
         </FlexBetween>
       </Toolbar>

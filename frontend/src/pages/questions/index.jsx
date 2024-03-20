@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Button, TextField, Paper } from "@mui/material";
-import { Edit, Delete, Add } from "@mui/icons-material";
+
+import { DeleteRounded, AddRounded, EditRounded } from "@mui/icons-material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -8,32 +9,33 @@ import {
 } from "@mui/x-data-grid";
 import FlexBetween from "components/FlexBetween";
 import Header from "components/Header";
+import AddQuestionForm from "./AddQuestionForm";
 
 const columns = [
   { field: "id", headerName: "ID", width: 100, editable: false },
   {
     field: "title",
     headerName: "Title",
-    width: 900,
+    width: 750,
     editable: false,
     sortable: false,
   },
   {
     field: "action",
     headerName: "Action",
-    width: 200,
+    width: 100,
     sortable: false,
     type: "actions",
     getActions: () => {
       return [
         <GridActionsCellItem
-          icon={<Edit sx={{ color: "#1976D2" }} />}
+          icon={<EditRounded sx={{ color: "#1976D2" }} />}
           label="Edit"
           className="textPrimary"
           color="inherit"
         />,
         <GridActionsCellItem
-          icon={<Delete sx={{ color: "red" }} />}
+          icon={<DeleteRounded sx={{ color: "red" }} />}
           label="Delete"
           color="inherit"
         />,
@@ -43,7 +45,11 @@ const columns = [
 ];
 
 const rows = [
-  { id: 1, title: "Câu hỏi 1" },
+  {
+    id: 1,
+    title:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore illum excepturi iure aspernatur doloremque itaque odio ratione et animi, quibusdam quaerat accusantium. Tempora exercitationem veritatis corporis est nesciunt esse modi?",
+  },
   { id: 2, title: "Câu hỏi 2" },
   { id: 3, title: "Câu hỏi 3" },
   { id: 4, title: "Câu hỏi 4" },
@@ -67,36 +73,18 @@ const rows = [
   { id: 22, title: "Câu hỏi 22" },
   { id: 23, title: "Câu hỏi 23" },
 ];
-function EditToolbar() {
-  return (
-    <GridToolbarContainer>
-      <FlexBetween width="100%">
-        <Button color="primary" startIcon={<Add />}>
-          Add new question
-        </Button>
-        <Box pr="5px" width="300px">
-          <TextField
-            id="outlined-basic"
-            label="Search"
-            variant="outlined"
-            size="small"
-            color="success"
-            fullWidth
-          />
-        </Box>
-      </FlexBetween>
-    </GridToolbarContainer>
-  );
-}
 
 const Questions = () => {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <Box sx={{ margin: "0 50px", padding: "30px" }}>
       <Header title="QUESTIONS" subtitle="List of questions" />
-      <Box m="1.5rem 2.5rem">
+      <Box m="0 auto" width="1000px">
         <Paper>
           <Box
-            mt="40px"
+            mt="20px"
             sx={{
               "& .MuiDataGrid-root": {
                 border: "2px solid #e7e7e7",
@@ -127,22 +115,49 @@ const Questions = () => {
               "& .MuiTablePagination-displayedRows": {
                 margin: "unset",
               },
+              overflow: "unset",
             }}
           >
             <DataGrid
               rows={rows}
               columns={columns}
               slots={{
-                toolbar: EditToolbar,
+                toolbar: () => {
+                  return (
+                    <GridToolbarContainer>
+                      <FlexBetween width="100%">
+                        <Button
+                          color="primary"
+                          startIcon={<AddRounded />}
+                          onClick={handleOpen}
+                        >
+                          Add new question
+                        </Button>
+                        <Box pr="5px" width="300px">
+                          <TextField
+                            id="outlined-basic"
+                            label="Search"
+                            variant="outlined"
+                            size="small"
+                            color="success"
+                            fullWidth
+                          />
+                        </Box>
+                      </FlexBetween>
+                    </GridToolbarContainer>
+                  );
+                },
               }}
               initialState={{
                 pagination: { paginationModel: { pageSize: 5 } },
               }}
               pageSizeOptions={[5, 10]}
+              sx={{ padding: "10px 20px" }}
             />
           </Box>
         </Paper>
       </Box>
+      <AddQuestionForm open={open} handleClose={handleClose} />
     </Box>
   );
 };

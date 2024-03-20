@@ -1,157 +1,187 @@
-import React from 'react';
-import { Container, AppBar, Toolbar, Typography, TextField, Button, IconButton, Grid, Link } from '@mui/material';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import return_icon from "../../../assets/return.png"
-
+import React from "react";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Link,
+  Box,
+} from "@mui/material";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import HomeNavbar from "components/HomeNavbar";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
-  name: yup
-    .string()
-    .min(1, "Name is required")
-    .required('Name is required'),
+  name: yup.string().min(1, "Name is required").required("Name is required"),
   phonenumber: yup
     .string()
-    .matches(/^0[0-9]{9}$/, 'Phone number must start with 0 and contain exactly 10 digits')
-    .required('Phone Number is required'),
+    .matches(
+      /^0[0-9]{9}$/,
+      "Phone number must start with 0 and contain exactly 10 digits",
+    )
+    .required("Phone Number is required"),
   email: yup
     .string()
-    .email('Enter a valid email')
-    .required('Email is required'),
+    .email("Enter a valid email")
+    .required("Email is required"),
   password: yup
     .string()
-    .min(8, 'Password should be of minimum 8 characters length')
-    .required('Password is required'),
+    .min(8, "Password should be of minimum 8 characters length")
+    .required("Password is required"),
   passwordverify: yup
     .string()
-    .oneOf([yup.ref('password')], 'Passwords must match')
-    .min(8, 'Password should be of minimum 8 characters length')
-    .required('Password is required')
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .min(8, "Password should be of minimum 8 characters length")
+    .required("Password is required"),
 });
 
 const Siginform = () => {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      email: '',
-      password: ''
+      email: "",
+      password: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log('Form data:', values);
-      alert('Email: ' + values.email + ', Password: ' + values.password);
-    }
+      console.log("Form data:", values);
+      alert("Email: " + values.email + ", Password: " + values.password);
+    },
   });
 
   return (
-    <Container maxWidth="sm">
-      <AppBar sx={{ bgcolor: 'white', boxShadow: '0 0 4px 0 black', display: 'flex' }} >
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <img
-              src={return_icon}
-              alt="return"
-              style={{ width: '40px', height: '40px' }}
-            onClick={() => navigate(`/`)}
-            />
-          </IconButton>
-          <Typography variant="h4" component="div" sx={{ flexGrow: 1, color: '#009265', fontWeight: 'bold' }}>
-            ClassIn
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Grid container spacing={2} justifyContent="center" style={{ marginTop: '80px' }}>
-        <Grid item xs={12}>
-          <form onSubmit={formik.handleSubmit}>
-            <Typography variant="h4" component="div" gutterBottom sx={{ textAlign: 'center' }}>
-              Sign up
-            </Typography>
-            <TextField
-              fullWidth
-              id="name"
-              name="name"
-              label="Name"
-              variant="outlined"
-              margin="normal"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
-            />
-            <TextField
-              fullWidth
-              id="phonenumber"
-              name="phonenumber"
-              label="Phone Number"
-              variant="outlined"
-              margin="normal"
-              value={formik.values.phonenumber}
-              onChange={formik.handleChange}
-              error={formik.touched.phonenumber && Boolean(formik.errors.phonenumber)}
-              helperText={formik.touched.phonenumber && formik.errors.phonenumber}
-            />
-            <TextField
-              fullWidth
-              id="email"
-              name="email"
-              label="Email"
-              variant="outlined"
-              margin="normal"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-            />
-            <TextField
-              fullWidth
-              id="password"
-              name="password"
-              label="Password"
-              type="password"
-              variant="outlined"
-              margin="normal"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-            />
-            <TextField
-              fullWidth
-              id="passwordverify"
-              name="passwordverify"
-              label="Password Verify"
-              type="password"
-              variant="outlined"
-              margin="normal"
-              value={formik.values.passwordverify}
-              onChange={formik.handleChange}
-              error={formik.touched.passwordverify && Boolean(formik.errors.passwordverify)}
-              helperText={formik.touched.passwordverify && formik.errors.passwordverify}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              type="submit"
-              style={{ marginTop: '20px', backgroundColor: '#009265' }}>
-              Sign In
-            </Button>
-            <Typography variant="body2" align="center" style={{ marginTop: '20px' }}>
-              <Link href="#" color="#009265">
-                Forgot Password
-              </Link>
-            </Typography>
-            <Typography variant="body2" align="center" style={{ marginTop: '10px' }}>
+    <Box>
+      <HomeNavbar IsNotHomePage={true} />
+      <Container maxWidth="sm">
+        <Grid
+          container
+          spacing={2}
+          justifyContent="center"
+          style={{ marginTop: "10px" }}
+        >
+          <Grid item xs={12}>
+            <form onSubmit={formik.handleSubmit}>
+              <Typography
+                variant="h4"
+                component="div"
+                gutterBottom
+                sx={{ textAlign: "center" }}
+              >
+                Sign up
+              </Typography>
+              <TextField
+                fullWidth
+                id="name"
+                name="name"
+                label="Name"
+                variant="outlined"
+                margin="normal"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+              />
+              <TextField
+                fullWidth
+                id="phonenumber"
+                name="phonenumber"
+                label="Phone Number"
+                variant="outlined"
+                margin="normal"
+                value={formik.values.phonenumber}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.phonenumber &&
+                  Boolean(formik.errors.phonenumber)
+                }
+                helperText={
+                  formik.touched.phonenumber && formik.errors.phonenumber
+                }
+              />
+              <TextField
+                fullWidth
+                id="email"
+                name="email"
+                label="Email"
+                variant="outlined"
+                margin="normal"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+              />
+              <TextField
+                fullWidth
+                id="password"
+                name="password"
+                label="Password"
+                type="password"
+                variant="outlined"
+                margin="normal"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.password && Boolean(formik.errors.password)
+                }
+                helperText={formik.touched.password && formik.errors.password}
+              />
+              <TextField
+                fullWidth
+                id="passwordverify"
+                name="passwordverify"
+                label="Password Verify"
+                type="password"
+                variant="outlined"
+                margin="normal"
+                value={formik.values.passwordverify}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.passwordverify &&
+                  Boolean(formik.errors.passwordverify)
+                }
+                helperText={
+                  formik.touched.passwordverify && formik.errors.passwordverify
+                }
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                type="submit"
+                style={{ marginTop: "20px", backgroundColor: "#009265" }}
+              >
+                Sign In
+              </Button>
+              <Typography
+                variant="body2"
+                align="center"
+                style={{ marginTop: "20px" }}
+              >
+                <Link href="#" color="#009265">
+                  Forgot Password
+                </Link>
+              </Typography>
+              <Typography
+                variant="body2"
+                align="center"
+                style={{ marginTop: "10px" }}
+              >
                 Already have an account
-              <Link href="#" color="#009265" onClick={() => navigate(`/signin`)}>
-                Sign Up?
-              </Link>
-            </Typography>
-          </form>
+                <Link
+                  href="#"
+                  color="#009265"
+                  onClick={() => navigate(`/signin`)}
+                >
+                  Sign In?
+                </Link>
+              </Typography>
+            </form>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

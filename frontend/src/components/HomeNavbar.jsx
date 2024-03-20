@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import FlexBetween from "components/FlexBetween";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,11 +10,12 @@ import {
 } from "@mui/material";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
-const HomeNavbar = ({ IsLoginPage, handleAboutUsClick, handleHomeClick }) => {
-  const [value, setValue] = React.useState(0);
-  const [isAtTop, setIsAtTop] = React.useState(true);
+const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
+  const [value, setValue] = useState(0);
   const navigate = useNavigate();
-  React.useEffect(() => {
+
+  const [isAtTop, setIsAtTop] = useState(true);
+  useEffect(() => {
     const handleScroll = () => {
       // Check if scrollTop is at top of the page
       setIsAtTop(window.scrollY === 0);
@@ -29,12 +30,12 @@ const HomeNavbar = ({ IsLoginPage, handleAboutUsClick, handleHomeClick }) => {
   }, []);
 
   // Automatically select Home when scrolled to top
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAtTop) {
       setValue("Home");
     }
   }, [isAtTop]);
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScrollToAboutUs = () => {
       if (window.scrollY >= 400) {
         setValue("AboutUs");
@@ -47,22 +48,25 @@ const HomeNavbar = ({ IsLoginPage, handleAboutUsClick, handleHomeClick }) => {
       window.removeEventListener("scroll", handleScrollToAboutUs);
     };
   }, []);
+
   return (
     <FlexBetween
       sx={{
-
-        //width: "100%",
+        width: "100%",
         height: "50px",
         backgroundColor: "white",
         borderBottom: "1px solid #e7e7e7",
         padding: "0 50px",
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
       }}
     >
       <FlexBetween>
-        {IsLoginPage && (
+        {IsNotHomePage && (
           <WestOutlinedIcon
             sx={{ color: "#009265", fontSize: "30px", cursor: "pointer" }}
-            onClick={() => navigate(`/`)}
+            onClick={() => navigate(-1)}
           />
         )}
         <Typography
@@ -76,7 +80,7 @@ const HomeNavbar = ({ IsLoginPage, handleAboutUsClick, handleHomeClick }) => {
           ClassIn
         </Typography>
       </FlexBetween>
-      {!IsLoginPage && (
+      {!IsNotHomePage && (
         <>
           <Box sx={{ width: "300px", height: "40px" }}>
             <BottomNavigation
@@ -89,7 +93,6 @@ const HomeNavbar = ({ IsLoginPage, handleAboutUsClick, handleHomeClick }) => {
             >
               <BottomNavigationAction
                 label="Home"
-                value="Home"
                 sx={{
                   color: "#009265",
                   width: "100px",
@@ -111,7 +114,6 @@ const HomeNavbar = ({ IsLoginPage, handleAboutUsClick, handleHomeClick }) => {
               />
               <BottomNavigationAction
                 label="About Us"
-                value="AboutUs"
                 sx={{
                   color: "#009265",
                   width: "100px",

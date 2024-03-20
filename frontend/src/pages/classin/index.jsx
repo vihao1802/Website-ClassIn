@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Box,
@@ -6,18 +6,15 @@ import {
   MenuItem,
   Button,
   TextField,
-  Tab,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { Add, MoreHorizOutlined } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import ClassWidget from "components/ClassWidget";
-
 const classItems = [
   {
     name: "Công nghệ phần mềm",
@@ -83,7 +80,6 @@ const Clasin = () => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const [active, setActive] = useState("");
-  const [lophoc, setLophoc] = useState([]);
 
   /*   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/lopHoc")
@@ -95,7 +91,13 @@ const Clasin = () => {
   }, []); */
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "row" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        height: "calc(100% - 50.8px)",
+      }}
+    >
       {/* LEFT SIDEBAR */}
       <Box
         sx={{
@@ -103,6 +105,8 @@ const Clasin = () => {
           height: "100%",
           padding: "10px",
           borderRight: "1px solid #e7e7e7",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <FlexBetween>
@@ -170,7 +174,7 @@ const Clasin = () => {
         />
         <List
           sx={{
-            height: "500px",
+            height: "100%",
             overflowY: "scroll",
             marginTop: "10px",
             "::-webkit-scrollbar": { width: "10px" },
@@ -209,7 +213,7 @@ const Clasin = () => {
                   />
                   <ListItemText
                     primary={item.name}
-                    sx={{ paddingLeft: "10px" }}
+                    sx={{ paddingLeft: "10px", maxWidth: "195px" }}
                     primaryTypographyProps={{
                       style: {
                         whiteSpace: "nowrap",
@@ -224,7 +228,6 @@ const Clasin = () => {
           })}
         </List>
       </Box>
-
       {/* CENTER CONTAIN */}
       <ClassWidget />
     </Box>
