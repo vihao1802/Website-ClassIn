@@ -33,43 +33,147 @@ const classItems = [
     image: profileImage,
   },
   {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
     name: "Phát tiển phần mềm mã nguồn mở",
+    image: profileImage,
+  },
+  {
+    name: "Web Development",
+    image: profileImage,
+  },
+  {
+    name: "Data Science",
+    image: profileImage,
+  },
+  {
+    name: "Mobile App Development",
+    image: profileImage,
+  },
+  {
+    name: "Artificial Intelligence",
+    image: profileImage,
+  },
+  {
+    name: "Machine Learning",
+    image: profileImage,
+  },
+  {
+    name: "Database Management",
+    image: profileImage,
+  },
+  {
+    name: "Network Security",
+    image: profileImage,
+  },
+  {
+    name: "Cloud Computing",
+    image: profileImage,
+  },
+  {
+    name: "UI/UX Design",
+    image: profileImage,
+  },
+  {
+    name: "Game Development",
+    image: profileImage,
+  },
+  {
+    name: "Class 16",
+    image: profileImage,
+  },
+  {
+    name: "Class 17",
+    image: profileImage,
+  },
+  {
+    name: "Class 18",
+    image: profileImage,
+  },
+  {
+    name: "Class 19",
+    image: profileImage,
+  },
+  {
+    name: "Class 20",
+    image: profileImage,
+  },
+  {
+    name: "Class 21",
+    image: profileImage,
+  },
+  {
+    name: "Class 22",
+    image: profileImage,
+  },
+  {
+    name: "Class 23",
+    image: profileImage,
+  },
+  {
+    name: "Class 24",
+    image: profileImage,
+  },
+  {
+    name: "Class 25",
+    image: profileImage,
+  },
+  {
+    name: "Class 26",
+    image: profileImage,
+  },
+  {
+    name: "Class 27",
+    image: profileImage,
+  },
+  {
+    name: "Class 28",
+    image: profileImage,
+  },
+  {
+    name: "Class 29",
+    image: profileImage,
+  },
+  {
+    name: "Class 30",
+    image: profileImage,
+  },
+  {
+    name: "Class 31",
+    image: profileImage,
+  },
+  {
+    name: "Class 32",
+    image: profileImage,
+  },
+  {
+    name: "Class 33",
+    image: profileImage,
+  },
+  {
+    name: "Class 34",
+    image: profileImage,
+  },
+  {
+    name: "Class 35",
+    image: profileImage,
+  },
+  {
+    name: "Class 36",
+    image: profileImage,
+  },
+  {
+    name: "Class 37",
+    image: profileImage,
+  },
+  {
+    name: "Class 38",
+    image: profileImage,
+  },
+  {
+    name: "Class 39",
+    image: profileImage,
+  },
+  {
+    name: "Class 40",
     image: profileImage,
   },
 ];

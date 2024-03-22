@@ -37,7 +37,7 @@ function TabPanel(props) {
       {...other}
       style={{ width: "100%", height: "100%" }}
     >
-      <Box sx={{ p: 1.5, height: "calc(100% - 24px)" }}>
+      <Box sx={{ p: 1.5, height: "100%" }}>
         {value === index && (
           <Typography component="span">{children}</Typography>
         )}
@@ -65,13 +65,14 @@ const Todo = () => {
   const [classes, setClasses] = React.useState("");
   const [categories, setCategories] = React.useState("");
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const navigate = useNavigate();
   const handleChangeClasses = (event) => {
     setClasses(event.target.value);
   };
   const handleClick = () => {
     // setAnchorEl(event.currentTarget);
-    console.log("Submit");
+    // console.log("Submit");
+    navigate("/tests/do");
   };
   const handleChangeCategories = (event) => {
     setCategories(event.target.value);
