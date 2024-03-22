@@ -128,6 +128,11 @@ const messageItems = [
     position: "left",
     name: "Admin",
   },
+  {
+    text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati ut, temporibus mollitia debitis minus itaque, cupiditate libero necessitatibus impedit blanditiis ipsa nesciunt id facere totam incidunt quasi dolor soluta nisi?",
+    position: "left",
+    name: "Admin",
+  },
   { text: "Message 11", position: "right", name: "User1" },
   { text: "Message 12", position: "left", name: "User2" },
   { text: "Message 13", position: "left", name: "User3" },
@@ -164,6 +169,178 @@ const testItems = [
   { id: "8", label: "Test 8" },
   { id: "9", label: "Test 9" },
   { id: "10", label: "Test 10" },
+];
+
+const lessons = [
+  {
+    title: "Lesson 1",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 2",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 3",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 4",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 5",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 6",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 7",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 8",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 9",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 10",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 11",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 12",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 13",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
 ];
 
 const statisticItems = [
@@ -334,13 +511,13 @@ const ClassWidget = () => {
             display: "flex",
             flexDirection: "column",
             padding: "unset",
-            height: "100%",
+            height: "calc(100% - 88.8px)",
           }}
         >
           <Box
             sx={{
               minHeight: "430px",
-              height: "460px",
+              height: "auto",
               overflowY: "scroll",
               backgroundColor: "#e7e7e7",
               padding: "10px",
@@ -395,15 +572,17 @@ const ClassWidget = () => {
               );
             })}
           </Box>
-          <Box sx={{ height: "20%", marginTop: "10px", padding: "0 20px" }}>
+          <Box sx={{ height: "20%", padding: "20px" }}>
             <FlexBetween
               backgroundColor="white"
               border="1px solid #e7e7e7"
               borderRadius="9px"
-              gap="3rem"
-              padding="0.1rem 1.5rem"
+              padding="0.1rem 0.5rem 0.1rem 1.5rem"
             >
-              <InputBase placeholder="Aa" />
+              <InputBase
+                placeholder="Type a message..."
+                sx={{ width: "100%" }}
+              />
               <IconButton>
                 <SendRounded sx={{ color: "#009265" }} />
               </IconButton>
@@ -521,7 +700,8 @@ const ClassWidget = () => {
           <Box
             mt="10px"
             sx={{
-              height: "400px",
+              height: "100%",
+              maxHeight: "510px",
               overflowY: "scroll",
               "::-webkit-scrollbar": { width: "10px" },
               "::-webkit-scrollbar-track": {
@@ -535,61 +715,50 @@ const ClassWidget = () => {
               },
             }}
           >
-            <Accordion sx={{ border: "1px solid #e7e7e7" }}>
-              <FlexBetween>
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="panel3-content"
-                  id="panel3-header"
-                  sx={{ flexDirection: "row-reverse" }}
-                >
-                  Lesson 1
-                </AccordionSummary>
-                <IconButton
-                  sx={{
-                    color: "#009265",
-                    width: "40px",
-                    marginRight: "30px",
-                  }}
-                >
-                  <MoreHorizOutlined />
-                </IconButton>
-              </FlexBetween>
-              <AccordionDetails sx={{ padding: "unset" }}>
-                <List>
-                  <ListItem disablePadding>
-                    <ListItemButton sx={{ height: "80px" }}>
-                      <ListItemIcon>
-                        <Inbox />
-                      </ListItemIcon>
-                      <Box>
-                        <Typography variant="h6">
-                          Test 1: Introduce about Brute-Force
-                        </Typography>
-                        <Typography color="#666666">
-                          Deadline: 10pm 21-03-2024
-                        </Typography>
-                      </Box>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton sx={{ height: "80px" }}>
-                      <ListItemIcon>
-                        <Inbox />
-                      </ListItemIcon>
-                      <Box>
-                        <Typography variant="h6">
-                          Test 1: Introduce about Brute-Force
-                        </Typography>
-                        <Typography color="#666666">
-                          Deadline: 10pm 21-03-2024
-                        </Typography>
-                      </Box>
-                    </ListItemButton>
-                  </ListItem>
-                </List>
-              </AccordionDetails>
-            </Accordion>
+            {lessons.map((lesson, index) => (
+              <Accordion
+                sx={{ border: "1px solid #e7e7e7", marginBottom: "5px" }}
+              >
+                <FlexBetween>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel3-content"
+                    id="panel3-header"
+                    sx={{ flexDirection: "row-reverse", width: "100%" }}
+                  >
+                    {lesson.title}
+                  </AccordionSummary>
+                  <IconButton
+                    sx={{
+                      color: "#009265",
+                      width: "40px",
+                      marginRight: "30px",
+                    }}
+                  >
+                    <MoreHorizOutlined />
+                  </IconButton>
+                </FlexBetween>
+                <AccordionDetails sx={{ padding: "unset" }}>
+                  <List>
+                    {lesson.tests.map((test, testIndex) => (
+                      <ListItem key={testIndex} disablePadding>
+                        <ListItemButton sx={{ height: "80px" }}>
+                          <ListItemIcon>
+                            <Inbox />
+                          </ListItemIcon>
+                          <Box>
+                            <Typography variant="h6">{test.name}</Typography>
+                            <Typography color="#666666">
+                              Deadline: {test.deadline}
+                            </Typography>
+                          </Box>
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            ))}
           </Box>
         </TabPanel>
 
