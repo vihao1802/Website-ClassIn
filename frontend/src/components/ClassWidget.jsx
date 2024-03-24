@@ -418,7 +418,7 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = () => {
+const ClassWidget = (props) => {
   // course tab
   const [value, setValue] = React.useState("1");
   const handleChangeTab = (event, newValue) => {
@@ -454,16 +454,36 @@ const ClassWidget = () => {
         flexDirection: "column",
       }}
     >
-      <Typography
+      <Box
         sx={{
-          height: "40px",
+          height: "50px",
           borderBottom: "1px solid #e7e7e7",
-          fontSize: "18px",
-          padding: "7px 15px",
+          padding: "5px 20px",
+          display: "flex",
+          flexDirection: "row",
         }}
       >
-        Công nghệ phần mềm
-      </Typography>
+        <Box
+          component="img"
+          alt="profile"
+          src={props.classInfo.image}
+          height="39px"
+          width="39px"
+          borderRadius="50%"
+          sx={{ objectFit: "cover" }}
+        />
+        <Typography
+          sx={{
+            height: "40px",
+            borderBottom: "1px solid #e7e7e7",
+            fontSize: "18px",
+            padding: "7px 15px",
+          }}
+        >
+          {/* Công nghệ phần mềm */}
+          {props.classInfo.name}
+        </Typography>
+      </Box>
       <TabContext value={value}>
         <Box
           sx={{
@@ -533,9 +553,10 @@ const ClassWidget = () => {
               },
             }}
           >
-            {messageItems.map((item) => {
+            {messageItems.map((item, index) => {
               return (
                 <Box
+                  key={index}
                   sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -717,6 +738,7 @@ const ClassWidget = () => {
           >
             {lessons.map((lesson, index) => (
               <Accordion
+                key={index}
                 sx={{ border: "1px solid #e7e7e7", marginBottom: "5px" }}
               >
                 <FlexBetween>
