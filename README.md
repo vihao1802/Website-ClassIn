@@ -5,6 +5,14 @@
   </a>
 </p>
 
+<!--
+[![GitHub Watches](https://img.shields.io/github/watchers/vihao1802/Website-ClassIn.svg?style=social&label=Watch&maxAge=2592000)](https://github.com/vihao1802/Website-ClassIn/watchers)
+[![Contributors](https://img.shields.io/github/contributors/vihao1802/Website-ClassIn.svg)](https://github.com/vihao1802/Website-ClassIn/graphs/contributors)
+ <a href="https://github.com/vihao1802/pharmacy-management">
+    <img src="https://img.shields.io/github/contributors/vihao1802/pharmacy-management.svg" alt="Contributors">
+  </a>
+-->
+
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
 
 
