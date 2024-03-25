@@ -9,7 +9,7 @@ import {
 } from "@mui/x-data-grid";
 import FlexBetween from "components/FlexBetween";
 import Header from "components/Header";
-import AddQuestionForm from "./AddQuestionForm";
+import AddQuestionForm from "../../components/AddQuestionForm";
 
 const columns = [
   { field: "id", headerName: "ID", width: 100, editable: false },

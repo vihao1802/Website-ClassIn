@@ -299,7 +299,6 @@ const ClassWidget = () => {
         >
           <TabList
             onChange={handleChangeTab}
-            aria-label="lab API tabs example"
             sx={{
               color: "#009265",
               "& .MuiTab-root.Mui-selected": {
@@ -322,6 +321,7 @@ const ClassWidget = () => {
               width: "40px",
               marginRight: "30px",
             }}
+            onClick={() => navigate("/classDetail")}
           >
             <MoreHorizOutlined />
           </IconButton>

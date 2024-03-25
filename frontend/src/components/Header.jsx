@@ -3,7 +3,14 @@ import React from "react";
 
 const Header = ({ title, subtitle }) => {
   return (
-    <Box>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        padding: "0 120px",
+        justifyContent: "center",
+      }}
+    >
       <Typography
         variant="h4"
         color="#009265"
