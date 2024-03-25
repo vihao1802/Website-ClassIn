@@ -15,6 +15,7 @@ import { Add } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import ClassWidget from "components/ClassWidget";
+import ModalHandleCLass from "components/ModalHandleCLass";
 const classItems = [
   {
     name: "Công nghệ phần mềm",
@@ -33,53 +34,179 @@ const classItems = [
     image: profileImage,
   },
   {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
     name: "Phát tiển phần mềm mã nguồn mở",
+    image: profileImage,
+  },
+  {
+    name: "Web Development",
+    image: profileImage,
+  },
+  {
+    name: "Data Science",
+    image: profileImage,
+  },
+  {
+    name: "Mobile App Development",
+    image: profileImage,
+  },
+  {
+    name: "Artificial Intelligence",
+    image: profileImage,
+  },
+  {
+    name: "Machine Learning",
+    image: profileImage,
+  },
+  {
+    name: "Database Management",
+    image: profileImage,
+  },
+  {
+    name: "Network Security",
+    image: profileImage,
+  },
+  {
+    name: "Cloud Computing",
+    image: profileImage,
+  },
+  {
+    name: "UI/UX Design",
+    image: profileImage,
+  },
+  {
+    name: "Game Development",
+    image: profileImage,
+  },
+  {
+    name: "Class 16",
+    image: profileImage,
+  },
+  {
+    name: "Class 17",
+    image: profileImage,
+  },
+  {
+    name: "Class 18",
+    image: profileImage,
+  },
+  {
+    name: "Class 19",
+    image: profileImage,
+  },
+  {
+    name: "Class 20",
+    image: profileImage,
+  },
+  {
+    name: "Class 21",
+    image: profileImage,
+  },
+  {
+    name: "Class 22",
+    image: profileImage,
+  },
+  {
+    name: "Class 23",
+    image: profileImage,
+  },
+  {
+    name: "Class 24",
+    image: profileImage,
+  },
+  {
+    name: "Class 25",
+    image: profileImage,
+  },
+  {
+    name: "Class 26",
+    image: profileImage,
+  },
+  {
+    name: "Class 27",
+    image: profileImage,
+  },
+  {
+    name: "Class 28",
+    image: profileImage,
+  },
+  {
+    name: "Class 29",
+    image: profileImage,
+  },
+  {
+    name: "Class 30",
+    image: profileImage,
+  },
+  {
+    name: "Class 31",
+    image: profileImage,
+  },
+  {
+    name: "Class 32",
+    image: profileImage,
+  },
+  {
+    name: "Class 33",
+    image: profileImage,
+  },
+  {
+    name: "Class 34",
+    image: profileImage,
+  },
+  {
+    name: "Class 35",
+    image: profileImage,
+  },
+  {
+    name: "Class 36",
+    image: profileImage,
+  },
+  {
+    name: "Class 37",
+    image: profileImage,
+  },
+  {
+    name: "Class 38",
+    image: profileImage,
+  },
+  {
+    name: "Class 39",
+    image: profileImage,
+  },
+  {
+    name: "Class 40",
     image: profileImage,
   },
 ];
 
 const Clasin = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isOpenModalJoin, setOpenModalJoin] = useState(false);
+  const [isOpenModalCreate, setOpenModalCreate] = useState(false);
   const isOpen = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-  const [active, setActive] = useState("");
+  const handleOpenModalJoin = () => {
+    setOpenModalJoin(true);
+  };
+  const handleOpenModalCreate = () => {
+    setOpenModalCreate(true);
+  };
+  const handleCLoseModalJoin = () => {
+    setOpenModalJoin(false);
+  };
+  const handleCLoseModalCreate = () => {
+    setOpenModalCreate(false);
+  };
+  const handleJoin = () => {
+    console.log("Join");
+  };
+  const handleCreate = () => {
+    console.log("Create");
+  };
+  const [active, setActive] = useState(
+    classItems.length > 0 ? classItems[0] : null,
+  );
 
   /*   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/lopHoc")
@@ -158,8 +285,20 @@ const Clasin = () => {
                 horizontal: "left",
               }}
             >
-              <MenuItem onClick={handleClose}>Join class</MenuItem>
-              <MenuItem onClick={handleClose}>Create class</MenuItem>
+              <MenuItem onClick={handleOpenModalJoin}>Join class</MenuItem>
+              <ModalHandleCLass
+                open={isOpenModalJoin}
+                handleClose={handleCLoseModalJoin}
+                handleClass={handleJoin}
+                title={"Join class"}
+              />
+              <MenuItem onClick={handleOpenModalCreate}>Create class</MenuItem>
+              <ModalHandleCLass
+                open={isOpenModalCreate}
+                handleClose={handleCLoseModalCreate}
+                handleClass={handleCreate}
+                title={"Create class"}
+              />
             </Menu>
           </FlexBetween>
         </FlexBetween>
@@ -189,17 +328,17 @@ const Clasin = () => {
             },
           }}
         >
-          {classItems.map((item) => {
+          {classItems.map((item, index) => {
             return (
-              <ListItem key={item.name} disablePadding>
+              <ListItem key={index} disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    setActive(item.name);
+                    setActive(item);
                   }}
                   sx={{
                     backgroundColor:
-                      active === item.name ? "#e7e7e7" : "transparent",
-                    color: active === item.name ? "black" : "#666666",
+                      active.name === item.name ? "#e7e7e7" : "transparent",
+                    color: active.name === item.name ? "black" : "#666666",
                   }}
                 >
                   <Box
@@ -229,7 +368,7 @@ const Clasin = () => {
         </List>
       </Box>
       {/* CENTER CONTAIN */}
-      <ClassWidget />
+      <ClassWidget classInfo={active} />
     </Box>
   );
 };

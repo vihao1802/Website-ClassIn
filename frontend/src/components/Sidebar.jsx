@@ -101,7 +101,14 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setIsSidebarOpen }) => {
                       backgroundColor:
                         active === lcText ? "#009265" : "transparent",
                       color: active === lcText ? "white" : "#009265",
+                      "&:not(.active):hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.04)", // Add your hover styles here
+                      },
+                      "&.active": {
+                        backgroundColor: "#009265",
+                      },
                     }}
+                    className={active === lcText ? "active" : ""}
                   >
                     <ListItemIcon
                       sx={{
