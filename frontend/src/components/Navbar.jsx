@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import { Menu as MenuIcon, Person, Logout } from "@mui/icons-material";
 
@@ -20,6 +21,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const isOpen = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+  const navigate = useNavigate();
 
   return (
     <AppBar
@@ -101,7 +103,12 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               horizontal: "left",
             }}
           >
-            <MenuItem onClick={handleClose}>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                navigate("/profile");
+              }}
+            >
               <FlexBetween color="#009265">
                 <Person />
                 <Typography ml="5px">Your Account</Typography>

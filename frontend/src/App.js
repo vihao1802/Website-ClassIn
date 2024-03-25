@@ -11,6 +11,9 @@ import AddTestForm from "pages/tests/AddTestForm";
 import DoTestForm from "pages/tests/DoTestForm";
 import Signin from "pages/login/signin/index";
 import Signup from "pages/login/signup/index";
+import TestExcerciseDetail from "pages/tests/TestExcerciseDetail";
+import Profile from "pages/profile";
+import ClassDetail from "pages/classDetail";
 function App() {
   return (
     <div className="app">
@@ -23,6 +26,9 @@ function App() {
           <Route path="/tests/do" element={<DoTestForm />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/tests/detail" element={<TestExcerciseDetail />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/classDetail" element={<ClassDetail />} />
           <Route element={<Layout />}>
             <Route path="/classin" element={<Classin />} />
             <Route path="/todo" element={<Todo />} />
