@@ -80,6 +80,8 @@ const ModalHandleCLass = (props) => {
                 : "Enter class's name"}
             </Typography>
             <TextField
+              color="success"
+              size="small"
               id="outlined-textarea"
               label={props.title === "Join class" ? "Code" : "Name"}
               placeholder={
@@ -138,13 +140,15 @@ const ModalHandleCLass = (props) => {
             }}
           >
             <Button
+              variant="outlined"
               sx={{
-                backgroundColor: "#9da5b1",
-                color: "black",
+                backgroundColor: "white",
+                color: "#009265",
                 maxWidth: "100px",
                 width: "100%",
+                border: "1px solid #009265",
                 "&:hover": {
-                  backgroundColor: "#8690a3",
+                  border: "1px solid #009265",
                 },
               }}
               onClick={() => props.handleClose()}

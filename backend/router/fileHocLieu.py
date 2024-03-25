@@ -17,7 +17,7 @@ async def create(
     ma_hocLieu: str,
     db: Session = Depends(database.get_db),
 ):
-    if schema_object.link.strip() == "":
+    if schema_object.tenFile.strip() == "":
         raise HTTPException(status_code=400, detail="Invalid link")
     # check ma_lopHoc
     db_object_check = (
@@ -40,7 +40,6 @@ async def create(
 
 @router.get(
     "/",
-    response_model=list[schemas.FileHocLieu],
     status_code=status.HTTP_200_OK,
 )
 async def read(db: Session = Depends(database.get_db)):

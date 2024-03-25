@@ -475,7 +475,6 @@ const ClassWidget = (props) => {
         <Typography
           sx={{
             height: "40px",
-            borderBottom: "1px solid #e7e7e7",
             fontSize: "18px",
             padding: "7px 15px",
           }}
@@ -531,7 +530,7 @@ const ClassWidget = (props) => {
             display: "flex",
             flexDirection: "column",
             padding: "unset",
-            height: "calc(100% - 88.8px)",
+            height: "calc(100% - 98.8px)",
           }}
         >
           <Box
@@ -615,8 +614,10 @@ const ClassWidget = (props) => {
         <TabPanel
           value="2"
           sx={{
-            padding: "0 20px",
-            height: "100%",
+            padding: "0 20px 10px",
+            height: "calc(100% - 98.8px)",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           {/* TOOLBAR */}
@@ -739,7 +740,10 @@ const ClassWidget = (props) => {
             {lessons.map((lesson, index) => (
               <Accordion
                 key={index}
-                sx={{ border: "1px solid #e7e7e7", marginBottom: "5px" }}
+                sx={{
+                  border: "1px solid #e7e7e7",
+                  marginBottom: "10px",
+                }}
               >
                 <FlexBetween>
                   <AccordionSummary
