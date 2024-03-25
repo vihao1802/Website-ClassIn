@@ -43,15 +43,7 @@ source ./venv/bin/activate
 ```
 pip install -r ./requirements.txt
 ```
-5. Move to `frontend` directory
-```
-cd frontend
-```
-6. Install all required packages in `packages.json`
-```
-npm i
-```
-7. (Optional) Init `pre-commit`
+5. (Optional) Init `pre-commit`
 
 * This is for development
 ```
@@ -60,6 +52,15 @@ pre-commit install
 ```
 pre-commit run --all-files
 ```
+6. Move to `frontend` directory
+```
+cd frontend
+```
+7. Install all required packages in `packages.json`
+```
+npm i
+```
+
 ## 🚀 Usage
 ⚠️ Should use two terminals when run app
 
