@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
+  Add,
   MoreHorizOutlined,
   SendRounded,
-  Add,
+  ListAltRounded,
   ExpandMore,
   Inbox,
   PersonOffRounded,
@@ -13,6 +14,8 @@ import {
   EmojiEventsRounded,
   ThumbDownRounded,
   SentimentDissatisfiedRounded,
+  ArticleOutlined,
+  BookOutlined,
 } from "@mui/icons-material";
 import {
   Tab,
@@ -36,6 +39,7 @@ import {
   Autocomplete,
   Paper,
   Grid,
+  Divider,
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import "react-chat-elements/dist/main.css";
@@ -697,21 +701,39 @@ const ClassWidget = (props) => {
                     horizontal: "left",
                   }}
                 >
-                  <MenuItem onClick={handleCloseCreateMenu}>
-                    <FlexBetween>
-                      <Add />
-                      <Typography>Unit</Typography>
-                    </FlexBetween>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={
-                      (handleCloseCreateMenu, () => navigate("/tests/add"))
-                    }
-                  >
-                    Test
-                  </MenuItem>
-                  <MenuItem onClick={handleCloseCreateMenu}>Exercise</MenuItem>
-                  <MenuItem onClick={handleCloseCreateMenu}>Document</MenuItem>
+                  <nav>
+                    <MenuItem
+                      onClick={
+                        (handleCloseCreateMenu, () => navigate("/tests/add"))
+                      }
+                    >
+                      <FlexBetween width="60%">
+                        <ArticleOutlined />
+                        <Typography>Test</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseCreateMenu}>
+                      <FlexBetween width="90%">
+                        <ArticleOutlined />
+                        <Typography>Exercise</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseCreateMenu}>
+                      <FlexBetween>
+                        <BookOutlined />
+                        <Typography>Document</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                  </nav>
+                  <Divider color="#666666" />
+                  <nav>
+                    <MenuItem onClick={handleCloseCreateMenu}>
+                      <FlexBetween width="60%">
+                        <ListAltRounded />
+                        <Typography>Unit</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                  </nav>
                 </Menu>
               </FlexBetween>
             </FlexBetween>

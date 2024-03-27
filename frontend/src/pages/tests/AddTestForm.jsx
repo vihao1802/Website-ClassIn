@@ -236,7 +236,7 @@ const AddTestForm = () => {
 
   return (
     <Box height="100%">
-      <HomeNavbar IsNotHomePage={true} />
+      <HomeNavbar IsNotHomePage={true} title="Add Test" />
       <Box
         sx={{
           display: "flex",

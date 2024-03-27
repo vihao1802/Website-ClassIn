@@ -81,7 +81,7 @@ const Profile = () => {
 
   return (
     <Box>
-      <HomeNavbar IsNotHomePage={true} />
+      <HomeNavbar IsNotHomePage={true} title="Your Account" />
       <Box
         sx={{
           width: "100%",
@@ -89,7 +89,6 @@ const Profile = () => {
           padding: "20px",
         }}
       >
-        <Header title="Account Setting" subtitle="Your Account" />
         <Box
           sx={{
             width: "100%",
@@ -97,7 +96,6 @@ const Profile = () => {
             display: "flex",
             flexDirection: "row",
             gap: 3,
-            marginTop: "",
             margin: "20px auto 0",
             justifyContent: "center",
           }}

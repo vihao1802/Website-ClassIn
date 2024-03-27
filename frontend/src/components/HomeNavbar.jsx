@@ -11,6 +11,7 @@ import {
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
 const HomeNavbar = ({
+  title,
   IsNotHomePage,
   handleAboutUsClick,
   handleHomeClick,
@@ -79,7 +80,7 @@ const HomeNavbar = ({
         padding: "0 50px",
         position: "sticky",
         top: 0,
-        zIndex: 1,
+        zIndex: 2,
       }}
     >
       <FlexBetween>
@@ -97,7 +98,7 @@ const HomeNavbar = ({
             marginLeft: "30px",
           }}
         >
-          ClassIn
+          {!IsNotHomePage ? "ClassIn" : title}
         </Typography>
       </FlexBetween>
       {!IsNotHomePage && (
