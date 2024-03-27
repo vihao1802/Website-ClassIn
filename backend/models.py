@@ -226,7 +226,6 @@ class ChiTietBaiKiemTra(Base):
     __tablename__ = "chiTietBaiKiemTra"
 
     thuTu = Column(Integer)
-    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"))
 
     ma_deKiemTra = Column(
         String, ForeignKey("deKiemTra.ma_deKiemTra"), primary_key=True
@@ -263,8 +262,12 @@ class ChiTietBaiLamKiemTra(Base):
 class LuuVetBaiLamKiemTra(Base):
     __tablename__ = "luuVetBaiLamKiemTra"
 
-    email = Column(String, primary_key=True)
+    email = Column(String)
 
-    ma_deKiemTra = Column(String, ForeignKey("deKiemTra.ma_deKiemTra"))
-    ma_cauHoi = Column(String, ForeignKey("cauHoi.ma_cauHoi"))
-    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"))
+    ma_deKiemTra = Column(
+        String, ForeignKey("deKiemTra.ma_deKiemTra"), primary_key=True
+    )
+    ma_cauHoi = Column(String, ForeignKey("cauHoi.ma_cauHoi"), primary_key=True)
+    ma_dapAnChon = Column(
+        String, ForeignKey("cauTraLoi.ma_cauTraLoi"), primary_key=True
+    )

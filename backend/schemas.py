@@ -218,7 +218,7 @@ class TinNhanBanBe(TinNhanBanBeBase):
 class BaiTapBase(BaseModel):
     tieuDe: str
     noiDungBaiTap: str
-    noiDungBaiTap: str
+    noiDungDapAn: str
     thoiGianBatDau: datetime
     thoiGianKetThuc: datetime
     congKhaiDapAn: int
@@ -296,7 +296,8 @@ class FileBaiLamBaiTap(FileBaiLamBaiTapBase):
 class DeKiemTraBase(BaseModel):
     tieuDe: str
     thoiGianBatDau: datetime
-    thoiGianKetThuc: datetime
+    hanChotNopBai: datetime
+    thoiGianLamBai: int
     xemDapAn: int
     tronCauHoi: int
     hinhPhat: int
@@ -353,7 +354,6 @@ class CauTraLoi(CauTraLoiBase):
 class ChiTietBaiKiemTraBase(BaseModel):
     ma_deKiemTra: UUID
     ma_cauHoi: UUID
-    ma_dapAnChon: UUID
     thuTu: int
 
 
@@ -370,6 +370,7 @@ class BaiLamKiemTraBase(BaseModel):
     ma_taiKhoan: UUID
     ma_deKiemTra: UUID
     thoiGianNop: datetime
+    thoiGianBatDauLam: datetime
     diem: int
     nopTre: int
     soCauDung: int
