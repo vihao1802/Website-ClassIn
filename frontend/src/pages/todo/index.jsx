@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import theme from "../../theme";
 import PropTypes from "prop-types";
 import {
   Tab,
@@ -97,7 +98,7 @@ const Todo = () => {
         onChange={handleChange}
         aria-label="Vertical tabs example"
         TabIndicatorProps={{
-          sx: { backgroundColor: "#009265" },
+          sx: { backgroundColor: theme.main_theme },
         }}
         sx={{
           borderRight: 1,
@@ -105,14 +106,14 @@ const Todo = () => {
           display: "flex",
           flexDirection: "column",
           paddingTop: "16px",
-          color: "#009265",
+          color: theme.main_theme,
           "& .MuiTab-root.Mui-selected": {
             color: "white",
-            backgroundColor: "#009265",
-            borderColor: "#009265",
+            backgroundColor: theme.main_theme,
+            borderColor: theme.main_theme,
 
             "&:hover": {
-              backgroundColor: "#009265",
+              backgroundColor: theme.main_theme,
             },
           },
           "& .MuiTab-root:not(.Mui-selected):hover": {
@@ -124,7 +125,7 @@ const Todo = () => {
           label={
             <React.Fragment>
               <HourglassEmpty />
-              Đang chờ
+              Pending
             </React.Fragment>
           }
           sx={{
@@ -146,7 +147,7 @@ const Todo = () => {
           label={
             <React.Fragment>
               <EventAvailable />
-              Đã xong
+              Done
             </React.Fragment>
           }
           sx={{
@@ -188,7 +189,7 @@ const Todo = () => {
                   sx={{
                     minWidth: "200px",
                   }}
-                  color="success"
+                  color={"success"}
                 >
                   <MenuItem value="">All classes</MenuItem>
                   <MenuItem value={10}>Công nghệ phần mềm</MenuItem>
@@ -206,7 +207,7 @@ const Todo = () => {
                   sx={{
                     minWidth: "200px",
                   }}
-                  color="success"
+                  color={"success"}
                 >
                   <MenuItem value="">Tất cả thể loại</MenuItem>
                   <MenuItem value={10}>Bài tập</MenuItem>
@@ -268,7 +269,7 @@ const Todo = () => {
                       <Stack direction="row" spacing={1}>
                         <Chip
                           label="Test"
-                          color="success"
+                          color={"success"}
                           size="small"
                           variant="outlined"
                         />
@@ -285,7 +286,7 @@ const Todo = () => {
                       borderRadius: "20px",
                       marginLeft: "auto",
                       padding: "5px 25px",
-                      backgroundColor: "#009265",
+                      backgroundColor: theme.main_theme,
                       "&:hover": {
                         backgroundColor: "#007850",
                       },
@@ -325,7 +326,7 @@ const Todo = () => {
                       <Stack direction="row" spacing={1}>
                         <Chip
                           label="Assignment"
-                          color="success"
+                          color={"success"}
                           size="small"
                           variant="outlined"
                         />
@@ -342,7 +343,7 @@ const Todo = () => {
                       borderRadius: "20px",
                       marginLeft: "auto",
                       padding: "5px 25px",
-                      backgroundColor: "#009265",
+                      backgroundColor: theme.main_theme,
                       "&:hover": {
                         backgroundColor: "#007850",
                       },
@@ -389,7 +390,7 @@ const Todo = () => {
                   sx={{
                     minWidth: "200px",
                   }}
-                  color="success"
+                  color={"success"}
                 >
                   <MenuItem value="">All classes</MenuItem>
                   <MenuItem value={10}>Công nghệ phần mềm</MenuItem>
@@ -407,7 +408,7 @@ const Todo = () => {
                   sx={{
                     minWidth: "200px",
                   }}
-                  color="success"
+                  color={"success"}
                 >
                   <MenuItem value="">Tất cả thể loại</MenuItem>
                   <MenuItem value={10}>Bài tập</MenuItem>
@@ -468,7 +469,7 @@ const Todo = () => {
                       <Stack direction="row" spacing={1}>
                         <Chip
                           label="Test"
-                          color="success"
+                          color={"success"}
                           size="small"
                           variant="outlined"
                         />
@@ -485,7 +486,7 @@ const Todo = () => {
                       borderRadius: "20px",
                       marginLeft: "auto",
                       padding: "5px 25px",
-                      backgroundColor: "#009265",
+                      backgroundColor: theme.main_theme,
                       "&:hover": {
                         backgroundColor: "#007850",
                       },
@@ -525,7 +526,7 @@ const Todo = () => {
                       <Stack direction="row" spacing={1}>
                         <Chip
                           label="Assignment"
-                          color="success"
+                          color={"success"}
                           size="small"
                           variant="outlined"
                         />
@@ -542,7 +543,7 @@ const Todo = () => {
                       borderRadius: "20px",
                       marginLeft: "auto",
                       padding: "5px 25px",
-                      backgroundColor: "#009265",
+                      backgroundColor: theme.main_theme,
                       "&:hover": {
                         backgroundColor: "#007850",
                       },

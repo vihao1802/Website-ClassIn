@@ -4,6 +4,7 @@ import Countdown, { zeroPad } from "react-countdown";
 import { Typography } from "@mui/material";
 import FlexBetween from "./FlexBetween";
 import { AccessAlarmsRounded } from "@mui/icons-material";
+import theme from "../theme";
 const CountdownComponent = ({ timeInMinute }) => {
   return (
     <Countdown
@@ -12,8 +13,8 @@ const CountdownComponent = ({ timeInMinute }) => {
         // Render a countdown
         return (
           <FlexBetween width="170px">
-            <AccessAlarmsRounded sx={{ color: "#009265" }} />
-            <Typography variant="h4" color="#009265" fontWeight="bold">
+            <AccessAlarmsRounded sx={{ color: theme.main_theme }} />
+            <Typography variant="h4" color={theme.main_theme} fontWeight="bold">
               {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
             </Typography>
           </FlexBetween>
