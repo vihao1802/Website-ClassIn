@@ -341,7 +341,7 @@ const TestExcerciseDetail = () => {
 
   return (
     <Box>
-      <HomeNavbar IsNotHomePage={true} />
+      <HomeNavbar IsNotHomePage={true} title="Detail" />
       <Box
         sx={{
           display: "flex",

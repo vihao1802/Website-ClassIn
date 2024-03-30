@@ -26,7 +26,7 @@ import dayjs from "dayjs";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import HomeNavbar from "components/HomeNavbar";
 import FlexBetween from "components/FlexBetween";
-import AddQuestionForm from "components/AddQuestionForm";
+import AddQuestionForm from "components/ModalAddQuestion";
 
 const questionItems = [
   {
@@ -236,7 +236,7 @@ const AddTestForm = () => {
 
   return (
     <Box height="100%">
-      <HomeNavbar IsNotHomePage={true} />
+      <HomeNavbar IsNotHomePage={true} title="Add Test" />
       <Box
         sx={{
           display: "flex",

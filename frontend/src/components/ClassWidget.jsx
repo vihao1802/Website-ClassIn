@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
+  Add,
   MoreHorizOutlined,
   SendRounded,
-  Add,
+  ListAltRounded,
   ExpandMore,
-  Inbox,
   PersonOffRounded,
   PeopleRounded,
   StarHalfRounded,
   EmojiEventsRounded,
   ThumbDownRounded,
   SentimentDissatisfiedRounded,
+  ArticleOutlined,
+  BookOutlined,
+  SettingsRounded,
+  EditRounded,
+  DeleteRounded,
 } from "@mui/icons-material";
 import {
   Tab,
@@ -36,6 +41,9 @@ import {
   Autocomplete,
   Paper,
   Grid,
+  Divider,
+  Chip,
+  Modal,
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import "react-chat-elements/dist/main.css";
@@ -44,6 +52,8 @@ import FlexBetween from "./FlexBetween";
 import profileImage from "assets/profile.jpg";
 import DataGridCustomToolbar from "./DataGridCustomToolbar";
 import { DataGrid } from "@mui/x-data-grid";
+import ModalAddUnit from "components/ModalAddUnit";
+import { useGetClassDetailsQuery } from "state/api";
 
 const rows = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -418,7 +428,7 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = (props) => {
+const ClassWidget = ({ classItem }) => {
   // course tab
   const [value, setValue] = React.useState("1");
   const handleChangeTab = (event, newValue) => {
@@ -429,10 +439,21 @@ const ClassWidget = (props) => {
     setActivity(event.target.value);
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isOpen = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleCloseCreateMenu = () => setAnchorEl(null);
+  const [anchorElCreateMenu, setAnchorElCreateMenu] = useState(null);
+  const isOpenCreateMenu = Boolean(anchorElCreateMenu);
+  const handleClickCreateMenu = (event) =>
+    setAnchorElCreateMenu(event.currentTarget);
+  const handleCloseCreateMenu = () => setAnchorElCreateMenu(null);
+
+  const [anchorElActivityMenu, setAnchorElActivityMenu] = useState(null);
+  const isOpenActivityMenu = Boolean(anchorElActivityMenu);
+  const handleClickActivityMenu = (event) =>
+    setAnchorElActivityMenu(event.currentTarget);
+  const handleCloseActivityMenu = () => setAnchorElActivityMenu(null);
+
+  const [openAddUnit, setOpenAddUnit] = useState(false);
+  const handleOpenAddUnit = () => setOpenAddUnit(true);
+  const handleCloseAddUnit = () => setOpenAddUnit(false);
 
   const navigate = useNavigate();
 
@@ -466,7 +487,7 @@ const ClassWidget = (props) => {
         <Box
           component="img"
           alt="profile"
-          src={props.classInfo.image}
+          src={classItem?.anhDaiDien}
           height="39px"
           width="39px"
           borderRadius="50%"
@@ -479,8 +500,7 @@ const ClassWidget = (props) => {
             padding: "7px 15px",
           }}
         >
-          {/* Công nghệ phần mềm */}
-          {props.classInfo.name}
+          {classItem?.ten}
         </Typography>
       </Box>
       <TabContext value={value}>
@@ -513,13 +533,13 @@ const ClassWidget = (props) => {
           </TabList>
           <IconButton
             sx={{
-              color: "#009265",
+              color: "#666666",
               width: "40px",
               marginRight: "30px",
             }}
             onClick={() => navigate("/classDetail")}
           >
-            <MoreHorizOutlined />
+            <SettingsRounded />
           </IconButton>
         </Box>
 
@@ -678,7 +698,7 @@ const ClassWidget = (props) => {
               </FormControl>
               <FlexBetween>
                 <Button
-                  onClick={handleClick}
+                  onClick={handleClickCreateMenu}
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -715,29 +735,53 @@ const ClassWidget = (props) => {
                   />
                 </Button>
                 <Menu
-                  anchorEl={anchorEl}
-                  open={isOpen}
+                  anchorEl={anchorElCreateMenu}
+                  open={isOpenCreateMenu}
                   onClose={handleCloseCreateMenu}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left",
                   }}
                 >
-                  <MenuItem onClick={handleCloseCreateMenu}>
-                    <FlexBetween>
-                      <Add />
-                      <Typography>Unit</Typography>
-                    </FlexBetween>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={
-                      (handleCloseCreateMenu, () => navigate("/tests/add"))
-                    }
-                  >
-                    Test
-                  </MenuItem>
-                  <MenuItem onClick={handleCloseCreateMenu}>Exercise</MenuItem>
-                  <MenuItem onClick={handleCloseCreateMenu}>Document</MenuItem>
+                  <nav>
+                    <MenuItem
+                      onClick={
+                        (handleCloseCreateMenu, () => navigate("/tests/add"))
+                      }
+                    >
+                      <FlexBetween width="60%">
+                        <ArticleOutlined />
+                        <Typography>Test</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseCreateMenu}>
+                      <FlexBetween width="90%">
+                        <ArticleOutlined />
+                        <Typography>Exercise</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseCreateMenu}>
+                      <FlexBetween>
+                        <BookOutlined />
+                        <Typography>Document</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                  </nav>
+                  <Divider color="#666666" />
+                  <nav>
+                    <MenuItem
+                      onClick={(handleCloseCreateMenu, handleOpenAddUnit)}
+                    >
+                      <FlexBetween width="60%">
+                        <ListAltRounded />
+                        <Typography>Unit</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <ModalAddUnit
+                      open={openAddUnit}
+                      handleClose={handleCloseAddUnit}
+                    />
+                  </nav>
                 </Menu>
               </FlexBetween>
             </FlexBetween>
@@ -785,20 +829,30 @@ const ClassWidget = (props) => {
                       width: "40px",
                       marginRight: "30px",
                     }}
+                    onClick={handleClickActivityMenu}
                   >
                     <MoreHorizOutlined />
                   </IconButton>
                 </FlexBetween>
+
                 <AccordionDetails sx={{ padding: "unset" }}>
                   <List>
                     {lesson.tests.map((test, testIndex) => (
                       <ListItem key={testIndex} disablePadding>
                         <ListItemButton sx={{ height: "80px" }}>
                           <ListItemIcon>
-                            <Inbox />
+                            <ArticleOutlined />
                           </ListItemIcon>
                           <Box>
-                            <Typography variant="h6">{test.name}</Typography>
+                            <FlexBetween>
+                              <Typography variant="h6">{test.name}</Typography>
+                              <Chip
+                                label="Ongoing"
+                                color="success"
+                                size="small"
+                                sx={{ marginLeft: "10px" }}
+                              />
+                            </FlexBetween>
                             <Typography color="#666666">
                               Deadline: {test.deadline}
                             </Typography>
@@ -810,6 +864,30 @@ const ClassWidget = (props) => {
                 </AccordionDetails>
               </Accordion>
             ))}
+
+            {/* Activity Menu */}
+            <Menu
+              anchorEl={anchorElActivityMenu}
+              open={isOpenActivityMenu}
+              onClose={handleCloseActivityMenu}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <MenuItem onClick={handleCloseCreateMenu}>
+                <FlexBetween>
+                  <EditRounded color="primary" />
+                  <Typography color="primary">Edit</Typography>
+                </FlexBetween>
+              </MenuItem>
+              <MenuItem onClick={handleCloseCreateMenu}>
+                <FlexBetween>
+                  <DeleteRounded color="error" />
+                  <Typography color="error">Delete</Typography>
+                </FlexBetween>
+              </MenuItem>
+            </Menu>
           </Box>
         </TabPanel>
 
