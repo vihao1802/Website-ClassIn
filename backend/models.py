@@ -256,7 +256,9 @@ class ChiTietBaiLamKiemTra(Base):
         String, ForeignKey("baiLamKiemTra.ma_baiLamKiemTra"), primary_key=True
     )
     ma_cauHoi = Column(String, ForeignKey("cauHoi.ma_cauHoi"), primary_key=True)
-    ma_dapAnChon = Column(String, ForeignKey("cauTraLoi.ma_cauTraLoi"))
+    ma_dapAnChon = Column(
+        String, ForeignKey("cauTraLoi.ma_cauTraLoi"), nullable=True
+    )
 
 
 class LuuVetBaiLamKiemTra(Base):
