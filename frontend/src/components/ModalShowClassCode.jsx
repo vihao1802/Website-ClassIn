@@ -10,9 +10,8 @@ import {
 import { CloseRounded, ContentCopyRounded } from "@mui/icons-material";
 import FlexBetween from "./FlexBetween";
 
-const ShowClassCode = ({ open, handleClose }) => {
+const ShowClassCode = ({ open, handleClose, classinfo }) => {
   const [copy, setCopy] = useState(false);
-
   return (
     <>
       <Modal
@@ -58,12 +57,12 @@ const ShowClassCode = ({ open, handleClose }) => {
               }}
             >
               <Typography fontSize="128px" color="#009265">
-                cd5y78
+                {classinfo?.cid.split("-")[1]}
               </Typography>
             </Box>
             <FlexBetween p="10px 0">
               <Typography variant="h6" color="#009265">
-                Cong nghe phan mem
+                {classinfo?.cname}
               </Typography>
               <Button
                 variant="primary"
@@ -73,7 +72,7 @@ const ShowClassCode = ({ open, handleClose }) => {
                   gap: 1,
                 }}
                 onClick={() => {
-                  navigator.clipboard.writeText("");
+                  navigator.clipboard.writeText(classinfo?.cid);
                   setCopy(true);
                 }}
               >

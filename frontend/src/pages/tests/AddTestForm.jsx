@@ -26,7 +26,7 @@ import dayjs from "dayjs";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import HomeNavbar from "components/HomeNavbar";
 import FlexBetween from "components/FlexBetween";
-import AddQuestionForm from "components/AddQuestionForm";
+import AddQuestionForm from "components/ModalAddQuestion";
 
 const questionItems = [
   {

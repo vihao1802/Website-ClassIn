@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Box,
@@ -10,12 +10,14 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  CircularProgress,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import ClassWidget from "components/ClassWidget";
-import ModalHandleCLass from "components/ModalHandleCLass";
+import ModalHandleCLass from "components/ModalHandleClass";
+import { useGetClassQuery } from "state/api";
 const classItems = [
   {
     name: "Công nghệ phần mềm",
@@ -204,18 +206,31 @@ const Clasin = () => {
   const handleCreate = () => {
     console.log("Create");
   };
-  const [active, setActive] = useState(
-    classItems.length > 0 ? classItems[0] : null,
+
+  const { data, isLoading } = useGetClassQuery(
+    "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
   );
 
-  /*   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/lopHoc")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setLophoc(data);
-      });
-  }, []); */
+  const [activeClass, setActiveClass] = useState(null);
+  useEffect(() => {
+    setActiveClass(data?.[0]);
+  }, [data, isLoading]);
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "calc(100% - 50.8px)",
+        }}
+      >
+        <CircularProgress color="success" />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -328,30 +343,35 @@ const Clasin = () => {
             },
           }}
         >
-          {classItems.map((item, index) => {
+          {data?.map((item, index) => {
             return (
               <ListItem key={index} disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    setActive(item);
+                    setActiveClass(item);
                   }}
                   sx={{
                     backgroundColor:
-                      active.name === item.name ? "#e7e7e7" : "transparent",
-                    color: active.name === item.name ? "black" : "#666666",
+                      activeClass?.ma_lopHoc === item.ma_lopHoc
+                        ? "#e7e7e7"
+                        : "transparent",
+                    color:
+                      activeClass?.ma_lopHoc === item.ma_lopHoc
+                        ? "black"
+                        : "#666666",
                   }}
                 >
                   <Box
                     component="img"
                     alt="profile"
-                    src={item.image}
+                    src={item.anhDaiDien}
                     height="48px"
                     width="48px"
                     borderRadius="50%"
                     sx={{ objectFit: "cover" }}
                   />
                   <ListItemText
-                    primary={item.name}
+                    primary={item.ten}
                     sx={{ paddingLeft: "10px", maxWidth: "195px" }}
                     primaryTypographyProps={{
                       style: {
@@ -368,7 +388,8 @@ const Clasin = () => {
         </List>
       </Box>
       {/* CENTER CONTAIN */}
-      <ClassWidget classInfo={active} />
+
+      <ClassWidget classItem={activeClass} />
     </Box>
   );
 };

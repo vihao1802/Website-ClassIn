@@ -122,3 +122,20 @@ async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
     if db_object is None:
         raise HTTPException(status_code=400, detail="LopHoc not found")
     return db_object
+
+
+@router.get("/{ma_taiKhoan}", status_code=status.HTTP_200_OK)
+async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
+    query_1 = (
+        db.query(models.LopHoc)
+        .join(models.ThamGiaLopHoc)
+        .filter(models.ThamGiaLopHoc.ma_taiKhoan == ma_taiKhoan)
+        .all()
+    )
+    query_2 = (
+        db.query(models.LopHoc)
+        .filter(models.LopHoc.ma_giangVien == ma_taiKhoan)
+        .all()
+    )
+    result = query_1 + query_2
+    return result

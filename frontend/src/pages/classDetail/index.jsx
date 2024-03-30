@@ -32,8 +32,9 @@ import {
   CropFreeRounded,
 } from "@mui/icons-material";
 import profileImage from "assets/profile.jpg";
-import ShowClassCode from "components/ShowClassCode";
-import AddStudentToClass from "components/AddStudentToClass";
+import ShowClassCode from "components/ModalShowClassCode";
+import AddStudentToClass from "components/ModalAddStudentToClass";
+import { useGetClassDetailsQuery } from "state/api";
 
 const profileCommonSchema = yup.object().shape({
   classname: yup.string().required("Class Name is required"),
@@ -193,6 +194,10 @@ const ClassDetail = () => {
   const [openAddStudentToClass, setOpenAddStudentToClass] = useState(false);
   const handleOpenAddStudentToClass = () => setOpenAddStudentToClass(true);
   const handleCloseAddStudentToClass = () => setOpenAddStudentToClass(false);
+
+  const { data, isLoading } = useGetClassDetailsQuery(
+    "3ca75f6c-5ef9-46a2-9c26-324ec4e81abf",
+  );
 
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
@@ -372,7 +377,7 @@ const ClassDetail = () => {
                       </Typography>
                       <FlexBetween>
                         <Typography variant="h7" color="#666666">
-                          abcd-1234-5678
+                          {data?.ma_lopHoc}
                         </Typography>
                         <Button
                           variant="primary"
@@ -389,6 +394,7 @@ const ClassDetail = () => {
                         <ShowClassCode
                           open={openShowClassCode}
                           handleClose={handleCloseShowClassCode}
+                          classinfo={{ cid: data?.ma_lopHoc, cname: data?.ten }}
                         />
                       </FlexBetween>
                     </Box>
@@ -416,7 +422,7 @@ const ClassDetail = () => {
                         <TextField
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={values.classname}
+                          value={data?.ten}
                           name="classname"
                           color="success"
                           size="small"
@@ -444,7 +450,7 @@ const ClassDetail = () => {
                         <TextField
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={values.description}
+                          value={data?.moTa}
                           name="description"
                           color="success"
                           placeholder="Description"
