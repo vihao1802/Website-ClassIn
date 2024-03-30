@@ -16,7 +16,7 @@ import { Add } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import ClassWidget from "components/ClassWidget";
-import ModalHandleCLass from "components/ModalHandleClass";
+import ModalHandleClass from "components/ModalHandleClass";
 import { useGetClassQuery } from "state/api";
 const classItems = [
   {
@@ -301,14 +301,14 @@ const Clasin = () => {
               }}
             >
               <MenuItem onClick={handleOpenModalJoin}>Join class</MenuItem>
-              <ModalHandleCLass
+              <ModalHandleClass
                 open={isOpenModalJoin}
                 handleClose={handleCLoseModalJoin}
                 handleClass={handleJoin}
                 title={"Join class"}
               />
               <MenuItem onClick={handleOpenModalCreate}>Create class</MenuItem>
-              <ModalHandleCLass
+              <ModalHandleClass
                 open={isOpenModalCreate}
                 handleClose={handleCLoseModalCreate}
                 handleClass={handleCreate}

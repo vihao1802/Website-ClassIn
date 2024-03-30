@@ -555,7 +555,6 @@ const ClassWidget = ({ classItem }) => {
         >
           <Box
             sx={{
-              minHeight: "430px",
               height: "auto",
               overflowY: "scroll",
               backgroundColor: "#e7e7e7",
@@ -612,18 +611,44 @@ const ClassWidget = ({ classItem }) => {
               );
             })}
           </Box>
-          <Box sx={{ height: "20%", padding: "20px" }}>
+          <Box sx={{ height: "auto", padding: "10px " }}>
             <FlexBetween
               backgroundColor="white"
-              border="1px solid #e7e7e7"
+              // border="1px solid #e7e7e7"
               borderRadius="9px"
-              padding="0.1rem 0.5rem 0.1rem 1.5rem"
+              padding="0.1rem 1.5rem 0.1rem 0.5rem"
             >
-              <InputBase
+              <TextField
                 placeholder="Type a message..."
-                sx={{ width: "100%" }}
+                sx={{
+                  width: "100%",
+                  padding: "0",
+                  color: "black",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      border: "none",
+                    },
+                    "&:hover fieldset": {
+                      border: "none",
+                    },
+                    "&.Mui-focused fieldset": {
+                      border: "none",
+                    },
+                  },
+                }}
+                variant="outlined"
+                size="small"
+                // multiline
+                InputProps={{
+                  maxRows: 10,
+                  multiline: true,
+                }}
               />
-              <IconButton>
+              <IconButton
+                sx={{
+                  marginTop: "auto",
+                }}
+              >
                 <SendRounded sx={{ color: "#009265" }} />
               </IconButton>
             </FlexBetween>

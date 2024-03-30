@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Box, Button, Paper, Typography, Divider } from "@mui/material";
 import { RadioGroup, Radio, radioClasses, Sheet, Link } from "@mui/joy";
 import Countdown from "components/CountDown";
+import theme from "../../theme";
 
 const questionItems = [
   {
@@ -226,7 +227,7 @@ const DoTestForm = () => {
         >
           <Box
             sx={{
-              backgroundColor: "#009265",
+              backgroundColor: theme.main_theme,
               color: "white",
               width: "100%",
               height: "15px",
@@ -234,15 +235,25 @@ const DoTestForm = () => {
             }}
           ></Box>
           <Box p="5px 20px">
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h4" padding={"5px 0"}>
               Test: Brute Force Algorithm
             </Typography>
             <Box color="#666666">
-              <Typography>Duration: 90 min</Typography>
-              <Typography>Start: 11/9/2024</Typography>
-              <Typography>End: 20/8/2023</Typography>
-              <Typography>Class: Công nghệ phần mềm</Typography>
-              <Typography>Unit: Introduce Brute Force</Typography>
+              <Typography>
+                Duration: <strong>90 min</strong>
+              </Typography>
+              <Typography>
+                Start: <strong>11/9/2024</strong>
+              </Typography>
+              <Typography>
+                End: <strong>20/8/2023</strong>
+              </Typography>
+              <Typography>
+                Class: <strong>Công nghệ phần mềm</strong>
+              </Typography>
+              <Typography>
+                Unit: <strong>Introduce Brute Force</strong>
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -299,7 +310,7 @@ const DoTestForm = () => {
                 >
                   <Typography
                     variant="h7"
-                    color="#009265"
+                    color={theme.main_theme}
                     fontWeight="bold"
                     p="10px 0"
                   >
@@ -311,6 +322,7 @@ const DoTestForm = () => {
                       mb: 2,
                       flexWrap: "wrap",
                       flexDirection: "row",
+                      alignItems: "center",
                       marginLeft: "20px",
                       marginBottom: "unset",
                     }}
@@ -341,7 +353,7 @@ const DoTestForm = () => {
                               color: "white",
                             },
                             [`& .${radioClasses.action}`]: {
-                              backgroundColor: "#009265",
+                              backgroundColor: theme.main_theme,
                             },
                           },
                           [`& .${radioClasses.action}.${radioClasses.focusVisible}`]:
@@ -376,7 +388,7 @@ const DoTestForm = () => {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: "#009265",
+                backgroundColor: theme.main_theme,
                 "&:hover": { backgroundColor: "#007850" },
                 width: "100%",
                 marginTop: "10px",
@@ -408,7 +420,7 @@ const DoTestForm = () => {
                             height: "35px",
                             minWidth: "35px",
                             gap: 2,
-                            backgroundColor: "#009265",
+                            backgroundColor: theme.main_theme,
                             color: "white",
                             "&:hover": {
                               backgroundColor: "#007850",
@@ -419,10 +431,10 @@ const DoTestForm = () => {
                             minWidth: "35px",
                             gap: 2,
                             backgroundColor: "white",
-                            color: "#009265",
-                            border: "1px solid #009265",
+                            color: theme.main_theme,
+                            border: "1px solid " + theme.main_theme,
                             "&:hover": {
-                              backgroundColor: "#009265",
+                              backgroundColor: theme.main_theme,
                               color: "white",
                             },
                           }
