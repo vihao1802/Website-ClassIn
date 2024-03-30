@@ -9,14 +9,15 @@ import {
 } from "@mui/x-data-grid";
 import FlexBetween from "components/FlexBetween";
 import Header from "components/Header";
-import AddQuestionForm from "../../components/AddQuestionForm";
+import AddQuestionForm from "../../components/ModalAddQuestion";
+import { useGetQuestionsQuery } from "state/api";
 
 const columns = [
-  { field: "id", headerName: "ID", width: 100, editable: false },
+  { field: "ma_cauHoi", headerName: "ID", width: 150, editable: false },
   {
-    field: "title",
+    field: "noiDung",
     headerName: "Title",
-    width: 750,
+    width: 700,
     editable: false,
     sortable: false,
   },
@@ -78,6 +79,9 @@ const Questions = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const { data, isLoading } = useGetQuestionsQuery(
+    "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
+  );
   return (
     <Box sx={{ margin: "0 50px", padding: "30px" }}>
       <Header title="QUESTIONS" subtitle="List of questions" />
@@ -85,6 +89,7 @@ const Questions = () => {
         <Paper>
           <Box
             mt="20px"
+            minHeight="60vh"
             sx={{
               "& .MuiDataGrid-root": {
                 border: "2px solid #e7e7e7",
@@ -119,7 +124,9 @@ const Questions = () => {
             }}
           >
             <DataGrid
-              rows={rows}
+              loading={isLoading || !data}
+              rows={data || []}
+              getRowId={(row) => row.ma_cauHoi}
               columns={columns}
               slots={{
                 toolbar: () => {

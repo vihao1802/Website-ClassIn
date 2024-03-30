@@ -63,7 +63,7 @@ const Siginform = () => {
         flexDirection: "column",
       }}
     >
-      <HomeNavbar IsNotHomePage={true} />
+      <HomeNavbar IsNotHomePage={true} title="Sign Up" />
       <Container
         sx={{
           height: "500px",

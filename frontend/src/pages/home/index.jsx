@@ -6,10 +6,10 @@ import img_home_1 from "../../assets/logo_home.jpg";
 import img_hoctructuyen from "../../assets/home/cn1_hoctructuyen.png";
 import img_nhantin from "../../assets/home/cn2_nhantin.png";
 import img_lambai from "../../assets/home/cn3_lambaitructuyen.png";
-import img_tranvihao from "../../assets/home/canhan1_tranvihao.jpg";
-import img_machhaotuan from "../../assets/home/canhan2_machhaotuan.jpg";
-import img_nguyenhuyhoang from "../../assets/home/canhan3_nguyenhuyhoang.jpg";
-import img_lamtuankiet from "../../assets/home/canhan4_lamtuankiet.jpg";
+import img_tranvihao from "../../assets/home/canhan1.jpg";
+import img_machhaotuan from "../../assets/home/canhan2.jpg";
+import img_nguyenhuyhoang from "../../assets/home/canhan3.jpg";
+import img_lamtuankiet from "../../assets/home/canhan4.jpg";
 const Home = () => {
   const handleAboutUsClick = () => {
     // Cuộn tới phần có id "aboutus" bằng cách thay đổi scrollTop của window
