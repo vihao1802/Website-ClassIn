@@ -192,7 +192,7 @@ class DeKiemTra(Base):
     tieuDe = Column(String(50))
     thoiGianTao = Column(DateTime, default=datetime.now)
     thoiGianBatDau = Column(DateTime)  # thoi gian giao bai cua giang vien
-    hanChotNopBai = Column(DateTime)  # thoi gian het han nop bai
+    thoiGianKetThuc = Column(DateTime)  # thoi gian het han nop bai
     thoiGianLamBai = Column(Integer)  # khoang thoi gian lam bai cua hoc sinh
     xemDapAn = Column(Integer)
     tronCauHoi = Column(Integer)
@@ -237,7 +237,7 @@ class BaiLamKiemTra(Base):
     __tablename__ = "baiLamKiemTra"
 
     ma_baiLamKiemTra = Column(String, primary_key=True, default=generate_uuid)
-    thoiGianNop = Column(DateTime)
+    thoiGianNopBai = Column(DateTime)
     thoiGianBatDauLam = Column(DateTime)
     diem = Column(Integer)
     nopTre = Column(Integer)

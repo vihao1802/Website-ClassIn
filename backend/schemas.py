@@ -296,7 +296,7 @@ class FileBaiLamBaiTap(FileBaiLamBaiTapBase):
 class DeKiemTraBase(BaseModel):
     tieuDe: str
     thoiGianBatDau: datetime
-    hanChotNopBai: datetime
+    thoiGianKetThuc: datetime
     thoiGianLamBai: int
     xemDapAn: int
     tronCauHoi: int
@@ -369,7 +369,7 @@ class ChiTietBaiKiemTra(ChiTietBaiKiemTraBase):
 class BaiLamKiemTraBase(BaseModel):
     ma_taiKhoan: UUID
     ma_deKiemTra: UUID
-    thoiGianNop: datetime
+    thoiGianNopBai: datetime
     thoiGianBatDauLam: datetime
     diem: int
     nopTre: int
