@@ -494,7 +494,7 @@ INSERT INTO fileBaiLamBaiTap (`ma_baiLamBaiTap`, `tenFile`, `ma_file`) VALUES
 ('51c871a3-422f-4840-8522-a29af9a6ac8d', 'NUnit.pdf', '15Yxae3FAwSJGiviyt3A-0cngtq3nz0BZ');
   
 
-INSERT INTO deKiemTra (`ma_deKiemTra`, `ma_chuong`, `tieuDe`, `thoiGianTao`, `thoiGianBatDau`, `hanChotNopBai`, `tronCauHoi`, `xemDapAn`, `daXoa`, `hinhPhat`,thoiGianLamBai) VALUES
+INSERT INTO deKiemTra (`ma_deKiemTra`, `ma_chuong`, `tieuDe`, `thoiGianTao`, `thoiGianBatDau`, `thoiGianKetThuc`, `tronCauHoi`, `xemDapAn`, `daXoa`, `hinhPhat`,thoiGianLamBai) VALUES
 ('8e74bf14-25a9-4b3c-aab6-16725b77ede3', '25d57ef6-c76c-4659-a09c-0ba40c0eb511', 'Bài kiểm tra tét ','2023-12-04T15:54:17.000','2023-12-04T15:55:11.573','2024-12-04T16:07:11.573', 1, 1, 0, 5,12),
 ('1eebff72-6f06-4ac6-8179-1dcf28f51a7c', '663e6eed-a0f8-4560-a1c4-caf77f2ad8ed', 'Kiểm tra chương 2','2023-11-22T23:58:28.317','2023-11-23T00:00:00.157','2023-11-23T12:00:00.087', 0, 1, 0, 25,12),
 ('3e1dc6e0-2d97-4254-b1fb-2dd14dedcf1a', '90e1ffc6-3eff-4ab2-b083-9761c53ba80d', 'Kiểm tra chương 1 lần 2','2023-11-18T19:09:15.137','2023-11-18T19:08:40.090','2023-11-18T20:00:00.040', 0, 1, 0, 0,12),
@@ -1113,7 +1113,7 @@ INSERT INTO chiTietBaiKiemTra (`ma_deKiemTra`, `ma_cauHoi`, `thuTu`) VALUES
 ('6397284a-8fad-4e9d-a920-f10501682eae', 'e2b692c8-62cd-4388-89bf-5df8cd404f1a', 10),
 ('8e74bf14-25a9-4b3c-aab6-16725b77ede3', 'c0c5e120-7f4c-4476-9293-047bdcbfdadc', 2);
 
-INSERT INTO baiLamKiemTra (`ma_baiLamKiemTra`, `ma_taiKhoan`, `ma_deKiemTra`, `diem`, `thoiGianNop`,`thoiGianBatDauLam`, `nopTre`, `soCauDung`) VALUES 
+INSERT INTO baiLamKiemTra (`ma_baiLamKiemTra`, `ma_taiKhoan`, `ma_deKiemTra`, `diem`, `thoiGianNopBai`,`thoiGianBatDauLam`, `nopTre`, `soCauDung`) VALUES 
 ('40afdaac-b544-4979-98aa-0c965dc85681', '1b0e8e50-b3d1-48dd-aa5b-f16ad1413eaf', 'c1c9ea82-8310-49dc-b26e-f87a2344da78', 0,'2023-01-01 08:00:00', '2023-01-01 12:00:00' , 0, 0),
 ('f7791390-c0d8-41bd-91ac-18c11873d40f', '1602102f-60f2-4b87-8992-6070fb969516', 'b4d85032-7f85-4f83-aba7-acefcaa9fb1d', 7,'2023-01-02 09:30:00', '2023-01-02 15:45:00' , 0, 7),
 ('818dad66-76be-40ff-8fdd-1e477cfeec93', '2493643f-576b-4bea-ad12-3ffa3558eb3e', 'c1c9ea82-8310-49dc-b26e-f87a2344da78', 0,'2023-01-03 10:15:00', '2023-01-03 13:30:00' , 0, 0),

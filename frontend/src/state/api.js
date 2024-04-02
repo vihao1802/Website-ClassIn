@@ -73,7 +73,7 @@ export const {
 export const api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
   reducerPath: "api",
-  tagTypes: ["Questions", "User", "classDetails", "Class"],
+  tagTypes: ["Questions", "User", "classDetails", "Class", "Todo"],
   endpoints: (build) => ({
     getQuestions: build.query({
       query: (uid) => `cauHoi/taiKhoan/${uid}`,
@@ -94,6 +94,11 @@ export const api = createApi({
       query: (uid) => `lopHoc/${uid}`,
       providesTags: ["Class"],
     }),
+    getTodo: build.query({
+      query: ({ acc_id, selectedClass, selectedCategory }) =>
+        `tai-khoan/${acc_id}/bai-tap/de-kiem-tra/filter?selectedClass=${selectedClass}&selectedCategory=${selectedCategory}`,
+      providesTags: ["Todo"],
+    }),
   }),
 });
 
@@ -102,4 +107,5 @@ export const {
   useGetUserQuery,
   useGetClassDetailsQuery,
   useGetClassQuery,
+  useGetTodoQuery,
 } = api;

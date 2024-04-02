@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import theme from "../../theme";
 import PropTypes from "prop-types";
@@ -17,6 +17,8 @@ import {
   Chip,
   Stack,
   Button,
+  IconButton,
+  CircularProgress,
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import {
@@ -26,6 +28,7 @@ import {
   EventAvailable,
   RefreshOutlined,
 } from "@mui/icons-material";
+import { useGetTodoQuery, useGetClassQuery } from "state/api";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -61,27 +64,45 @@ function a11yProps(index) {
 }
 
 const Todo = () => {
-  // course tab
-  const [value, setValue] = React.useState(0);
-  const [classes, setClasses] = React.useState("");
-  const [categories, setCategories] = React.useState("");
-  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
-  const handleChangeClasses = (event) => {
-    setClasses(event.target.value);
-  };
-  const handleClick = () => {
-    // setAnchorEl(event.currentTarget);
-    // console.log("Submit");
-    navigate("/tests/do");
-  };
+  const [value, setValue] = useState(0);
+  const [classes, setClasses] = useState("0");
+  const [categories, setCategories] = useState("0");
+  const { data: todoData, isLoading: todoLoading } = useGetTodoQuery({
+    acc_id: "6b157e9a-4f74-4ee8-a893-06bc950f4272",
+    selectedClass: classes,
+    selectedCategory: categories,
+  });
+  const { data: classData, isLoading: classLoading } = useGetClassQuery(
+    "6b157e9a-4f74-4ee8-a893-06bc950f4272",
+  );
+  useEffect(() => {}, [todoData, classData, classLoading, categories, classes]);
+
+  // change categories
   const handleChangeCategories = (event) => {
     setCategories(event.target.value);
   };
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  // change classes
+  const handleChangeClasses = (event) => {
+    setClasses(event.target.value);
   };
 
+  // handle click button
+  const handleClickDoExercise = () => {
+    navigate("/exercise/do");
+  };
+  const handleClickDoTest = () => {
+    navigate("/tests/do");
+  };
+  const handleClickRefresh = () => {
+    setClasses("0");
+    setCategories("0");
+  };
+
+  // handle change tab name
+  const handleChangeTabName = (event, newValue) => {
+    setValue(newValue);
+  };
   return (
     <Box
       sx={{
@@ -95,7 +116,7 @@ const Todo = () => {
         orientation="vertical"
         variant="scrollable"
         value={value}
-        onChange={handleChange}
+        onChange={handleChangeTabName}
         aria-label="Vertical tabs example"
         TabIndicatorProps={{
           sx: { backgroundColor: theme.main_theme },
@@ -191,10 +212,14 @@ const Todo = () => {
                   }}
                   color={"success"}
                 >
-                  <MenuItem value="">All classes</MenuItem>
-                  <MenuItem value={10}>Công nghệ phần mềm</MenuItem>
-                  <MenuItem value={20}>Kiểm thử phần mềm</MenuItem>
-                  <MenuItem value={30}>Phát triển mã nguồn mở</MenuItem>
+                  <MenuItem key={"0"} value={"0"}>
+                    All classes
+                  </MenuItem>
+                  {classData?.map((classItem) => (
+                    <MenuItem key={classItem.ma_lopHoc} value={classItem.ten}>
+                      {classItem.ten}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
               <FormControl sx={{ m: 1, minWidth: 120 }}>
@@ -209,19 +234,19 @@ const Todo = () => {
                   }}
                   color={"success"}
                 >
-                  <MenuItem value="">Tất cả thể loại</MenuItem>
-                  <MenuItem value={10}>Bài tập</MenuItem>
-                  <MenuItem value={20}>Bài kiểm tra</MenuItem>
-                  <MenuItem value={30}>Tài liệu</MenuItem>
+                  <MenuItem value={"0"}>All categories</MenuItem>
+                  <MenuItem value={"1"}>Exercise</MenuItem>
+                  <MenuItem value={"2"}>Test</MenuItem>
                 </Select>
               </FormControl>
-              <Button
+              <IconButton
                 sx={{
                   color: "gray",
                 }}
+                onClick={handleClickRefresh}
               >
                 <RefreshOutlined />
-              </Button>
+              </IconButton>
             </FlexBetween>
           </FlexBetween>
 
@@ -243,127 +268,127 @@ const Todo = () => {
               },
             }}
           >
-            <List
-              sx={{
-                padding: "0",
-              }}
-              component="span"
-            >
-              <ListItem disablePadding>
-                <ListItemButton sx={{ height: "80px", padding: "10px 25px" }}>
-                  <ListItemIcon>
-                    <NoteAltOutlined />
-                  </ListItemIcon>
-                  <Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: "10px",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography variant="h6" component="span">
-                        Test 1: Introduce about Brute-Force
-                      </Typography>
-                      <Stack direction="row" spacing={1}>
-                        <Chip
-                          label="Test"
-                          color={"success"}
-                          size="small"
-                          variant="outlined"
-                        />
-                      </Stack>
-                    </Box>
-                    <Typography color="#666666">
-                      Deadline: 10pm 21-03-2024 | Kiểm thử phần mềm
-                    </Typography>
-                  </Box>
-                  <Button
-                    onClick={handleClick}
+            {todoLoading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                  height: "calc(100% - 50.8px)",
+                }}
+              >
+                <CircularProgress color="success" />
+              </Box>
+            ) : (
+              <List
+                sx={{
+                  padding: "0",
+                }}
+                component="span"
+              >
+                {Array.isArray(todoData) && todoData.length === 0 ? (
+                  <Typography
+                    variant="h5"
                     sx={{
-                      textTransform: "none",
-                      borderRadius: "20px",
-                      marginLeft: "auto",
-                      padding: "5px 25px",
-                      backgroundColor: theme.main_theme,
-                      "&:hover": {
-                        backgroundColor: "#007850",
-                      },
+                      display: "flex",
+                      justifyContent: "center",
+                      marginTop: "20px",
+                      fontWeight: "bold",
+                      color: "#666666",
                     }}
                   >
-                    <Box>
-                      <Typography
-                        sx={{
-                          color: "white",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                        }}
-                      >
-                        Submit
-                      </Typography>
-                    </Box>
-                  </Button>
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton sx={{ height: "80px", padding: "10px 25px" }}>
-                  <ListItemIcon>
-                    <AssignmentOutlined />
-                  </ListItemIcon>
-                  <Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: "10px",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography variant="h6" component="span">
-                        Assignment 1: Introduce about Brute-Force
-                      </Typography>
-                      <Stack direction="row" spacing={1}>
-                        <Chip
-                          label="Assignment"
-                          color={"success"}
-                          size="small"
-                          variant="outlined"
-                        />
-                      </Stack>
-                    </Box>
-                    <Typography color="#666666">
-                      Deadline: 10pm 21-03-2024 | Kiểm thử phần mềm
-                    </Typography>
-                  </Box>
-                  <Button
-                    onClick={handleClick}
-                    sx={{
-                      textTransform: "none",
-                      borderRadius: "20px",
-                      marginLeft: "auto",
-                      padding: "5px 25px",
-                      backgroundColor: theme.main_theme,
-                      "&:hover": {
-                        backgroundColor: "#007850",
-                      },
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        sx={{
-                          color: "white",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                        }}
-                      >
-                        Submit
-                      </Typography>
-                    </Box>
-                  </Button>
-                </ListItemButton>
-              </ListItem>
-            </List>
+                    No Results Found
+                  </Typography>
+                ) : (
+                  todoData?.map(
+                    (exercise) =>
+                      exercise.da_lam === 0 && (
+                        <ListItem
+                          key={
+                            exercise.ma_baiTap
+                              ? exercise.ma_baiTap
+                              : exercise.ma_deKiemTra
+                          }
+                          disablePadding
+                        >
+                          <ListItemButton
+                            sx={{ height: "80px", padding: "10px 25px" }}
+                          >
+                            <ListItemIcon>
+                              {exercise.ma_baiTap ? (
+                                <AssignmentOutlined />
+                              ) : (
+                                <NoteAltOutlined />
+                              )}
+                            </ListItemIcon>
+                            <Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  gap: "10px",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Typography variant="h6" component="span">
+                                  {exercise.tieuDe}
+                                </Typography>
+                                <Stack direction="row" spacing={1}>
+                                  <Chip
+                                    label={
+                                      exercise.ma_baiTap ? "Assignment" : "Test"
+                                    }
+                                    color={"success"}
+                                    size="small"
+                                    variant="outlined"
+                                  />
+                                </Stack>
+                              </Box>
+                              <Typography color="#666666">
+                                Deadline:{" "}
+                                {new Date(
+                                  exercise.thoiGianKetThuc,
+                                ).toLocaleString()}{" "}
+                                | Class: {exercise.ten_lopHoc}
+                              </Typography>
+                            </Box>
+                            <Button
+                              onClick={
+                                exercise.ma_baiTap
+                                  ? handleClickDoExercise
+                                  : handleClickDoTest
+                              }
+                              sx={{
+                                textTransform: "none",
+                                borderRadius: "20px",
+                                marginLeft: "auto",
+                                padding: "5px 25px",
+                                backgroundColor: theme.main_theme,
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                              }}
+                            >
+                              <Box>
+                                <Typography
+                                  sx={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  {exercise.ma_baiTap ? "Submit" : "Start"}
+                                </Typography>
+                              </Box>
+                            </Button>
+                          </ListItemButton>
+                        </ListItem>
+                      ),
+                  )
+                )}
+              </List>
+            )}
           </Box>
         </Box>
       </TabPanel>
@@ -392,10 +417,14 @@ const Todo = () => {
                   }}
                   color={"success"}
                 >
-                  <MenuItem value="">All classes</MenuItem>
-                  <MenuItem value={10}>Công nghệ phần mềm</MenuItem>
-                  <MenuItem value={20}>Kiểm thử phần mềm</MenuItem>
-                  <MenuItem value={30}>Phát triển mã nguồn mở</MenuItem>
+                  <MenuItem key={"0"} value={"0"}>
+                    All classes
+                  </MenuItem>
+                  {classData?.map((classItem) => (
+                    <MenuItem key={classItem.ma_lopHoc} value={classItem.ten}>
+                      {classItem.ten}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
               <FormControl sx={{ m: 1, minWidth: 120 }}>
@@ -410,19 +439,19 @@ const Todo = () => {
                   }}
                   color={"success"}
                 >
-                  <MenuItem value="">Tất cả thể loại</MenuItem>
-                  <MenuItem value={10}>Bài tập</MenuItem>
-                  <MenuItem value={20}>Bài kiểm tra</MenuItem>
-                  <MenuItem value={30}>Tài liệu</MenuItem>
+                  <MenuItem value={"0"}>All categories</MenuItem>
+                  <MenuItem value={"1"}>Exercise</MenuItem>
+                  <MenuItem value={"2"}>Test</MenuItem>
                 </Select>
               </FormControl>
-              <Button
+              <IconButton
                 sx={{
                   color: "gray",
                 }}
+                onClick={handleClickRefresh}
               >
                 <RefreshOutlined />
-              </Button>
+              </IconButton>
             </FlexBetween>
           </FlexBetween>
 
@@ -444,126 +473,96 @@ const Todo = () => {
               },
             }}
           >
-            <List
-              sx={{
-                padding: "0",
-              }}
-            >
-              <ListItem disablePadding>
-                <ListItemButton sx={{ height: "80px", padding: "10px 25px" }}>
-                  <ListItemIcon>
-                    <NoteAltOutlined />
-                  </ListItemIcon>
-                  <Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: "10px",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography variant="h6" component="span">
-                        Test 2: Introduce about Brute-Force
-                      </Typography>
-                      <Stack direction="row" spacing={1}>
-                        <Chip
-                          label="Test"
-                          color={"success"}
-                          size="small"
-                          variant="outlined"
-                        />
-                      </Stack>
-                    </Box>
-                    <Typography color="#666666">
-                      Deadline: 10pm 21-03-2024 | Kiểm thử phần mềm
-                    </Typography>
-                  </Box>
-                  <Button
-                    onClick={handleClick}
-                    sx={{
-                      textTransform: "none",
-                      borderRadius: "20px",
-                      marginLeft: "auto",
-                      padding: "5px 25px",
-                      backgroundColor: theme.main_theme,
-                      "&:hover": {
-                        backgroundColor: "#007850",
-                      },
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        sx={{
-                          color: "white",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                        }}
+            {Array.isArray(todoData) && todoData.length === 0 ? (
+              <Typography
+                variant="h5"
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                  fontWeight: "bold",
+                  color: "#666666",
+                }}
+              >
+                No Results Found
+              </Typography>
+            ) : todoLoading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                  height: "calc(100% - 50.8px)",
+                }}
+              >
+                <CircularProgress color="success" />
+              </Box>
+            ) : (
+              <List
+                sx={{
+                  padding: "0",
+                }}
+                component="span"
+              >
+                {todoData?.map(
+                  (exercise) =>
+                    exercise.da_lam === 1 && (
+                      <ListItem
+                        key={
+                          exercise.ma_baiTap
+                            ? exercise.ma_baiTap
+                            : exercise.ma_deKiemTra
+                        }
+                        disablePadding
                       >
-                        Submit
-                      </Typography>
-                    </Box>
-                  </Button>
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton sx={{ height: "80px", padding: "10px 25px" }}>
-                  <ListItemIcon>
-                    <AssignmentOutlined />
-                  </ListItemIcon>
-                  <Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: "10px",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography variant="h6" component="span">
-                        Assignment 2: Introduce about Brute-Force
-                      </Typography>
-                      <Stack direction="row" spacing={1}>
-                        <Chip
-                          label="Assignment"
-                          color={"success"}
-                          size="small"
-                          variant="outlined"
-                        />
-                      </Stack>
-                    </Box>
-                    <Typography color="#666666">
-                      Deadline: 10pm 21-03-2024 | Kiểm thử phần mềm
-                    </Typography>
-                  </Box>
-                  <Button
-                    onClick={handleClick}
-                    sx={{
-                      textTransform: "none",
-                      borderRadius: "20px",
-                      marginLeft: "auto",
-                      padding: "5px 25px",
-                      backgroundColor: theme.main_theme,
-                      "&:hover": {
-                        backgroundColor: "#007850",
-                      },
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        sx={{
-                          color: "white",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                        }}
-                      >
-                        Submit
-                      </Typography>
-                    </Box>
-                  </Button>
-                </ListItemButton>
-              </ListItem>
-            </List>
+                        <ListItemButton
+                          sx={{ height: "80px", padding: "10px 25px" }}
+                        >
+                          <ListItemIcon>
+                            {exercise.ma_baiTap ? (
+                              <AssignmentOutlined />
+                            ) : (
+                              <NoteAltOutlined />
+                            )}
+                          </ListItemIcon>
+                          <Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "10px",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Typography variant="h6" component="span">
+                                {exercise.tieuDe}
+                              </Typography>
+                              <Stack direction="row" spacing={1}>
+                                <Chip
+                                  label={
+                                    exercise.ma_baiTap ? "Assignment" : "Test"
+                                  }
+                                  color={"success"}
+                                  size="small"
+                                  variant="outlined"
+                                />
+                              </Stack>
+                            </Box>
+                            <Typography color="#666666">
+                              Deadline:{" "}
+                              {new Date(
+                                exercise.thoiGianKetThuc,
+                              ).toLocaleString()}{" "}
+                              | Class: {exercise.ten_lopHoc}
+                            </Typography>
+                          </Box>
+                        </ListItemButton>
+                      </ListItem>
+                    ),
+                )}
+              </List>
+            )}
           </Box>
         </Box>
       </TabPanel>
