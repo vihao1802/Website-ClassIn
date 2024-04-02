@@ -35,9 +35,7 @@ async def create(
     return db_object
 
 
-@router.get(
-    "/", response_model=list[schemas.FileBaiTap], status_code=status.HTTP_200_OK
-)
+@router.get("/", status_code=status.HTTP_200_OK)
 async def read(db: Session = Depends(database.get_db)):
     db_object = db.query(models.FileBaiTap).all()
     return db_object

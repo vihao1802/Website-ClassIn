@@ -7,6 +7,7 @@ import {
   Grid,
   Link,
   Box,
+  Paper,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -15,6 +16,7 @@ import HomeNavbar from "components/HomeNavbar";
 import axios from "axios";
 import { CookieSharp } from "@mui/icons-material";
 
+import "../../../index.css";
 const validationSchema = yup.object({
   email: yup
     .string()
@@ -65,99 +67,110 @@ const Siginform = () => {
   });
 
   return (
-    <Box>
-      <HomeNavbar IsNotHomePage={true} />
-      <Container maxWidth="sm">
-        <Grid
-          container
-          spacing={2}
-          justifyContent="center"
-          style={{ marginTop: "100px" }}
-        >
-          <Grid item xs={12}>
-            <form onSubmit={formik.handleSubmit}>
-              <Typography
-                variant="h4"
-                component="div"
-                gutterBottom
-                sx={{ textAlign: "center" }}
-              >
-                Sign In
-              </Typography>
-              <TextField
-                fullWidth
-                id="email"
-                name="email"
-                label="Email"
-                variant="outlined"
-                margin="normal"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
-              <TextField
-                fullWidth
-                id="password"
-                name="password"
-                label="Password"
-                type="password"
-                variant="outlined"
-                margin="normal"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.password && Boolean(formik.errors.password)
-                }
-                helperText={formik.touched.password && formik.errors.password}
-              />
-              <Button
-                // disabled={SigningIn}
-                variant="contained"
-                color="primary"
-                fullWidth
-                type="submit"
-                {...(SigningIn
-                  ? {
-                      disabled: true,
-                      style: {
-                        backgroundColor: "gray",
-                        color: "black",
-                        marginTop: "20px",
-                      },
-                    }
-                  : {
-                      style: { marginTop: "20px", backgroundColor: "#009265" },
-                    })}
-              >
-                Sign In
-              </Button>
-              <Typography
-                variant="body2"
-                align="center"
-                style={{ marginTop: "20px" }}
-              >
-                <Link href="#" color="#009265">
-                  Forgot Password
-                </Link>
-              </Typography>
-              <Typography
-                variant="body2"
-                align="center"
-                style={{ marginTop: "10px" }}
-              >
-                No account ? &nbsp;
-                <Link
-                  href="#"
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <HomeNavbar IsNotHomePage={true} title="Sign In" />
+      <Container
+        sx={{
+          height: "500px",
+          margin: "auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100% !important",
+          maxWidth: "500px",
+        }}
+      >
+        <Paper elevation={3} sx={{ padding: "30px" }}>
+          <Grid container justifyContent="center" width={"100%"}>
+            <Grid item padding={"0 !important"}>
+              <form onSubmit={formik.handleSubmit} style={{ padding: "0" }}>
+                <Typography
+                  variant="h4"
+                  component="div"
+                  gutterBottom
+                  textAlign="center"
                   color="#009265"
-                  onClick={() => navigate(`/signup`)}
+                  fontWeight="bold"
                 >
-                  Create one !
-                </Link>
-              </Typography>
-            </form>
+                  Sign In
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  color="success"
+                  id="email"
+                  name="email"
+                  label="Email"
+                  variant="outlined"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
+                  sx={{ margin: "8px 0" }}
+                />
+                <TextField
+                  fullWidth
+                  size="small"
+                  color="success"
+                  id="password"
+                  name="password"
+                  label="Password"
+                  type="password"
+                  variant="outlined"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
+                  helperText={formik.touched.password && formik.errors.password}
+                  sx={{ margin: "8px 0" }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  type="submit"
+                  style={{
+                    marginTop: "8px",
+                    backgroundColor: "#009265",
+                  }}
+                >
+                  Sign In
+                </Button>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  style={{ marginTop: "20px" }}
+                >
+                  <Link href="#" color="#009265" underline="none">
+                    Forgot Password
+                  </Link>
+                </Typography>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  style={{ marginTop: "10px" }}
+                >
+                  No account!{" "}
+                  <Link
+                    href="#"
+                    color="#009265"
+                    onClick={() => navigate(`/signup`)}
+                    underline="none"
+                  >
+                    Create one?
+                  </Link>
+                </Typography>
+              </form>
+            </Grid>
           </Grid>
-        </Grid>
+        </Paper>
       </Container>
     </Box>
   );

@@ -10,7 +10,13 @@ import {
 } from "@mui/material";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
-const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
+const HomeNavbar = ({
+  title,
+  IsNotHomePage,
+  handleAboutUsClick,
+  handleHomeClick,
+  handleProductsClick,
+}) => {
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
 
@@ -37,7 +43,7 @@ const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
   }, [isAtTop]);
   useEffect(() => {
     const handleScrollToAboutUs = () => {
-      if (window.scrollY >= 400) {
+      if (window.scrollY >= 1000) {
         setValue("AboutUs");
       }
     };
@@ -46,6 +52,21 @@ const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
 
     return () => {
       window.removeEventListener("scroll", handleScrollToAboutUs);
+    };
+  }, []);
+
+  // Automatically select Products when scrolled to top
+  useEffect(() => {
+    const handleScrollToProducts = () => {
+      if (window.scrollY >= 400) {
+        setValue("Products");
+      }
+    };
+
+    window.addEventListener("scroll", handleScrollToProducts);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollToProducts);
     };
   }, []);
 
@@ -59,7 +80,7 @@ const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
         padding: "0 50px",
         position: "sticky",
         top: 0,
-        zIndex: 1,
+        zIndex: 2,
       }}
     >
       <FlexBetween>
@@ -75,7 +96,9 @@ const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
             color: "#009265",
             fontSize: "30px",
             marginLeft: "30px",
+            cursor: "pointer",
           }}
+          onClick={() => navigate("/")}
         >
           ClassIn
         </Typography>
@@ -96,6 +119,7 @@ const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
                 sx={{
                   color: "#009265",
                   width: "100px",
+                  padding: "0",
                   ".MuiBottomNavigationAction-label": { fontSize: "18px" },
                   ".MuiBottomNavigationAction-label.Mui-selected": {
                     fontSize: "18px",
@@ -113,10 +137,27 @@ const HomeNavbar = ({ IsNotHomePage, handleAboutUsClick, handleHomeClick }) => {
                 }}
               />
               <BottomNavigationAction
+                label="Products"
+                sx={{
+                  color: "#009265",
+                  width: "100px",
+                  padding: "0",
+                  ".MuiBottomNavigationAction-label": { fontSize: "18px" },
+                  ".MuiBottomNavigationAction-label.Mui-selected": {
+                    fontSize: "18px",
+                    borderBottom: "2px solid #009265",
+                    color: "#009265",
+                    fontWeight: "bold",
+                  },
+                }}
+                onClick={handleProductsClick}
+              />
+              <BottomNavigationAction
                 label="About Us"
                 sx={{
                   color: "#009265",
                   width: "100px",
+                  padding: "0",
                   ".MuiBottomNavigationAction-label": { fontSize: "18px" },
                   ".MuiBottomNavigationAction-label.Mui-selected": {
                     fontSize: "18px",

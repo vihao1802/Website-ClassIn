@@ -6,16 +6,15 @@ import img_home_1 from "../../assets/logo_home.jpg";
 import img_hoctructuyen from "../../assets/home/cn1_hoctructuyen.png";
 import img_nhantin from "../../assets/home/cn2_nhantin.png";
 import img_lambai from "../../assets/home/cn3_lambaitructuyen.png";
-import img_tranvihao from "../../assets/home/canhan1_tranvihao.jpg";
-import img_machhaotuan from "../../assets/home/canhan2_machhaotuan.jpg";
-import img_nguyenhuyhoang from "../../assets/home/canhan3_nguyenhuyhoang.jpg";
-import img_lamtuankiet from "../../assets/home/canhan4_lamtuankiet.jpg";
+import img_tranvihao from "../../assets/home/canhan1.jpg";
+import img_machhaotuan from "../../assets/home/canhan2.jpg";
+import img_nguyenhuyhoang from "../../assets/home/canhan3.jpg";
+import img_lamtuankiet from "../../assets/home/canhan4.jpg";
 const Home = () => {
   const handleAboutUsClick = () => {
     // Cuộn tới phần có id "aboutus" bằng cách thay đổi scrollTop của window
     window.scrollTo({
-      //top: document.getElementById("aboutus").offsetTop,
-      top: 650,
+      top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
   };
@@ -27,12 +26,29 @@ const Home = () => {
     });
   };
 
+  const handleProductsClick = () => {
+    // Find the element with id "products"
+    const productsElement = document.getElementById("products");
+
+    // Scroll to the "products" element
+    if (productsElement) {
+      productsElement.scrollIntoView({
+        behavior: "smooth",
+      });
+      window.scrollBy({
+        top: -100, // Adjust this value to your needs
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <HomeNavbar
         IsNotHomePage={false}
         handleAboutUsClick={handleAboutUsClick}
         handleHomeClick={handleHomeClick}
+        handleProductsClick={handleProductsClick}
       />
 
       <Container sx={{ flexGrow: 1 }}>
@@ -97,7 +113,7 @@ const Home = () => {
           </Grid>
         </Grid>
         <Grid
-          id="aboutus"
+          id="products"
           container
           spacing={2}
           justifyContent="left"
@@ -130,7 +146,7 @@ const Home = () => {
                 >
                   <Typography
                     sx={{
-                      marginTop: "auto",
+                      margin: "auto",
                       marginLeft: "10px",
                       color: "gray",
                       width: "auto",
@@ -166,7 +182,12 @@ const Home = () => {
                     <img
                       src={img_hoctructuyen}
                       alt="return"
-                      style={{ width: "500px", height: "300px" }}
+                      style={{
+                        width: "500px",
+                        height: "300px",
+                        borderRadius: "10px",
+                        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
+                      }}
                     />
                   </IconButton>
                 </Grid>
@@ -180,30 +201,27 @@ const Home = () => {
             style={{ marginTop: "250px", width: "1200px" }}
           >
             <Grid xs={12}>
-              <Grid container spacing={2} justifyContent={"left"}>
-                <Grid item xs={5}>
-                  <IconButton
-                    style={{ display: "flex", justifyContent: "center" }}
-                  >
-                    <img
-                      src={img_nhantin}
-                      alt="return"
-                      style={{ width: "500px", height: "300px" }}
-                    />
-                  </IconButton>
-                </Grid>
+              <Grid
+                container
+                spacing={2}
+                justifyContent={"left"}
+                flexDirection={"row-reverse"}
+              >
                 <Grid
                   item
-                  xs={7}
-                  style={{ display: "flex", alignItems: "center" }}
+                  xs={6}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
                   <Typography
                     sx={{
-                      marginTop: "auto",
-                      marginLeft: "150px",
+                      margin: "auto",
+                      marginLeft: "10px",
                       color: "gray",
                       width: "auto",
-                      textAlign: "right",
+                      textAlign: "left",
                       fontSize: "20px",
                     }}
                   >
@@ -228,6 +246,22 @@ const Home = () => {
                     </span>
                   </Typography>
                 </Grid>
+                <Grid item xs={6}>
+                  <IconButton
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <img
+                      src={img_nhantin}
+                      alt="return"
+                      style={{
+                        width: "500px",
+                        height: "300px",
+                        borderRadius: "10px",
+                        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
+                      }}
+                    />
+                  </IconButton>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -246,7 +280,7 @@ const Home = () => {
                 >
                   <Typography
                     sx={{
-                      marginTop: "auto",
+                      margin: "auto",
                       marginLeft: "10px",
                       color: "gray",
                       width: "auto",
@@ -280,7 +314,12 @@ const Home = () => {
                     <img
                       src={img_lambai}
                       alt="return"
-                      style={{ width: "500px", height: "300px" }}
+                      style={{
+                        width: "500px",
+                        height: "300px",
+                        borderRadius: "10px",
+                        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
+                      }}
                     />
                   </IconButton>
                 </Grid>
@@ -288,12 +327,13 @@ const Home = () => {
             </Grid>
           </Grid>
           <Grid
+            id="aboutus"
             container
             spacing={2}
             justifyContent="left"
             style={{ marginTop: "250px", width: "1200px" }}
           >
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ marginLeft: "-50px" }}>
               <Typography
                 sx={{
                   color: "#009265",
@@ -310,9 +350,18 @@ const Home = () => {
                 container
                 spacing={2}
                 justifyContent={"left"}
-                style={{ display: "flex", marginBottom: "100px" }}
+                style={{ display: "flex", margin: "100px 0 116px -16px " }}
               >
-                <Grid item xs={3} style={{ alignItems: "center" }}>
+                <Grid
+                  item
+                  xs={3}
+                  style={{ alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginLeft: "-16px",
+                  }}
+                >
                   <a href="https://github.com/vihao1802">
                     <IconButton
                       style={{ display: "flex", justifyContent: "center" }}
@@ -350,7 +399,16 @@ const Home = () => {
                     </span>
                   </Typography>
                 </Grid>
-                <Grid item xs={3} style={{ alignItems: "center" }}>
+                <Grid
+                  item
+                  xs={3}
+                  style={{ alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginLeft: "-16px",
+                  }}
+                >
                   <a href="https://github.com/Huchuynh">
                     <IconButton
                       style={{ display: "flex", justifyContent: "center" }}
@@ -388,7 +446,16 @@ const Home = () => {
                     </span>
                   </Typography>
                 </Grid>
-                <Grid item xs={3} style={{ alignItems: "center" }}>
+                <Grid
+                  item
+                  xs={3}
+                  style={{ alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginLeft: "-16px",
+                  }}
+                >
                   <a href="https://github.com/hnoga-n">
                     <IconButton
                       style={{ display: "flex", justifyContent: "center" }}
@@ -426,7 +493,16 @@ const Home = () => {
                     </span>
                   </Typography>
                 </Grid>
-                <Grid item xs={3} style={{ alignItems: "center" }}>
+                <Grid
+                  item
+                  xs={3}
+                  style={{ alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginLeft: "-16px",
+                  }}
+                >
                   <a href="https://github.com/lamtuankiet20122003">
                     <IconButton
                       style={{ display: "flex", justifyContent: "center" }}

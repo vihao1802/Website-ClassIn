@@ -302,6 +302,7 @@ class DeKiemTraBase(BaseModel):
     tieuDe: str
     thoiGianBatDau: datetime
     thoiGianKetThuc: datetime
+    thoiGianLamBai: int
     xemDapAn: int
     tronCauHoi: int
     hinhPhat: int
@@ -358,7 +359,6 @@ class CauTraLoi(CauTraLoiBase):
 class ChiTietBaiKiemTraBase(BaseModel):
     ma_deKiemTra: UUID
     ma_cauHoi: UUID
-    ma_dapAnChon: UUID
     thuTu: int
 
 
@@ -374,7 +374,8 @@ class ChiTietBaiKiemTra(ChiTietBaiKiemTraBase):
 class BaiLamKiemTraBase(BaseModel):
     ma_taiKhoan: UUID
     ma_deKiemTra: UUID
-    thoiGianNop: datetime
+    thoiGianNopBai: datetime
+    thoiGianBatDauLam: datetime
     diem: int
     nopTre: int
     soCauDung: int

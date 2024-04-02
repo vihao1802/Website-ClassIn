@@ -17,6 +17,7 @@ import {
   Switch,
   Paper,
   Radio,
+  RadioGroup,
 } from "@mui/material";
 import { MoreHorizOutlined, CloseRounded } from "@mui/icons-material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -25,7 +26,7 @@ import dayjs from "dayjs";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import HomeNavbar from "components/HomeNavbar";
 import FlexBetween from "components/FlexBetween";
-import AddQuestionForm from "pages/questions/AddQuestionForm";
+import AddQuestionForm from "components/ModalAddQuestion";
 
 const questionItems = [
   {
@@ -182,25 +183,25 @@ const unitItems = [
 ];
 
 const AddTestForm = () => {
-  const [checked, setChecked] = useState([]);
-
+  // checkboxlist
+  const [checkedQuestion, setCheckedQuestion] = useState([]);
   const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+    const currentIndex = checkedQuestion.indexOf(value);
+    const newChecked = [...checkedQuestion];
 
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
-    setChecked(newChecked);
+    setCheckedQuestion(newChecked);
   };
 
+  // autocomplete
   const [valueClass, setValueClass] = useState(classItems[0]);
   const [valueUnit, setValueUnit] = useState(unitItems[0]);
 
-  const [questions, setQuestions] = useState(questionItems);
+  // drag and drop
   const onDragEnd = (result) => {
     try {
       if (!result.destination) {
@@ -212,22 +213,30 @@ const AddTestForm = () => {
       ) {
         return;
       }
-      const newItems = Array.from(questions);
+      const newItems = Array.from(checkedQuestion);
       const [reorderedItem] = newItems.splice(result.source.index, 1);
       newItems.splice(result.destination.index, 0, reorderedItem);
-      setQuestions(newItems);
+      setCheckedQuestion(newItems);
     } catch (error) {
       console.log(error);
     }
   };
 
+  // add question form
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  // editButton
+  const initialEditState = questionItems.map((item) => ({
+    id: item.id,
+    isEdit: false,
+  }));
+  const [edit, setEdit] = useState(initialEditState);
+
   return (
     <Box height="100%">
-      <HomeNavbar IsNotHomePage={true} />
+      <HomeNavbar IsNotHomePage={true} title="Add Test" />
       <Box
         sx={{
           display: "flex",
@@ -327,13 +336,13 @@ const AddTestForm = () => {
                 >
                   <ListItemButton
                     role={undefined}
-                    onClick={handleToggle(item.id)}
+                    onClick={handleToggle(item)}
                     dense
                   >
                     <ListItemIcon sx={{ minWidth: "unset" }}>
                       <Checkbox
                         edge="start"
-                        checked={checked.indexOf(item.id) !== -1}
+                        checked={checkedQuestion.indexOf(item) !== -1}
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}
@@ -409,59 +418,140 @@ const AddTestForm = () => {
             <Droppable droppableId="question-list">
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {questions
-                    .filter((item) => checked.includes(item.id))
-                    .map((item, index) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <Paper
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            ref={provided.innerRef}
-                            sx={{ padding: "10px", marginTop: "10px" }}
-                          >
+                  {checkedQuestion.map((item, index) => (
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <Paper
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}
+                          sx={{ padding: "10px", marginTop: "10px" }}
+                        >
+                          {edit.find((element) => element.id === item.id)
+                            .isEdit ? (
+                            <FlexBetween>
+                              <TextField
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                color="success"
+                                defaultValue={item.title}
+                              />
+
+                              <Button
+                                sx={{ color: "#009265" }}
+                                onClick={() => {
+                                  const newEdit = edit.map((element) => {
+                                    if (element.id === item.id) {
+                                      return { ...element, isEdit: false };
+                                    }
+                                    return element;
+                                  });
+                                  setEdit(newEdit);
+                                }}
+                              >
+                                Update
+                              </Button>
+                            </FlexBetween>
+                          ) : (
                             <FlexBetween>
                               <Typography variant="h7" fontWeight="bold">
-                                {item.title}
+                                {parseInt(index + 1) + ". " + item.title}
                               </Typography>
-                              <Box>
-                                <Button sx={{ color: "#009265" }}>Edit</Button>
+                              <Box
+                                sx={{ display: "flex", flexDirection: "row" }}
+                              >
+                                <Button
+                                  sx={{ color: "#009265" }}
+                                  onClick={() => {
+                                    const newEdit = edit.map((element) => {
+                                      if (element.id === item.id) {
+                                        return { ...element, isEdit: true };
+                                      }
+                                      return element;
+                                    });
+                                    setEdit(newEdit);
+                                  }}
+                                >
+                                  Edit
+                                </Button>
                                 <IconButton
                                   sx={{
                                     color: "#009265",
                                     width: "40px",
                                   }}
-                                  onClick={handleToggle(item.id)}
+                                  onClick={handleToggle(item)}
                                 >
                                   <CloseRounded />
                                 </IconButton>
                               </Box>
                             </FlexBetween>
+                          )}
+                          <RadioGroup
+                            defaultValue={
+                              item.answer.find(
+                                (anwsers) => anwsers.isCorrect === true,
+                              ).id
+                            }
+                          >
                             {item.answer.map((answer, answerIndex) => (
-                              <Box
-                                key={answer.id.toString()}
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  marginTop: "10px",
-                                }}
-                              >
-                                <Radio
-                                  color="success"
-                                  checked={answer.isCorrect}
-                                />
-                                <Typography>{answer.title}</Typography>
-                              </Box>
+                              <>
+                                {edit.find((element) => element.id === item.id)
+                                  .isEdit ? (
+                                  <Box
+                                    key={answer.id.toString()}
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <FormControlLabel
+                                      value={answer.id.toString()}
+                                      control={
+                                        <Radio
+                                          color="success"
+                                          sx={{ marginLeft: "10px" }}
+                                        />
+                                      }
+                                    />
+                                    <TextField
+                                      variant="outlined"
+                                      size="small"
+                                      fullWidth
+                                      color="success"
+                                      defaultValue={answer.title}
+                                    />
+                                  </Box>
+                                ) : (
+                                  <Box
+                                    key={answer.id.toString()}
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Radio
+                                      color="success"
+                                      checked={answer.isCorrect}
+                                    />
+                                    <Typography>{answer.title}</Typography>
+                                  </Box>
+                                )}
+                              </>
                             ))}
-                          </Paper>
-                        )}
-                      </Draggable>
-                    ))}
+                          </RadioGroup>
+                        </Paper>
+                      )}
+                    </Draggable>
+                  ))}
                   {provided.placeholder}
                 </div>
               )}

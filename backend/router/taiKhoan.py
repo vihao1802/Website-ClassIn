@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/taiKhoan", tags=["taiKhoan"])
+router = APIRouter(prefix="/tai-khoan", tags=["TaiKhoan"])
 
 
 @router.post(
@@ -155,3 +155,88 @@ async def read(ma_nhomQuyen: str, db: Session = Depends(database.get_db)):
         .first()
     )
     return db_object
+
+
+@router.get(
+    "/{ma_taiKhoan}/bai-tap/de-kiem-tra/filter", status_code=status.HTTP_200_OK
+)
+async def read(
+    ma_taiKhoan: str,
+    selectedClass: str = None,
+    selectedCategory: str = None,
+    db: Session = Depends(database.get_db),
+):
+    # Check ma_taiKhoan exists
+    db_object_check = (
+        db.query(models.TaiKhoan)
+        .filter(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan)
+        .first()
+    )
+    if db_object_check is None:
+        raise HTTPException(status_code=400, detail="ma_taiKhoan not found")
+
+    result = []
+    db_baiTap = (
+        db.query(models.BaiTap, models.LopHoc)
+        .join(models.Chuong, models.BaiTap.ma_chuong == models.Chuong.ma_chuong)
+        .join(models.LopHoc, models.Chuong.ma_lopHoc == models.LopHoc.ma_lopHoc)
+        .join(
+            models.ThamGiaLopHoc,
+            models.LopHoc.ma_lopHoc == models.ThamGiaLopHoc.ma_lopHoc,
+        )
+        .filter(models.ThamGiaLopHoc.ma_taiKhoan == ma_taiKhoan)
+        .all()
+    )
+    for baiTap, lopHoc in db_baiTap:
+        baiTap.ten_lopHoc = lopHoc.ten
+        db_object = (
+            db.query(models.BaiLamBaiTap)
+            .filter(models.BaiLamBaiTap.ma_baiTap == baiTap.ma_baiTap)
+            .first()
+        )
+        if db_object:
+            baiTap.da_lam = 1
+        else:
+            baiTap.da_lam = 0
+        result.append(baiTap)
+
+    db_deKiemTra = (
+        db.query(models.DeKiemTra, models.LopHoc)
+        .join(
+            models.Chuong, models.DeKiemTra.ma_chuong == models.Chuong.ma_chuong
+        )
+        .join(models.LopHoc, models.Chuong.ma_lopHoc == models.LopHoc.ma_lopHoc)
+        .join(
+            models.ThamGiaLopHoc,
+            models.LopHoc.ma_lopHoc == models.ThamGiaLopHoc.ma_lopHoc,
+        )
+        .filter(models.ThamGiaLopHoc.ma_taiKhoan == ma_taiKhoan)
+        .all()
+    )
+    for deKiemTra, lopHoc in db_deKiemTra:
+        deKiemTra.ten_lopHoc = lopHoc.ten
+        db_object = (
+            db.query(models.BaiLamKiemTra)
+            .filter(models.BaiLamKiemTra.ma_deKiemTra == deKiemTra.ma_deKiemTra)
+            .first()
+        )
+        if db_object:
+            deKiemTra.da_lam = 1
+        else:
+            deKiemTra.da_lam = 0
+        result.append(deKiemTra)
+
+    # sort by thoiGianKetThuc newest to oldest
+    result = sorted(result, key=lambda x: x.thoiGianKetThuc, reverse=True)
+
+    # filter by selectedClass
+    if selectedClass != "0":
+        result = [x for x in result if x.ten_lopHoc == selectedClass]
+
+    # filter by selectedCategory
+    if selectedCategory == "1":  # Exercise
+        result = [x for x in result if hasattr(x, "ma_baiTap")]
+    elif selectedCategory == "2":  # Test
+        result = [x for x in result if hasattr(x, "ma_deKiemTra")]
+
+    return result

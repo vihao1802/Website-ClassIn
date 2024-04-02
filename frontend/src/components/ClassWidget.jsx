@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
+  Add,
   MoreHorizOutlined,
   SendRounded,
-  Add,
+  ListAltRounded,
   ExpandMore,
-  Inbox,
   PersonOffRounded,
   PeopleRounded,
   StarHalfRounded,
   EmojiEventsRounded,
   ThumbDownRounded,
   SentimentDissatisfiedRounded,
+  ArticleOutlined,
+  BookOutlined,
+  SettingsRounded,
+  EditRounded,
+  DeleteRounded,
 } from "@mui/icons-material";
 import {
   Tab,
@@ -36,6 +41,9 @@ import {
   Autocomplete,
   Paper,
   Grid,
+  Divider,
+  Chip,
+  Modal,
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import "react-chat-elements/dist/main.css";
@@ -44,6 +52,8 @@ import FlexBetween from "./FlexBetween";
 import profileImage from "assets/profile.jpg";
 import DataGridCustomToolbar from "./DataGridCustomToolbar";
 import { DataGrid } from "@mui/x-data-grid";
+import ModalAddUnit from "components/ModalAddUnit";
+import { useGetClassDetailsQuery } from "state/api";
 
 const rows = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -128,6 +138,11 @@ const messageItems = [
     position: "left",
     name: "Admin",
   },
+  {
+    text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati ut, temporibus mollitia debitis minus itaque, cupiditate libero necessitatibus impedit blanditiis ipsa nesciunt id facere totam incidunt quasi dolor soluta nisi?",
+    position: "left",
+    name: "Admin",
+  },
   { text: "Message 11", position: "right", name: "User1" },
   { text: "Message 12", position: "left", name: "User2" },
   { text: "Message 13", position: "left", name: "User3" },
@@ -164,6 +179,178 @@ const testItems = [
   { id: "8", label: "Test 8" },
   { id: "9", label: "Test 9" },
   { id: "10", label: "Test 10" },
+];
+
+const lessons = [
+  {
+    title: "Lesson 1",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 2",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 3",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 4",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 5",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 6",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 7",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 8",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 9",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 10",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 11",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 12",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
+  {
+    title: "Lesson 13",
+    tests: [
+      {
+        name: "Test 1: Introduce about Brute-Force",
+        deadline: "10pm 21-03-2024",
+      },
+      {
+        name: "Test 2: Another Test",
+        deadline: "10pm 22-03-2024",
+      },
+    ],
+  },
 ];
 
 const statisticItems = [
@@ -241,7 +428,7 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = () => {
+const ClassWidget = ({ classItem }) => {
   // course tab
   const [value, setValue] = React.useState("1");
   const handleChangeTab = (event, newValue) => {
@@ -252,10 +439,21 @@ const ClassWidget = () => {
     setActivity(event.target.value);
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isOpen = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleCloseCreateMenu = () => setAnchorEl(null);
+  const [anchorElCreateMenu, setAnchorElCreateMenu] = useState(null);
+  const isOpenCreateMenu = Boolean(anchorElCreateMenu);
+  const handleClickCreateMenu = (event) =>
+    setAnchorElCreateMenu(event.currentTarget);
+  const handleCloseCreateMenu = () => setAnchorElCreateMenu(null);
+
+  const [anchorElActivityMenu, setAnchorElActivityMenu] = useState(null);
+  const isOpenActivityMenu = Boolean(anchorElActivityMenu);
+  const handleClickActivityMenu = (event) =>
+    setAnchorElActivityMenu(event.currentTarget);
+  const handleCloseActivityMenu = () => setAnchorElActivityMenu(null);
+
+  const [openAddUnit, setOpenAddUnit] = useState(false);
+  const handleOpenAddUnit = () => setOpenAddUnit(true);
+  const handleCloseAddUnit = () => setOpenAddUnit(false);
 
   const navigate = useNavigate();
 
@@ -277,16 +475,34 @@ const ClassWidget = () => {
         flexDirection: "column",
       }}
     >
-      <Typography
+      <Box
         sx={{
-          height: "40px",
+          height: "50px",
           borderBottom: "1px solid #e7e7e7",
-          fontSize: "18px",
-          padding: "7px 15px",
+          padding: "5px 20px",
+          display: "flex",
+          flexDirection: "row",
         }}
       >
-        Công nghệ phần mềm
-      </Typography>
+        <Box
+          component="img"
+          alt="profile"
+          src={classItem?.anhDaiDien}
+          height="39px"
+          width="39px"
+          borderRadius="50%"
+          sx={{ objectFit: "cover" }}
+        />
+        <Typography
+          sx={{
+            height: "40px",
+            fontSize: "18px",
+            padding: "7px 15px",
+          }}
+        >
+          {classItem?.ten}
+        </Typography>
+      </Box>
       <TabContext value={value}>
         <Box
           sx={{
@@ -299,7 +515,6 @@ const ClassWidget = () => {
         >
           <TabList
             onChange={handleChangeTab}
-            aria-label="lab API tabs example"
             sx={{
               color: "#009265",
               "& .MuiTab-root.Mui-selected": {
@@ -318,12 +533,13 @@ const ClassWidget = () => {
           </TabList>
           <IconButton
             sx={{
-              color: "#009265",
+              color: "#666666",
               width: "40px",
               marginRight: "30px",
             }}
+            onClick={() => navigate("/classDetail")}
           >
-            <MoreHorizOutlined />
+            <SettingsRounded />
           </IconButton>
         </Box>
 
@@ -334,13 +550,12 @@ const ClassWidget = () => {
             display: "flex",
             flexDirection: "column",
             padding: "unset",
-            height: "100%",
+            height: "calc(100% - 98.8px)",
           }}
         >
           <Box
             sx={{
-              minHeight: "430px",
-              height: "460px",
+              height: "auto",
               overflowY: "scroll",
               backgroundColor: "#e7e7e7",
               padding: "10px",
@@ -356,9 +571,10 @@ const ClassWidget = () => {
               },
             }}
           >
-            {messageItems.map((item) => {
+            {messageItems.map((item, index) => {
               return (
                 <Box
+                  key={index}
                   sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -395,16 +611,44 @@ const ClassWidget = () => {
               );
             })}
           </Box>
-          <Box sx={{ height: "20%", marginTop: "10px", padding: "0 20px" }}>
+          <Box sx={{ height: "auto", padding: "10px " }}>
             <FlexBetween
               backgroundColor="white"
-              border="1px solid #e7e7e7"
+              // border="1px solid #e7e7e7"
               borderRadius="9px"
-              gap="3rem"
-              padding="0.1rem 1.5rem"
+              padding="0.1rem 1.5rem 0.1rem 0.5rem"
             >
-              <InputBase placeholder="Aa" />
-              <IconButton>
+              <TextField
+                placeholder="Type a message..."
+                sx={{
+                  width: "100%",
+                  padding: "0",
+                  color: "black",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      border: "none",
+                    },
+                    "&:hover fieldset": {
+                      border: "none",
+                    },
+                    "&.Mui-focused fieldset": {
+                      border: "none",
+                    },
+                  },
+                }}
+                variant="outlined"
+                size="small"
+                // multiline
+                InputProps={{
+                  maxRows: 10,
+                  multiline: true,
+                }}
+              />
+              <IconButton
+                sx={{
+                  marginTop: "auto",
+                }}
+              >
                 <SendRounded sx={{ color: "#009265" }} />
               </IconButton>
             </FlexBetween>
@@ -415,8 +659,10 @@ const ClassWidget = () => {
         <TabPanel
           value="2"
           sx={{
-            padding: "0 20px",
-            height: "100%",
+            padding: "0 20px 10px",
+            height: "calc(100% - 98.8px)",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           {/* TOOLBAR */}
@@ -452,7 +698,7 @@ const ClassWidget = () => {
               </FormControl>
               <FlexBetween>
                 <Button
-                  onClick={handleClick}
+                  onClick={handleClickCreateMenu}
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -489,29 +735,53 @@ const ClassWidget = () => {
                   />
                 </Button>
                 <Menu
-                  anchorEl={anchorEl}
-                  open={isOpen}
+                  anchorEl={anchorElCreateMenu}
+                  open={isOpenCreateMenu}
                   onClose={handleCloseCreateMenu}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left",
                   }}
                 >
-                  <MenuItem onClick={handleCloseCreateMenu}>
-                    <FlexBetween>
-                      <Add />
-                      <Typography>Unit</Typography>
-                    </FlexBetween>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={
-                      (handleCloseCreateMenu, () => navigate("/tests/add"))
-                    }
-                  >
-                    Test
-                  </MenuItem>
-                  <MenuItem onClick={handleCloseCreateMenu}>Exercise</MenuItem>
-                  <MenuItem onClick={handleCloseCreateMenu}>Document</MenuItem>
+                  <nav>
+                    <MenuItem
+                      onClick={
+                        (handleCloseCreateMenu, () => navigate("/tests/add"))
+                      }
+                    >
+                      <FlexBetween width="60%">
+                        <ArticleOutlined />
+                        <Typography>Test</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseCreateMenu}>
+                      <FlexBetween width="90%">
+                        <ArticleOutlined />
+                        <Typography>Exercise</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseCreateMenu}>
+                      <FlexBetween>
+                        <BookOutlined />
+                        <Typography>Document</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                  </nav>
+                  <Divider color="#666666" />
+                  <nav>
+                    <MenuItem
+                      onClick={(handleCloseCreateMenu, handleOpenAddUnit)}
+                    >
+                      <FlexBetween width="60%">
+                        <ListAltRounded />
+                        <Typography>Unit</Typography>
+                      </FlexBetween>
+                    </MenuItem>
+                    <ModalAddUnit
+                      open={openAddUnit}
+                      handleClose={handleCloseAddUnit}
+                    />
+                  </nav>
                 </Menu>
               </FlexBetween>
             </FlexBetween>
@@ -521,7 +791,8 @@ const ClassWidget = () => {
           <Box
             mt="10px"
             sx={{
-              height: "400px",
+              height: "100%",
+              maxHeight: "510px",
               overflowY: "scroll",
               "::-webkit-scrollbar": { width: "10px" },
               "::-webkit-scrollbar-track": {
@@ -535,61 +806,88 @@ const ClassWidget = () => {
               },
             }}
           >
-            <Accordion sx={{ border: "1px solid #e7e7e7" }}>
-              <FlexBetween>
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                  aria-controls="panel3-content"
-                  id="panel3-header"
-                  sx={{ flexDirection: "row-reverse" }}
-                >
-                  Lesson 1
-                </AccordionSummary>
-                <IconButton
-                  sx={{
-                    color: "#009265",
-                    width: "40px",
-                    marginRight: "30px",
-                  }}
-                >
-                  <MoreHorizOutlined />
-                </IconButton>
-              </FlexBetween>
-              <AccordionDetails sx={{ padding: "unset" }}>
-                <List>
-                  <ListItem disablePadding>
-                    <ListItemButton sx={{ height: "80px" }}>
-                      <ListItemIcon>
-                        <Inbox />
-                      </ListItemIcon>
-                      <Box>
-                        <Typography variant="h6">
-                          Test 1: Introduce about Brute-Force
-                        </Typography>
-                        <Typography color="#666666">
-                          Deadline: 10pm 21-03-2024
-                        </Typography>
-                      </Box>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton sx={{ height: "80px" }}>
-                      <ListItemIcon>
-                        <Inbox />
-                      </ListItemIcon>
-                      <Box>
-                        <Typography variant="h6">
-                          Test 1: Introduce about Brute-Force
-                        </Typography>
-                        <Typography color="#666666">
-                          Deadline: 10pm 21-03-2024
-                        </Typography>
-                      </Box>
-                    </ListItemButton>
-                  </ListItem>
-                </List>
-              </AccordionDetails>
-            </Accordion>
+            {lessons.map((lesson, index) => (
+              <Accordion
+                key={index}
+                sx={{
+                  border: "1px solid #e7e7e7",
+                  marginBottom: "10px",
+                }}
+              >
+                <FlexBetween>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls="panel3-content"
+                    id="panel3-header"
+                    sx={{ flexDirection: "row-reverse", width: "100%" }}
+                  >
+                    {lesson.title}
+                  </AccordionSummary>
+                  <IconButton
+                    sx={{
+                      color: "#009265",
+                      width: "40px",
+                      marginRight: "30px",
+                    }}
+                    onClick={handleClickActivityMenu}
+                  >
+                    <MoreHorizOutlined />
+                  </IconButton>
+                </FlexBetween>
+
+                <AccordionDetails sx={{ padding: "unset" }}>
+                  <List>
+                    {lesson.tests.map((test, testIndex) => (
+                      <ListItem key={testIndex} disablePadding>
+                        <ListItemButton sx={{ height: "80px" }}>
+                          <ListItemIcon>
+                            <ArticleOutlined />
+                          </ListItemIcon>
+                          <Box>
+                            <FlexBetween>
+                              <Typography variant="h6">{test.name}</Typography>
+                              <Chip
+                                label="Ongoing"
+                                color="success"
+                                size="small"
+                                sx={{ marginLeft: "10px" }}
+                              />
+                            </FlexBetween>
+                            <Typography color="#666666">
+                              Deadline: {test.deadline}
+                            </Typography>
+                          </Box>
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            ))}
+
+            {/* Activity Menu */}
+            <Menu
+              anchorEl={anchorElActivityMenu}
+              open={isOpenActivityMenu}
+              onClose={handleCloseActivityMenu}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <MenuItem onClick={handleCloseCreateMenu}>
+                <FlexBetween>
+                  <EditRounded color="primary" />
+                  <Typography color="primary">Edit</Typography>
+                </FlexBetween>
+              </MenuItem>
+              <MenuItem onClick={handleCloseCreateMenu}>
+                <FlexBetween>
+                  <DeleteRounded color="error" />
+                  <Typography color="error">Delete</Typography>
+                </FlexBetween>
+              </MenuItem>
+            </Menu>
           </Box>
         </TabPanel>
 

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/baiTap", tags=["baiTap"])
+router = APIRouter(prefix="/bai-tap", tags=["BaiTap"])
 
 
 @router.post(

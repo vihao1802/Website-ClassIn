@@ -63,7 +63,6 @@ async def create(
 
 @router.get(
     "/",
-    response_model=list[schemas.ChiTietBaiLamKiemTra],
     status_code=status.HTTP_200_OK,
 )
 async def read(db: Session = Depends(database.get_db)):
