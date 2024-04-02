@@ -57,7 +57,7 @@ const ShowClassCode = ({ open, handleClose, classinfo }) => {
               }}
             >
               <Typography fontSize="128px" color="#009265">
-                {classinfo?.cid.split("-")[1]}
+                {classinfo.cid ? classinfo.cid.split("-")[1] : ""}
               </Typography>
             </Box>
             <FlexBetween p="10px 0">
