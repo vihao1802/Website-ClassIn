@@ -12,3 +12,27 @@ def get_URL_DATABASE():
 
 def get_PORT():
     return os.getenv("PORT")
+
+
+def get_DOMAIN_URL():
+    return str(os.getenv("DOMAIN_URL"))
+
+
+def get_DOMAIN_CLIENT():
+    return str(os.getenv("DOMAIN_CLIENT"))
+
+
+def get_JWT_SECRET():
+    return str(os.getenv("JWT_SECRET"))
+
+
+def get_JWT_ALGORITHM():
+    return str(os.getenv("JWT_ALGORITHM"))
+
+
+def get_EMAIL():
+    return str(os.getenv("EMAIL"))
+
+
+def get_PASSWORD_EMAIL():
+    return str(os.getenv("PASSWORD_EMAIL"))

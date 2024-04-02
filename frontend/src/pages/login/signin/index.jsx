@@ -12,6 +12,8 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import HomeNavbar from "components/HomeNavbar";
+import axios from "axios";
+import { CookieSharp } from "@mui/icons-material";
 
 const validationSchema = yup.object({
   email: yup
@@ -25,7 +27,10 @@ const validationSchema = yup.object({
 });
 
 const Siginform = () => {
+  const COOKIES_EXPIRED_TIME = 60 * 60 * 24 * 7; // 30 days
   const navigate = useNavigate();
+  const [SigningIn, setSigningIn] = React.useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -33,8 +38,29 @@ const Siginform = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      //console.log('Form data:', values);
-      alert("Email: " + values.email + ", Password: " + values.password);
+      setSigningIn(true);
+      fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: new URLSearchParams({
+          username: values.email,
+          password: values.password,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setSigningIn(false);
+          if (data.access_token) {
+            document.cookie = `user_token=${data.access_token}; expires=${COOKIES_EXPIRED_TIME}; path=/`;
+            navigate(`/home`);
+          }
+        })
+        .catch((err) => {
+          setSigningIn(false);
+          console.log("Error", err);
+        });
     },
   });
 
@@ -86,11 +112,23 @@ const Siginform = () => {
                 helperText={formik.touched.password && formik.errors.password}
               />
               <Button
+                // disabled={SigningIn}
                 variant="contained"
                 color="primary"
                 fullWidth
                 type="submit"
-                style={{ marginTop: "20px", backgroundColor: "#009265" }}
+                {...(SigningIn
+                  ? {
+                      disabled: true,
+                      style: {
+                        backgroundColor: "gray",
+                        color: "black",
+                        marginTop: "20px",
+                      },
+                    }
+                  : {
+                      style: { marginTop: "20px", backgroundColor: "#009265" },
+                    })}
               >
                 Sign In
               </Button>
@@ -108,13 +146,13 @@ const Siginform = () => {
                 align="center"
                 style={{ marginTop: "10px" }}
               >
-                No account!
+                No account ? &nbsp;
                 <Link
                   href="#"
                   color="#009265"
                   onClick={() => navigate(`/signup`)}
                 >
-                  Create one?
+                  Create one !
                 </Link>
               </Typography>
             </form>

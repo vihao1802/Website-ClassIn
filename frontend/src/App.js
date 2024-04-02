@@ -11,6 +11,7 @@ import AddTestForm from "pages/tests/AddTestForm";
 import DoTestForm from "pages/tests/DoTestForm";
 import Signin from "pages/login/signin/index";
 import Signup from "pages/login/signup/index";
+import CreateHomeWork from "pages/homework";
 function App() {
   return (
     <div className="app">
@@ -23,6 +24,7 @@ function App() {
           <Route path="/tests/do" element={<DoTestForm />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/createhomework" element={<CreateHomeWork />} />
           <Route element={<Layout />}>
             <Route path="/classin" element={<Classin />} />
             <Route path="/todo" element={<Todo />} />
