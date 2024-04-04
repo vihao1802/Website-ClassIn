@@ -25,7 +25,7 @@ const schemaCreate = yup.object({
     .required("Name is required"),
   avatar: yup
     .mixed()
-    .required("A file is required")
+    .required("An image is required")
     .test(
       "fileSize",
       "File too large",
