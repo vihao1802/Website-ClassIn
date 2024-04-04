@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
@@ -24,7 +24,6 @@ import {
   IconButton,
   Box,
   Typography,
-  InputBase,
   TextField,
   FormControl,
   Select,
@@ -43,7 +42,7 @@ import {
   Grid,
   Divider,
   Chip,
-  Modal,
+  CircularProgress,
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import "react-chat-elements/dist/main.css";
@@ -53,7 +52,11 @@ import profileImage from "assets/profile.jpg";
 import DataGridCustomToolbar from "./DataGridCustomToolbar";
 import { DataGrid } from "@mui/x-data-grid";
 import ModalAddUnit from "components/ModalAddUnit";
-import { useGetClassDetailsQuery } from "state/api";
+import {
+  useGetClassDetailsQuery,
+  usePostMessageClassMutation,
+  useGetMessageClassQuery,
+} from "state/api";
 
 const rows = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -85,74 +88,6 @@ const columns = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "col1", headerName: "Column 1", width: 130 },
   { field: "col2", headerName: "Column 2", width: 130 },
-];
-
-const messageItems = [
-  {
-    text: "Chào mừng bạn đến với ứng dụng chat!",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Xin chào! Bạn cần hỗ trợ gì hôm nay?",
-    position: "left",
-    name: "User1",
-  },
-  {
-    text: "Tôi đang tìm hiểu về các tính năng của ứng dụng.",
-    position: "right",
-    name: "Admin",
-  },
-  {
-    text: "Rất vui được giúp đỡ. Bạn muốn biết điều gì cụ thể?",
-    position: "right",
-    name: "User1",
-  },
-  {
-    text: "Có tính năng nào giúp tìm kiếm bạn bè không?",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Có, bạn có thể sử dụng tính năng tìm kiếm để tìm kiếm bạn bè.",
-    position: "right",
-    name: "User1",
-  },
-  {
-    text: "Tôi thấy rất hứng thú! Làm thế nào để kết bạn mới?",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Bạn có thể sử dụng chức năng kết bạn và gửi lời mời kết bạn đến người khác.",
-    position: "left",
-    name: "User1",
-  },
-  {
-    text: "Cảm ơn bạn! Tôi sẽ thử ngay bây giờ.",
-    position: "right",
-    name: "Admin",
-  },
-  {
-    text: "Chúc bạn có trải nghiệm tuyệt vời! Hãy thông báo nếu cần thêm sự hỗ trợ.",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati ut, temporibus mollitia debitis minus itaque, cupiditate libero necessitatibus impedit blanditiis ipsa nesciunt id facere totam incidunt quasi dolor soluta nisi?",
-    position: "left",
-    name: "Admin",
-  },
-  { text: "Message 11", position: "right", name: "User1" },
-  { text: "Message 12", position: "left", name: "User2" },
-  { text: "Message 13", position: "left", name: "User3" },
-  { text: "Message 14", position: "right", name: "User2" },
-  { text: "Message 15", position: "left", name: "User1" },
-  { text: "Message 16", position: "right", name: "Admin" },
-  { text: "Message 17", position: "left", name: "User3" },
-  { text: "Message 18", position: "right", name: "User2" },
-  { text: "Message 19", position: "right", name: "User1" },
-  { text: "Message 20", position: "left", name: "User3" },
 ];
 
 const unitItems = [
@@ -466,6 +401,47 @@ const ClassWidget = ({ classItem }) => {
     setAge(event.target.value);
   };
 
+  // message loading data to chat box
+  const { data: messageData, isLoading: messageLoading } =
+    useGetMessageClassQuery({
+      class_id: classItem?.ma_lopHoc,
+      acc_id: "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
+    });
+  const [maNhomChat, setMaNhomChat] = useState("");
+
+  // scroll to bottom of chat box
+  const boxRef = useRef(null);
+  useEffect(() => {
+    if (boxRef.current) {
+      boxRef.current.scrollTop = boxRef.current.scrollHeight;
+    }
+    setMaNhomChat(messageData?.[0]?.ma_nhomChat);
+  }, [messageData]);
+
+  // handle message text field
+  const [messageTextField, setMessageTextField] = useState("");
+  const [postMessageClass, { isLoading: loadingPostMessage }] =
+    usePostMessageClassMutation();
+  const handleTextFieldChange = (event) => {
+    setMessageTextField(event.target.value);
+  };
+  const isMessageTextFieldEmpty = messageTextField.trim() === "";
+  const handleEnterKeyDown = (event) => {
+    if (event.key === "Enter" && event.shiftKey) {
+      // allow new line
+      return;
+    } else if (event.key === "Enter" && !isMessageTextFieldEmpty) {
+      postMessageClass({
+        noiDung: messageTextField,
+        acc_id: "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
+        chatGroup_id: maNhomChat,
+      });
+      setMessageTextField("");
+      event.preventDefault(); // prevent new line
+    } else if (event.key === "Enter" && isMessageTextFieldEmpty) {
+      event.preventDefault(); // prevent new line
+    }
+  };
   return (
     <Box
       sx={{
@@ -553,9 +529,23 @@ const ClassWidget = ({ classItem }) => {
             height: "calc(100% - 98.8px)",
           }}
         >
+          {messageLoading && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "calc(100% - 50.8px)",
+              }}
+            >
+              <CircularProgress color="success" />
+            </Box>
+          )}
           <Box
+            ref={boxRef}
             sx={{
-              height: "auto",
+              height: "100%",
               overflowY: "scroll",
               backgroundColor: "#e7e7e7",
               padding: "10px",
@@ -571,10 +561,10 @@ const ClassWidget = ({ classItem }) => {
               },
             }}
           >
-            {messageItems.map((item, index) => {
+            {messageData?.map((item, index) => {
               return (
                 <Box
-                  key={index}
+                  key={item.ma_tinNhan}
                   sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -601,9 +591,9 @@ const ClassWidget = ({ classItem }) => {
                   <MessageBox
                     position={item.position}
                     type={"text"}
-                    text={item.text}
-                    date={new Date()}
-                    title={item.name}
+                    text={item.noiDung}
+                    date={item.thoiGianGui}
+                    title={item.ten_taiKhoan}
                     titleColor="#009265"
                     styles={{ maxWidth: "400px" }}
                   />
@@ -643,14 +633,34 @@ const ClassWidget = ({ classItem }) => {
                   maxRows: 10,
                   multiline: true,
                 }}
+                value={messageTextField}
+                onChange={handleTextFieldChange}
+                onKeyDown={handleEnterKeyDown}
               />
-              <IconButton
+              {loadingPostMessage ? (
+                <CircularProgress color="success" />
+              ) : (
+                <IconButton
+                  sx={{
+                    marginTop: "auto",
+                  }}
+                  disabled={isMessageTextFieldEmpty}
+                >
+                  <SendRounded
+                    sx={{ color: isMessageTextFieldEmpty ? "gray" : "#009265" }}
+                  />
+                </IconButton>
+              )}
+              {/* <IconButton
                 sx={{
                   marginTop: "auto",
                 }}
+                disabled={isMessageTextFieldEmpty}
               >
-                <SendRounded sx={{ color: "#009265" }} />
-              </IconButton>
+                <SendRounded
+                  sx={{ color: isMessageTextFieldEmpty ? "gray" : "#009265" }}
+                />
+              </IconButton> */}
             </FlexBetween>
           </Box>
         </TabPanel>

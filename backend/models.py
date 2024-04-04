@@ -67,7 +67,7 @@ class TinNhan(Base):
     __tablename__ = "tinNhan"
 
     ma_tinNhan = Column(String, primary_key=True, default=generate_uuid)
-    noiDung = Column(String(300))
+    noiDung = Column(String(1000))
     thoiGianGui = Column(DateTime, default=datetime.now)
     anTinNhan = Column(Integer, default=0)
 

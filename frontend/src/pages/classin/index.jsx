@@ -388,8 +388,21 @@ const Clasin = () => {
         </List>
       </Box>
       {/* CENTER CONTAIN */}
-
-      <ClassWidget classItem={activeClass} />
+      {activeClass ? (
+        <ClassWidget classItem={activeClass} />
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "calc(100% - 50.8px)",
+          }}
+        >
+          <CircularProgress color="success" />
+        </Box>
+      )}
     </Box>
   );
 };
