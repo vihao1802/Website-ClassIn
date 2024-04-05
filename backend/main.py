@@ -27,6 +27,7 @@ from router import (
     thamGiaLopHoc,
     tinNhan,
     tinNhanBanBe,
+    webSocket,
 )
 
 models.Base.metadata.create_all(bind=engine)
@@ -62,6 +63,7 @@ main_route.include_router(chiTietBaiKiemTra.router)
 main_route.include_router(baiLamKiemTra.router)
 main_route.include_router(chiTietBaiLamKiemTra.router)
 main_route.include_router(luuVetBaiLamKiemTra.router)
+main_route.include_router(webSocket.router)
 
 app.include_router(main_route, prefix="/api")
 

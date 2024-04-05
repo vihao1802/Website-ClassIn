@@ -363,7 +363,7 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = ({ classItem }) => {
+const ClassWidget = ({ classItem, clientId }) => {
   // course tab
   const [value, setValue] = React.useState("1");
   const handleChangeTab = (event, newValue) => {
@@ -402,11 +402,14 @@ const ClassWidget = ({ classItem }) => {
   };
 
   // message loading data to chat box
-  const { data: messageData, isLoading: messageLoading } =
-    useGetMessageClassQuery({
-      class_id: classItem?.ma_lopHoc,
-      acc_id: "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
-    });
+  const {
+    data: messageData,
+    isLoading: messageLoading,
+    refetch: refetchMessageData,
+  } = useGetMessageClassQuery({
+    class_id: classItem?.ma_lopHoc,
+    acc_id: clientId,
+  });
   const [maNhomChat, setMaNhomChat] = useState("");
 
   // scroll to bottom of chat box
@@ -426,20 +429,68 @@ const ClassWidget = ({ classItem }) => {
     setMessageTextField(event.target.value);
   };
   const isMessageTextFieldEmpty = messageTextField.trim() === "";
-  const handleEnterKeyDown = (event) => {
+  const handleEnterKeyDown = async (event) => {
     if (event.key === "Enter" && event.shiftKey) {
       // allow new line
       return;
     } else if (event.key === "Enter" && !isMessageTextFieldEmpty) {
-      postMessageClass({
+      event.preventDefault(); // prevent new line
+      const response = await postMessageClass({
         noiDung: messageTextField,
-        acc_id: "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
+        acc_id: clientId,
         chatGroup_id: maNhomChat,
       });
-      setMessageTextField("");
-      event.preventDefault(); // prevent new line
+      if (response.data) {
+        sendMessage(messageTextField.trim());
+        setMessageTextField("");
+      } else {
+        console.error("Error posting message");
+      }
     } else if (event.key === "Enter" && isMessageTextFieldEmpty) {
       event.preventDefault(); // prevent new line
+    }
+  };
+
+  // web socket
+  const [webSocket, setWebSocket] = useState(null);
+
+  useEffect(() => {
+    // Connect to WebSocket
+    if (clientId && maNhomChat) {
+      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}`;
+      const ws = new WebSocket(url);
+      console.log("connecting to " + url);
+
+      ws.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
+      ws.onmessage = (event) => {
+        refetchMessageData();
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+      ws.onclose = () => {
+        console.log("WebSocket connection closed");
+      };
+
+      setWebSocket(ws);
+
+      // Clean up WebSocket connection
+      return () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
+      };
+    }
+  }, [clientId, maNhomChat]);
+
+  const sendMessage = (message) => {
+    if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+      webSocket.send(message);
     }
   };
   return (
@@ -529,7 +580,7 @@ const ClassWidget = ({ classItem }) => {
             height: "calc(100% - 98.8px)",
           }}
         >
-          {messageLoading && (
+          {/* {messageLoading && (
             <Box
               sx={{
                 display: "flex",
@@ -541,7 +592,7 @@ const ClassWidget = ({ classItem }) => {
             >
               <CircularProgress color="success" />
             </Box>
-          )}
+          )} */}
           <Box
             ref={boxRef}
             sx={{
@@ -593,7 +644,9 @@ const ClassWidget = ({ classItem }) => {
                     type={"text"}
                     text={item.noiDung}
                     date={item.thoiGianGui}
-                    title={item.ten_taiKhoan}
+                    title={
+                      item.position === "right" ? "You" : item.ten_taiKhoan
+                    }
                     titleColor="#009265"
                     styles={{ maxWidth: "400px" }}
                   />

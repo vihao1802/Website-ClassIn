@@ -93,6 +93,10 @@ export const api = createApi({
       }),
       providesTags: ["User"],
     }),
+    getAllUser: build.query({
+      query: () => `tai-khoan`,
+      providesTags: ["User"],
+    }),
     getClassDetails: build.query({
       query: (cid) => `lopHoc/lopHoc/${cid}`,
       providesTags: ["ClassDetails"],
@@ -128,6 +132,7 @@ export const api = createApi({
 export const {
   useGetQuestionsQuery,
   useGetUserQuery,
+  useGetAllUserQuery,
   useGetClassDetailsQuery,
   useGetClassQuery,
   useGetTodoQuery,

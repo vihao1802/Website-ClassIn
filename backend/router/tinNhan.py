@@ -98,11 +98,14 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
         raise HTTPException(status_code=400, detail="TaiKhoan not found")
     return db_object
 
+
 @router.get(
     "/lop-hoc/{ma_lopHoc}/tai-khoan/{ma_taiKhoan}",
     status_code=status.HTTP_200_OK,
 )
-async def read(ma_lopHoc: str,ma_taiKhoan: str ,db: Session = Depends(database.get_db)):
+async def read(
+    ma_lopHoc: str, ma_taiKhoan: str, db: Session = Depends(database.get_db)
+):
     taiKhoan_exists = db.query(
         exists().where(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan)
     ).scalar()
@@ -121,14 +124,20 @@ async def read(ma_lopHoc: str,ma_taiKhoan: str ,db: Session = Depends(database.g
         )
     result = []
     db_object = (
-        db.query(models.TinNhan,models.TaiKhoan)
-        .join(models.TaiKhoan, models.TinNhan.ma_taiKhoan == models.TaiKhoan.ma_taiKhoan)
-        .join(models.NhomChat, models.NhomChat.ma_nhomChat == models.TinNhan.ma_nhomChat)
-        .filter(models.NhomChat.ma_lopHoc == ma_lopHoc)    
+        db.query(models.TinNhan, models.TaiKhoan)
+        .join(
+            models.TaiKhoan,
+            models.TinNhan.ma_taiKhoan == models.TaiKhoan.ma_taiKhoan,
+        )
+        .join(
+            models.NhomChat,
+            models.NhomChat.ma_nhomChat == models.TinNhan.ma_nhomChat,
+        )
+        .filter(models.NhomChat.ma_lopHoc == ma_lopHoc)
     )
-    for TinNhan,TaiKhoan in db_object:
+    for TinNhan, TaiKhoan in db_object:
         TinNhan.ten_taiKhoan = TaiKhoan.hoTen
-        
+
         if TinNhan.ma_taiKhoan == ma_taiKhoan:
             TinNhan.position = "right"
         else:
