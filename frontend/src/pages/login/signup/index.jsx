@@ -8,6 +8,7 @@ import {
   Link,
   Box,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -38,7 +39,7 @@ const validationSchema = yup.object({
     .required("Password Verify is required"),
 });
 
-const Siginform = () => {
+const Sigupform = () => {
   const navigate = useNavigate();
   const [SigningUp, setSigningUp] = React.useState(false);
   const formik = useFormik({
@@ -73,6 +74,9 @@ const Siginform = () => {
           if (response.ok) {
             setSigningUp(false);
             navigate(`/signin`);
+          } else {
+            setSigningUp(false);
+            alert("Sign up failed");
           }
           return response.json();
         })
@@ -215,8 +219,9 @@ const Siginform = () => {
                     marginTop: "8px",
                     backgroundColor: "#009265",
                   }}
+                  disabled={SigningUp}
                 >
-                  Sign Up
+                  {SigningUp ? <CircularProgress size={24} /> : "Sign In"}
                 </Button>
 
                 <Typography
@@ -243,4 +248,4 @@ const Siginform = () => {
   );
 };
 
-export default Siginform;
+export default Sigupform;

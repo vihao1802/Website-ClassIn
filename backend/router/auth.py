@@ -187,8 +187,7 @@ async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(database.get_db),
 ) -> Token:
-    for attr in dir(form_data):
-        print(attr)
+    # print(form_data.username, form_data.password)
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(

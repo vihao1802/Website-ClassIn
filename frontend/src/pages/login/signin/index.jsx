@@ -8,13 +8,12 @@ import {
   Link,
   Box,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import HomeNavbar from "components/HomeNavbar";
-import axios from "axios";
-import { CookieSharp } from "@mui/icons-material";
 
 import "../../../index.css";
 const validationSchema = yup.object({
@@ -44,7 +43,7 @@ const Siginform = () => {
       fetch("http://localhost:8000/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
           username: values.email,
@@ -140,8 +139,9 @@ const Siginform = () => {
                     marginTop: "8px",
                     backgroundColor: "#009265",
                   }}
+                  disabled={SigningIn}
                 >
-                  Sign In
+                  {SigningIn ? <CircularProgress size={24} /> : "Sign In"}
                 </Button>
                 <Typography
                   variant="body2"
