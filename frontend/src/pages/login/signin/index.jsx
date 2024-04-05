@@ -8,11 +8,13 @@ import {
   Link,
   Box,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import HomeNavbar from "components/HomeNavbar";
+
 import "../../../index.css";
 const validationSchema = yup.object({
   email: yup
@@ -26,7 +28,10 @@ const validationSchema = yup.object({
 });
 
 const Siginform = () => {
+  const COOKIES_EXPIRED_TIME = 60 * 60 * 24 * 7; // 30 days
   const navigate = useNavigate();
+  const [SigningIn, setSigningIn] = React.useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -34,8 +39,29 @@ const Siginform = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      //console.log('Form data:', values);
-      alert("Email: " + values.email + ", Password: " + values.password);
+      setSigningIn(true);
+      fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: values.email,
+          password: values.password,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setSigningIn(false);
+          if (data.access_token) {
+            document.cookie = `user_token=${data.access_token}; expires=${COOKIES_EXPIRED_TIME}; path=/`;
+            navigate(`/home`);
+          }
+        })
+        .catch((err) => {
+          setSigningIn(false);
+          console.log("Error", err);
+        });
     },
   });
 
@@ -113,8 +139,9 @@ const Siginform = () => {
                     marginTop: "8px",
                     backgroundColor: "#009265",
                   }}
+                  disabled={SigningIn}
                 >
-                  Sign In
+                  {SigningIn ? <CircularProgress size={24} /> : "Sign In"}
                 </Button>
                 <Typography
                   variant="body2"

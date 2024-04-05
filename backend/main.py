@@ -1,10 +1,12 @@
+import jwt
 import load_env_global
 import models
 import uvicorn
 from database import engine
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from router import (
+    auth,
     baiLamBaiTap,
     baiLamKiemTra,
     baiTap,
@@ -41,31 +43,91 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-main_route.include_router(nhomQuyen.router)
-main_route.include_router(taiKhoan.router)
-main_route.include_router(lopHoc.router)
-main_route.include_router(thamGiaLopHoc.router)
-main_route.include_router(nhomChat.router)
-main_route.include_router(tinNhan.router)
-main_route.include_router(chuong.router)
-main_route.include_router(hocLieu.router)
-main_route.include_router(fileHocLieu.router)
-main_route.include_router(banBe.router)
-main_route.include_router(tinNhanBanBe.router)
-main_route.include_router(baiTap.router)
-main_route.include_router(fileBaiTap.router)
-main_route.include_router(baiLamBaiTap.router)
-main_route.include_router(fileBaiLamBaiTap.router)
-main_route.include_router(deKiemTra.router)
-main_route.include_router(cauHoi.router)
-main_route.include_router(cauTraLoi.router)
-main_route.include_router(chiTietBaiKiemTra.router)
-main_route.include_router(baiLamKiemTra.router)
-main_route.include_router(chiTietBaiLamKiemTra.router)
-main_route.include_router(luuVetBaiLamKiemTra.router)
+
+
+async def verify_token_middleware(request: Request):
+    token = request.cookies.get("user_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    try:
+        payload = jwt.decode(
+            token,
+            load_env_global.get_JWT_SECRET(),
+            algorithms=[load_env_global.get_JWT_ALGORITHM()],
+        )
+        request.user_data = payload
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return request
+
+
+main_route.include_router(
+    nhomQuyen.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    taiKhoan.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    thamGiaLopHoc.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    nhomChat.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    tinNhan.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    chuong.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    hocLieu.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    fileHocLieu.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    banBe.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    tinNhanBanBe.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    baiTap.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    fileBaiTap.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    baiLamBaiTap.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    fileBaiLamBaiTap.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    deKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    cauHoi.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    cauTraLoi.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    chiTietBaiKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    baiLamKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    chiTietBaiLamKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    lopHoc.router, dependencies=[Depends(verify_token_middleware)]
+)
 main_route.include_router(webSocket.router)
 
 app.include_router(main_route, prefix="/api")
+app.include_router(auth.auth, prefix="/auth")
 
 
 @app.get("/")
