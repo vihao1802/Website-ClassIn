@@ -17,7 +17,7 @@ import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import ClassWidget from "components/ClassWidget";
 import ModalHandleClass from "components/ModalHandleClass";
-import { useGetClassQuery } from "state/api";
+import { useGetClassQuery, useGetAllUserQuery } from "state/api";
 const classItems = [
   {
     name: "Công nghệ phần mềm",
@@ -206,10 +206,27 @@ const Clasin = () => {
   const handleCreate = () => {
     console.log("Create");
   };
-
-  const { data, isLoading } = useGetClassQuery(
+  /* const { data, isLoading } = useGetClassQuery(
     "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
-  );
+  ); */
+
+  const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
+  const [clientId, setClientId] = useState(null);
+
+  useEffect(() => {
+    if (userList && userList.length > 0 && !clientId) {
+      const uniqueUserIds = userList.map((user) => user.ma_taiKhoan);
+      const nonDuplicateIds = uniqueUserIds.filter(
+        (id, index) => uniqueUserIds.indexOf(id) === index,
+      );
+      const randomClientId =
+        nonDuplicateIds[Math.floor(Math.random() * nonDuplicateIds.length)];
+      console.log(randomClientId);
+      setClientId(randomClientId);
+    }
+  }, [userList, clientId]);
+
+  const { data, isLoading } = useGetClassQuery(clientId);
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
@@ -343,53 +360,54 @@ const Clasin = () => {
             },
           }}
         >
-          {data?.map((item, index) => {
-            return (
-              <ListItem key={index} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setActiveClass(item);
-                  }}
-                  sx={{
-                    backgroundColor:
-                      activeClass?.ma_lopHoc === item.ma_lopHoc
-                        ? "#e7e7e7"
-                        : "transparent",
-                    color:
-                      activeClass?.ma_lopHoc === item.ma_lopHoc
-                        ? "black"
-                        : "#666666",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    alt="profile"
-                    src={item.anhDaiDien}
-                    height="48px"
-                    width="48px"
-                    borderRadius="50%"
-                    sx={{ objectFit: "cover" }}
-                  />
-                  <ListItemText
-                    primary={item.ten}
-                    sx={{ paddingLeft: "10px", maxWidth: "195px" }}
-                    primaryTypographyProps={{
-                      style: {
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      },
+          {data &&
+            data.map((item, index) => {
+              return (
+                <ListItem key={index} disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      setActiveClass(item);
                     }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
+                    sx={{
+                      backgroundColor:
+                        activeClass?.ma_lopHoc === item.ma_lopHoc
+                          ? "#e7e7e7"
+                          : "transparent",
+                      color:
+                        activeClass?.ma_lopHoc === item.ma_lopHoc
+                          ? "black"
+                          : "#666666",
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      alt="profile"
+                      src={item.anhDaiDien}
+                      height="48px"
+                      width="48px"
+                      borderRadius="50%"
+                      sx={{ objectFit: "cover" }}
+                    />
+                    <ListItemText
+                      primary={item.ten}
+                      sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                      primaryTypographyProps={{
+                        style: {
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        },
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
         </List>
       </Box>
       {/* CENTER CONTAIN */}
       {activeClass ? (
-        <ClassWidget classItem={activeClass} />
+        <ClassWidget classItem={activeClass} clientId={clientId} />
       ) : (
         <Box
           sx={{

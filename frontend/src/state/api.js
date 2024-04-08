@@ -71,7 +71,10 @@ export const {
 } = api; */
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BASE_URL,
+    credentials: "include",
+  }),
   reducerPath: "api",
   tagTypes: [
     "Questions",
@@ -91,6 +94,10 @@ export const api = createApi({
         url: `taiKhoan/${uid}`,
         method: "GET",
       }),
+      providesTags: ["User"],
+    }),
+    getAllUser: build.query({
+      query: () => `tai-khoan`,
       providesTags: ["User"],
     }),
     getClassDetails: build.query({
@@ -122,15 +129,24 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    deleteMessageClass: build.mutation({
+      query: ({ messageId }) => ({
+        url: `tin-nhan/${messageId}/delete-message`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["MessageClass"],
+    }),
   }),
 });
 
 export const {
   useGetQuestionsQuery,
   useGetUserQuery,
+  useGetAllUserQuery,
   useGetClassDetailsQuery,
   useGetClassQuery,
   useGetTodoQuery,
   useGetMessageClassQuery,
   usePostMessageClassMutation,
+  useDeleteMessageClassMutation,
 } = api;
