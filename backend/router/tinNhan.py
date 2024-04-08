@@ -134,6 +134,7 @@ async def read(
             models.NhomChat.ma_nhomChat == models.TinNhan.ma_nhomChat,
         )
         .filter(models.NhomChat.ma_lopHoc == ma_lopHoc)
+        .filter(models.TinNhan.anTinNhan == 0)
     )
     for TinNhan, TaiKhoan in db_object:
         TinNhan.ten_taiKhoan = TaiKhoan.hoTen
@@ -148,3 +149,26 @@ async def read(
     result = sorted(result, key=lambda x: x.thoiGianGui)
 
     return result
+
+
+@router.put(
+    "/{ma_tinNhan}/delete-message",
+    status_code=status.HTTP_200_OK,
+)
+async def update(
+    ma_tinNhan: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = (
+        db.query(models.TinNhan)
+        .filter(models.TinNhan.ma_tinNhan == ma_tinNhan)
+        .first()
+    )
+    if db_object is None:
+        raise HTTPException(status_code=404, detail="TinNhan not found")
+
+    db_object.anTinNhan = 1
+
+    db.commit()
+    db.refresh(db_object)
+    return db_object

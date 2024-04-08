@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
   Add,
   MoreHorizOutlined,
-  SendRounded,
   ListAltRounded,
   ExpandMore,
   PersonOffRounded,
@@ -42,21 +41,16 @@ import {
   Grid,
   Divider,
   Chip,
-  CircularProgress,
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import "react-chat-elements/dist/main.css";
-import { MessageBox } from "react-chat-elements";
 import FlexBetween from "./FlexBetween";
 import profileImage from "assets/profile.jpg";
 import DataGridCustomToolbar from "./DataGridCustomToolbar";
 import { DataGrid } from "@mui/x-data-grid";
 import ModalAddUnit from "components/ModalAddUnit";
-import {
-  useGetClassDetailsQuery,
-  usePostMessageClassMutation,
-  useGetMessageClassQuery,
-} from "state/api";
+import { useGetClassDetailsQuery } from "state/api";
+import ChatBoxGroup from "./ChatBoxGroup";
 
 const rows = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -401,98 +395,6 @@ const ClassWidget = ({ classItem, clientId }) => {
     setAge(event.target.value);
   };
 
-  // message loading data to chat box
-  const {
-    data: messageData,
-    isLoading: messageLoading,
-    refetch: refetchMessageData,
-  } = useGetMessageClassQuery({
-    class_id: classItem?.ma_lopHoc,
-    acc_id: clientId,
-  });
-  const [maNhomChat, setMaNhomChat] = useState("");
-
-  // scroll to bottom of chat box
-  const boxRef = useRef(null);
-  useEffect(() => {
-    if (boxRef.current) {
-      boxRef.current.scrollTop = boxRef.current.scrollHeight;
-    }
-    setMaNhomChat(messageData?.[0]?.ma_nhomChat);
-  }, [messageData]);
-
-  // handle message text field
-  const [messageTextField, setMessageTextField] = useState("");
-  const [postMessageClass, { isLoading: loadingPostMessage }] =
-    usePostMessageClassMutation();
-  const handleTextFieldChange = (event) => {
-    setMessageTextField(event.target.value);
-  };
-  const isMessageTextFieldEmpty = messageTextField.trim() === "";
-  const handleEnterKeyDown = async (event) => {
-    if (event.key === "Enter" && event.shiftKey) {
-      // allow new line
-      return;
-    } else if (event.key === "Enter" && !isMessageTextFieldEmpty) {
-      event.preventDefault(); // prevent new line
-      const response = await postMessageClass({
-        noiDung: messageTextField,
-        acc_id: clientId,
-        chatGroup_id: maNhomChat,
-      });
-      if (response.data) {
-        sendMessage(messageTextField.trim());
-        setMessageTextField("");
-      } else {
-        console.error("Error posting message");
-      }
-    } else if (event.key === "Enter" && isMessageTextFieldEmpty) {
-      event.preventDefault(); // prevent new line
-    }
-  };
-
-  // web socket
-  const [webSocket, setWebSocket] = useState(null);
-
-  useEffect(() => {
-    // Connect to WebSocket
-    if (clientId && maNhomChat) {
-      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}`;
-      const ws = new WebSocket(url);
-      console.log("connecting to " + url);
-
-      ws.onopen = () => {
-        console.log("WebSocket connected");
-      };
-
-      ws.onmessage = (event) => {
-        refetchMessageData();
-      };
-
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-
-      ws.onclose = () => {
-        console.log("WebSocket connection closed");
-      };
-
-      setWebSocket(ws);
-
-      // Clean up WebSocket connection
-      return () => {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.close();
-        }
-      };
-    }
-  }, [clientId, maNhomChat]);
-
-  const sendMessage = (message) => {
-    if (webSocket && webSocket.readyState === WebSocket.OPEN) {
-      webSocket.send(message);
-    }
-  };
   return (
     <Box
       sx={{
@@ -580,142 +482,9 @@ const ClassWidget = ({ classItem, clientId }) => {
             height: "calc(100% - 98.8px)",
           }}
         >
-          {/* {messageLoading && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                height: "calc(100% - 50.8px)",
-              }}
-            >
-              <CircularProgress color="success" />
-            </Box>
-          )} */}
-          <Box
-            ref={boxRef}
-            sx={{
-              height: "100%",
-              overflowY: "scroll",
-              backgroundColor: "#e7e7e7",
-              padding: "10px",
-              "::-webkit-scrollbar": { width: "10px" },
-              "::-webkit-scrollbar-track": {
-                background: "#f1f1f1",
-              },
-              "::-webkit-scrollbar-thumb": {
-                background: "#858585",
-              },
-              "::-webkit-scrollbar-thumb:hover": {
-                background: "#777",
-              },
-            }}
-          >
-            {messageData?.map((item, index) => {
-              return (
-                <Box
-                  key={item.ma_tinNhan}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: "20px",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: item.position,
-                      marginBottom: "5px",
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      alt="profile"
-                      src={profileImage}
-                      height="36px"
-                      width="36px"
-                      borderRadius="50%"
-                      sx={{ objectFit: "cover" }}
-                    />
-                  </Box>
-                  <MessageBox
-                    position={item.position}
-                    type={"text"}
-                    text={item.noiDung}
-                    date={item.thoiGianGui}
-                    title={
-                      item.position === "right" ? "You" : item.ten_taiKhoan
-                    }
-                    titleColor="#009265"
-                    styles={{ maxWidth: "400px" }}
-                  />
-                </Box>
-              );
-            })}
-          </Box>
-          <Box sx={{ height: "auto", padding: "10px " }}>
-            <FlexBetween
-              backgroundColor="white"
-              // border="1px solid #e7e7e7"
-              borderRadius="9px"
-              padding="0.1rem 1.5rem 0.1rem 0.5rem"
-            >
-              <TextField
-                placeholder="Type a message..."
-                sx={{
-                  width: "100%",
-                  padding: "0",
-                  color: "black",
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      border: "none",
-                    },
-                    "&:hover fieldset": {
-                      border: "none",
-                    },
-                    "&.Mui-focused fieldset": {
-                      border: "none",
-                    },
-                  },
-                }}
-                variant="outlined"
-                size="small"
-                // multiline
-                InputProps={{
-                  maxRows: 10,
-                  multiline: true,
-                }}
-                value={messageTextField}
-                onChange={handleTextFieldChange}
-                onKeyDown={handleEnterKeyDown}
-              />
-              {loadingPostMessage ? (
-                <CircularProgress color="success" />
-              ) : (
-                <IconButton
-                  sx={{
-                    marginTop: "auto",
-                  }}
-                  disabled={isMessageTextFieldEmpty}
-                >
-                  <SendRounded
-                    sx={{ color: isMessageTextFieldEmpty ? "gray" : "#009265" }}
-                  />
-                </IconButton>
-              )}
-              {/* <IconButton
-                sx={{
-                  marginTop: "auto",
-                }}
-                disabled={isMessageTextFieldEmpty}
-              >
-                <SendRounded
-                  sx={{ color: isMessageTextFieldEmpty ? "gray" : "#009265" }}
-                />
-              </IconButton> */}
-            </FlexBetween>
-          </Box>
+          {classItem && clientId && (
+            <ChatBoxGroup classItem={classItem} clientId={clientId} />
+          )}
         </TabPanel>
 
         {/* COURSE TAB */}

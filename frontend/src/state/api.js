@@ -71,7 +71,10 @@ export const {
 } = api; */
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BASE_URL,
+    credentials: "include",
+  }),
   reducerPath: "api",
   tagTypes: [
     "Questions",
@@ -126,6 +129,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    deleteMessageClass: build.mutation({
+      query: ({ messageId }) => ({
+        url: `tin-nhan/${messageId}/delete-message`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["MessageClass"],
+    }),
   }),
 });
 
@@ -138,4 +148,5 @@ export const {
   useGetTodoQuery,
   useGetMessageClassQuery,
   usePostMessageClassMutation,
+  useDeleteMessageClassMutation,
 } = api;

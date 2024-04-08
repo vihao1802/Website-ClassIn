@@ -1,12 +1,10 @@
 import json
-from typing import List
-from fastapi import (
-    APIRouter,
-    WebSocket,
-    WebSocketDisconnect,
-)
+from typing import Dict, List
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter(prefix="/ws", tags=["WebSocket"])
+
 
 class ConnectionManager:
 
@@ -41,7 +39,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     await manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()
+            typeAction = await websocket.receive_text()
             """ db_latest_message = (
                 db.query(models.TinNhan,models.TaiKhoan)
                 .join(
@@ -65,7 +63,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     'thoiGianGui': TinNhan.thoiGianGui.strftime('%Y-%m-%dT%H:%M:%S')
                 } """
 
-            await manager.broadcast(json.dumps(data))
+            message = {"sendById": client_id, "type": typeAction}
+            await manager.broadcast(json.dumps(message))
     except WebSocketDisconnect:
-        await manager.disconnect(websocket)
-        await manager.broadcast(f"Client {client_id} disconnected")
+        manager.disconnect(websocket)
