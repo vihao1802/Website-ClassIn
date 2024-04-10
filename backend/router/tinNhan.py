@@ -138,6 +138,8 @@ async def read(
     )
     for TinNhan, TaiKhoan in db_object:
         TinNhan.ten_taiKhoan = TaiKhoan.hoTen
+        TinNhan.email = TaiKhoan.email
+        TinNhan.anhDaiDien = TaiKhoan.anhDaiDien
 
         if TinNhan.ma_taiKhoan == ma_taiKhoan:
             TinNhan.position = "right"

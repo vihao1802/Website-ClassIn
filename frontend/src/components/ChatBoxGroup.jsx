@@ -169,6 +169,23 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     }
   };
 
+  // user detail
+  const [userDetailData, setUserDetailData] = useState(null);
+  const [openUserDetail, setOpenUserDetail] = useState(false);
+  const handleClickOpenUserDetail = (email, ten_taiKhoan) => {
+    setOpenUserDetail(true);
+    console.log(email, ten_taiKhoan);
+    setUserDetailData({
+      email: email,
+      ten_taiKhoan: ten_taiKhoan,
+    });
+  };
+  const handleCloseUserDetail = () => {
+    setOpenUserDetail(false);
+    setUserDetailData(null);
+    handleClose();
+  };
+
   // web socket
   useEffect(() => {
     // Connect to WebSocket
@@ -287,6 +304,15 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                         ? handleActionMenuMessage
                         : null
                     }
+                    onTitleClick={
+                      item.ma_taiKhoan !== clientId
+                        ? () =>
+                            handleClickOpenUserDetail(
+                              item.email,
+                              item.ten_taiKhoan,
+                            )
+                        : null
+                    }
                     position={item.position}
                     type={"text"}
                     text={item.noiDung}
@@ -302,7 +328,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                 )}
 
                 {item.ma_taiKhoan === clientId && (
-                  <>
+                  <Box>
                     <Menu
                       anchorEl={anchorEl}
                       open={isOpen}
@@ -406,7 +432,85 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                         </Box>
                       </Box>
                     </Modal>
-                  </>
+                  </Box>
+                )}
+                {userDetailData && (
+                  <Box>
+                    <Modal
+                      open={openUserDetail}
+                      onClose={handleCloseUserDetail}
+                      aria-labelledby="modal-title"
+                      aria-describedby="modal-description"
+                      sx={{
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          width: "100%",
+                          maxWidth: "400px",
+                          bgcolor: "background.paper",
+                          borderRadius: 2,
+                          border: "none",
+                          boxShadow: 4,
+                          p: 3,
+                        }}
+                      >
+                        <Typography
+                          id="modal-title"
+                          variant="h6"
+                          component="h2"
+                          fontWeight={600}
+                        >
+                          {`Profile`}
+                        </Typography>
+                        <Typography id="modal-description" sx={{ mt: 2 }}>
+                          {`Name: ${userDetailData.ten_taiKhoan}`}
+                        </Typography>
+                        <Typography id="modal-description" sx={{ mt: 2 }}>
+                          {`Email: ${userDetailData.email}`}
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "end",
+                            gap: "10px",
+                            mt: 3,
+                          }}
+                        >
+                          <Button
+                            sx={{
+                              color: "#009265",
+                              border: "2px solid #009265",
+                              padding: "5px 15px",
+                            }}
+                            onClick={handleCloseUserDetail}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            sx={{
+                              backgroundColor: "#009265",
+                              color: "white",
+                              border: "2px solid #009265",
+                              padding: "5px 15px",
+                              "&:hover": {
+                                backgroundColor: "#007850",
+                              },
+                            }}
+                            // onClick={}
+                          >
+                            Add friend
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Modal>
+                  </Box>
                 )}
               </Box>
             )
