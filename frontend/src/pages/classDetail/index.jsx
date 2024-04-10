@@ -8,6 +8,11 @@ import {
   IconButton,
   TextField,
   Tab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
@@ -34,7 +39,14 @@ import {
 import profileImage from "assets/profile.jpg";
 import ShowClassCode from "components/ModalShowClassCode";
 import AddStudentToClass from "components/ModalAddStudentToClass";
-import { useGetClassDetailsQuery } from "state/api";
+import { useParams } from "react-router-dom";
+import {
+  useGetClassDetailsQuery,
+  useGetStudentsByClassIdQuery,
+  useDeleteUserFromClassMutation,
+} from "state/api";
+import Loading from "components/Loading";
+import AlertComponent from "components/AlertComponent";
 
 const profileCommonSchema = yup.object().shape({
   classname: yup.string().required("Class Name is required"),
@@ -49,137 +61,8 @@ const initialCommonValues = {
   avatar: "",
 };
 
-const studentcolumns = [
-  { field: "id", headerName: "ID", width: 50, editable: false },
-  {
-    field: "studentname",
-    headerName: "Student Name",
-    width: 250,
-    editable: false,
-    sortable: false,
-    renderCell: (item) => {
-      return (
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Box
-            component="img"
-            alt="profile"
-            src={profileImage}
-            height="32px"
-            width="32px"
-            borderRadius="50%"
-            sx={{ objectFit: "cover" }}
-          />
-          <Typography
-            sx={{
-              fontSize: "16px",
-              color: "black",
-              marginLeft: "10px",
-              padding: "5px 0",
-            }}
-          >
-            {item.value}
-          </Typography>
-        </Box>
-      );
-    },
-  },
-  {
-    field: "email",
-    headerName: "Email",
-    width: 200,
-    editable: false,
-    sortable: false,
-  },
-  {
-    field: "phonenumber",
-    headerName: "Phone Number",
-    width: 200,
-    editable: false,
-    sortable: false,
-  },
-  {
-    field: "remove",
-    headerName: "Remove",
-    width: 100,
-    sortable: false,
-    type: "actions",
-    getActions: () => {
-      return [
-        <GridActionsCellItem
-          icon={<RemoveCircleOutlineRounded sx={{ color: "red" }} />}
-          label="Remove"
-          className="textPrimary"
-          color="inherit"
-        />,
-      ];
-    },
-  },
-];
-
-const studentrows = [
-  {
-    id: 1,
-    studentname: "Jimmy",
-    email: "jimmy@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 2,
-    studentname: "John",
-    email: "john@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 3,
-    studentname: "Alice",
-    email: "alice@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 4,
-    studentname: "Bob",
-    email: "bob@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 5,
-    studentname: "Emily",
-    email: "emily@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 6,
-    studentname: "Alex",
-    email: "alex@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 7,
-    studentname: "Sarah",
-    email: "sarah@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 8,
-    studentname: "Michael",
-    email: "michael@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 9,
-    studentname: "Jessica",
-    email: "jessica@gmail.com",
-    phonenumber: "0123456789",
-  },
-  {
-    id: 10,
-    studentname: "David",
-    email: "david@gmail.com",
-    phonenumber: "0123456789",
-  },
-];
-
 const ClassDetail = () => {
+  const { classId } = useParams();
   const [clickedAvatar, setClickedAvatar] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [value, setValue] = React.useState("1");
@@ -195,13 +78,102 @@ const ClassDetail = () => {
   const handleOpenAddStudentToClass = () => setOpenAddStudentToClass(true);
   const handleCloseAddStudentToClass = () => setOpenAddStudentToClass(false);
 
-  const { data, isLoading } = useGetClassDetailsQuery(
-    "3ca75f6c-5ef9-46a2-9c26-324ec4e81abf",
-  );
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const [showAlert, setShowAlert] = useState({ message: "", state: false });
+
+  const { data: classes, isLoading: isClassDataLoading } =
+    useGetClassDetailsQuery(classId);
+  const {
+    data: students,
+    isLoading: isStudentDataLoading,
+    refetch: refetchStudents,
+  } = useGetStudentsByClassIdQuery(classId);
+
+  const [deleteUserFromClass, { isLoading, isError }] =
+    useDeleteUserFromClassMutation();
+  const studentcolumns = [
+    {
+      field: "hoTen",
+      headerName: "Student Name",
+      width: 250,
+      editable: false,
+      sortable: false,
+      renderCell: (item) => {
+        return (
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            <Box
+              component="img"
+              alt="profile"
+              src={profileImage}
+              height="32px"
+              width="32px"
+              borderRadius="50%"
+              sx={{ objectFit: "cover" }}
+            />
+            <Typography
+              sx={{
+                fontSize: "16px",
+                color: "black",
+                marginLeft: "10px",
+                padding: "5px 0",
+              }}
+            >
+              {item.value}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 300,
+      editable: false,
+      sortable: false,
+    },
+    {
+      field: "dienThoai",
+      headerName: "Phone Number",
+      width: 150,
+      editable: false,
+      sortable: false,
+    },
+    {
+      field: "remove",
+      headerName: "Remove",
+      width: 100,
+      sortable: false,
+      type: "actions",
+      getActions: (item) => {
+        return [
+          <GridActionsCellItem
+            icon={<RemoveCircleOutlineRounded sx={{ color: "red" }} />}
+            label="Remove"
+            className="textPrimary"
+            color="inherit"
+            onClick={() => {
+              setOpenDeleteDialog(true);
+              setSelectedRow(item.row);
+            }}
+          />,
+        ];
+      },
+    },
+  ];
+
+  if (isClassDataLoading) return <Loading />;
 
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
       <HomeNavbar IsNotHomePage={true} title="Class Information" />
+      <AlertComponent
+        severity="success"
+        message={showAlert.message}
+        open={showAlert.state}
+        onClose={() => setShowAlert({ ...showAlert, state: false })}
+      />
       <Box
         sx={{
           width: "100%",
@@ -377,7 +349,7 @@ const ClassDetail = () => {
                       </Typography>
                       <FlexBetween>
                         <Typography variant="h7" color="#666666">
-                          {data?.ma_lopHoc}
+                          {classes?.ma_lopHoc}
                         </Typography>
                         <Button
                           variant="primary"
@@ -394,7 +366,10 @@ const ClassDetail = () => {
                         <ShowClassCode
                           open={openShowClassCode}
                           handleClose={handleCloseShowClassCode}
-                          classinfo={{ cid: data?.ma_lopHoc, cname: data?.ten }}
+                          classinfo={{
+                            cid: classes?.ma_lopHoc,
+                            cname: classes?.ten,
+                          }}
                         />
                       </FlexBetween>
                     </Box>
@@ -422,7 +397,7 @@ const ClassDetail = () => {
                         <TextField
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={data?.ten}
+                          value={classes?.ten}
                           name="classname"
                           color="success"
                           size="small"
@@ -450,7 +425,7 @@ const ClassDetail = () => {
                         <TextField
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={data?.moTa}
+                          value={classes?.moTa}
                           name="description"
                           color="success"
                           placeholder="Description"
@@ -520,31 +495,21 @@ const ClassDetail = () => {
                 }}
               >
                 <DataGrid
-                  rows={studentrows}
+                  loading={isStudentDataLoading}
+                  getRowId={(row) => row.ma_taiKhoan}
+                  rows={students || []}
                   columns={studentcolumns}
                   slots={{
                     toolbar: () => {
                       return (
                         <GridToolbarContainer>
-                          <FlexBetween width="100%">
-                            <Button
-                              color="primary"
-                              startIcon={<PersonAddAltRounded />}
-                              onClick={handleOpenAddStudentToClass}
-                            >
-                              Add student
-                            </Button>
-                            <Box pr="5px" width="300px">
-                              <TextField
-                                id="outlined-basic"
-                                label="Search"
-                                variant="outlined"
-                                size="small"
-                                color="success"
-                                fullWidth
-                              />
-                            </Box>
-                          </FlexBetween>
+                          <Button
+                            color="primary"
+                            startIcon={<PersonAddAltRounded />}
+                            onClick={handleOpenAddStudentToClass}
+                          >
+                            Add student
+                          </Button>
                         </GridToolbarContainer>
                       );
                     },
@@ -552,13 +517,67 @@ const ClassDetail = () => {
                   initialState={{
                     pagination: { paginationModel: { pageSize: 5 } },
                   }}
+                  onRowSelectionModelChange={(item) => {
+                    setSelectedRow(item[0]);
+                  }}
                   pageSizeOptions={[5, 10]}
                   sx={{ padding: "0 20px" }}
                 />
                 <AddStudentToClass
                   open={openAddStudentToClass}
                   handleClose={handleCloseAddStudentToClass}
+                  setShowAlert={setShowAlert}
+                  refetchStudents={refetchStudents}
                 />
+
+                <Dialog
+                  open={openDeleteDialog}
+                  onClose={() => setOpenDeleteDialog(false)}
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    Notification
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Are you sure you want to remove this student from the
+                      class?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      onClick={() => setOpenDeleteDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => {
+                        deleteUserFromClass({
+                          ma_lopHoc: classId,
+                          ma_taiKhoan: selectedRow.ma_taiKhoan,
+                        });
+                        setOpenDeleteDialog(false);
+                        setShowAlert({
+                          message: "Delete student successfully",
+                          state: true,
+                        });
+                      }}
+                    >
+                      Accept
+                    </Button>
+                    <AlertComponent
+                      severity="success"
+                      message="Delete student successfully"
+                      open={showAlert.state}
+                      onClose={() =>
+                        setShowAlert({ ...showAlert, state: false })
+                      }
+                    />
+                  </DialogActions>
+                </Dialog>
               </Box>
             </TabPanel>
           </Box>

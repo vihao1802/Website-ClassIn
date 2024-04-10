@@ -17,6 +17,8 @@ import {
 import profileImage from "assets/profile.jpg";
 
 const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
+
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
@@ -106,7 +108,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <MenuItem
               onClick={() => {
                 handleClose();
-                navigate("/profile");
+                navigate(`/profile/${userId}`);
               }}
             >
               <FlexBetween color="#009265">

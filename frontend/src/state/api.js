@@ -73,8 +73,26 @@ export const {
 export const api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
   reducerPath: "api",
-  tagTypes: ["Questions", "User", "classDetails", "Class"],
+  tagTypes: [
+    "Questions",
+    "User",
+    "Class",
+    "Units",
+    /* "classDetails",
+    "UnitAcitvities",
+    "StudentsByClassId",
+    "TestByTestId",
+    "TestDetails",
+    "QuestionDetails",
+    "ClassByInstructorId",
+    "UserSubmissionsDetails",
+    "WorkDetailsByTestId",
+    "WorkInfoByWorkId",
+    "UnregisteredUsers" */
+    ,
+  ],
   endpoints: (build) => ({
+    // GET METHODS
     getQuestions: build.query({
       query: (uid) => `cauHoi/taiKhoan/${uid}`,
       providesTags: ["Questions"],
@@ -94,6 +112,69 @@ export const api = createApi({
       query: (uid) => `lopHoc/${uid}`,
       providesTags: ["Class"],
     }),
+    getUnits: build.query({
+      query: (unitId) => `chuong/${unitId}`,
+      providesTags: ["Units"],
+    }),
+    getUnitActivities: build.query({
+      query: (cid) => `chuong/${cid}/hoatdong`,
+      providesTags: ["UnitActivities"],
+    }),
+    getStudentsByClassId: build.query({
+      query: (cid) => `lopHoc/${cid}/taiKhoan`,
+      providesTags: ["StudentsByClassId"],
+    }),
+    getTestByTestId: build.query({
+      query: (tid) => `deKiemTra/${tid}`,
+      providesTags: ["TestByTestId"],
+    }),
+    getTestDetails: build.query({
+      query: (tid) => `deKiemTra/${tid}/chiTiet`,
+      providesTags: ["TestDetails"],
+    }),
+    getQuestionsDetails: build.query({
+      query: (uid) => `cauHoi/taiKhoan/${uid}/chiTiet`,
+      providesTags: ["QuestionDetails"],
+    }),
+    getClassByInstructorId: build.query({
+      query: (uid) => `lopHoc/taiKhoan/${uid}`,
+      providesTags: ["ClassByInstructorId"],
+    }),
+    getUserSubmissionsDetails: build.query({
+      query: (tid) => `deKiemTra/${tid}/getSubmissionDetails`,
+      providesTags: ["UserSubmissionsDetails"],
+    }),
+    getWorkDetailsByTestId: build.query({
+      query: (wid) => `chiTietBaiLamKiemTra/baiLamKiemTra/${wid}`,
+      providesTags: ["WorkDetailsByTestId"],
+    }),
+    getWorkInfoByWorkId: build.query({
+      query: (wid) => `baiLamKiemTra/${wid}`,
+      providesTags: ["WorkInfoByWorkId"],
+    }),
+    getUnregisteredUsers: build.query({
+      query: (cid) => `taiKhoan/${cid}/unregistered`,
+      providesTags: ["UnregisteredUsers"],
+    }),
+
+    // POST METHODS
+    postUserResigeter: build.mutation({
+      query: (data) => ({
+        url: "thamGiaLopHoc",
+        method: "POST",
+        body: data,
+      }),
+      providesTags: ["postUserResigeter"],
+    }),
+
+    // DELETE METHODS
+    deleteUserFromClass: build.mutation({
+      query: (data) => ({
+        url: `thamGiaLopHoc/${data.ma_lopHoc}/${data.ma_taiKhoan}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["StudentsByClassId"],
+    }),
   }),
 });
 
@@ -102,4 +183,17 @@ export const {
   useGetUserQuery,
   useGetClassDetailsQuery,
   useGetClassQuery,
+  useGetUnitActivitiesQuery,
+  useGetStudentsByClassIdQuery,
+  useGetTestByTestIdQuery,
+  useGetUnitsQuery,
+  useGetTestDetailsQuery,
+  useGetQuestionsDetailsQuery,
+  useGetClassByInstructorIdQuery,
+  useGetUserSubmissionsDetailsQuery,
+  useGetWorkDetailsByTestIdQuery,
+  useGetWorkInfoByWorkIdQuery,
+  useGetUnregisteredUsersQuery,
+  usePostUserResigeterMutation,
+  useDeleteUserFromClassMutation,
 } = api;

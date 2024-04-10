@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Modal,
@@ -10,18 +10,63 @@ import {
 } from "@mui/material";
 import { CloseRounded } from "@mui/icons-material";
 import FlexBetween from "./FlexBetween";
+import { useParams } from "react-router-dom";
+import {
+  useGetUnregisteredUsersQuery,
+  usePostUserResigeterMutation,
+} from "state/api";
+import AlertComponent from "./AlertComponent";
+import state from "state";
 
-const emailItems = Array.from({ length: 100 }, (_, index) => ({
-  title: `email${index + 1}@example.com`,
-}));
+const AddStudentToClass = ({
+  open,
+  handleClose,
+  setShowAlert,
+  refetchStudents,
+}) => {
+  const { classId } = useParams();
+  const {
+    data: users,
+    isLoading: usersLoading,
+    refetch: refetchUsers,
+  } = useGetUnregisteredUsersQuery(classId);
+  const [emailItems, setEmailItems] = useState([]);
 
-const AddStudentToClass = ({ open, handleClose }) => {
+  const [selectedEmails, setSelectedEmails] = useState([]);
+  useEffect(() => {
+    if (users && !usersLoading) {
+      setEmailItems(
+        users.map((user) => ({
+          id: user.ma_taiKhoan,
+          cid: classId,
+          title: user.email,
+        })),
+      );
+    }
+  }, [users, usersLoading]);
+  const [isEmailEmpty, setIsEmailEmpty] = useState(false);
+
+  const [addUsersRegister, data] = usePostUserResigeterMutation();
+  const handleClickAddUsersRegister = () => {
+    if (selectedEmails.length === 0) {
+      setIsEmailEmpty(true);
+      return;
+    }
+    addUsersRegister(
+      selectedEmails.map((item) => ({
+        ma_lopHoc: item.cid,
+        ma_taiKhoan: item.id,
+      })),
+    );
+    handleClose();
+    setShowAlert({ message: "Add student successfully", state: true });
+    refetchStudents();
+    refetchUsers();
+    setSelectedEmails([]);
+  };
+
   return (
-    <Modal
-      open={open}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+    <Modal open={open}>
       <Box
         sx={{
           position: "absolute",
@@ -71,14 +116,21 @@ const AddStudentToClass = ({ open, handleClose }) => {
               multiple
               id="tags-standard"
               options={emailItems}
+              value={selectedEmails}
               getOptionLabel={(option) => option.title}
+              onChange={(event, newValue) => {
+                setSelectedEmails(newValue);
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   variant="outlined"
                   placeholder="Email"
                   size="small"
-                  color="success"
+                  color={isEmailEmpty ? "error" : "success"}
+                  onChange={() => setIsEmailEmpty(false)}
+                  helperText={isEmailEmpty && "Email is required"}
+                  error={isEmailEmpty}
                 />
               )}
             />
@@ -94,6 +146,7 @@ const AddStudentToClass = ({ open, handleClose }) => {
               backgroundColor: "#009265",
               "&:hover": { backgroundColor: "#007850" },
             }}
+            onClick={handleClickAddUsersRegister}
           >
             Add
           </Button>
