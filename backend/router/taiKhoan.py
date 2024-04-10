@@ -158,6 +158,39 @@ async def read(ma_nhomQuyen: str, db: Session = Depends(database.get_db)):
 
 
 @router.get(
+    "/{ma_lopHoc}/unregistered",
+    status_code=status.HTTP_200_OK,
+)
+async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
+    all_user = (
+        db.query(models.TaiKhoan)
+        .filter(
+            models.TaiKhoan.ma_nhomQuyen
+            != "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        )
+        .all()
+    )
+    registered_user = (
+        db.query(models.ThamGiaLopHoc)
+        .filter(models.ThamGiaLopHoc.ma_lopHoc == ma_lopHoc)
+        .all()
+    )
+    instructor_user_id = (
+        db.query(models.LopHoc.ma_giangVien)
+        .filter(models.LopHoc.ma_lopHoc == ma_lopHoc)
+        .first()
+    )
+    registered_user_id = [user.ma_taiKhoan for user in registered_user]
+    unregistered_user = [
+        {"ma_taiKhoan": user.ma_taiKhoan, "email": user.email}
+        for user in all_user
+        if user.ma_taiKhoan not in registered_user_id
+        and user.ma_taiKhoan != instructor_user_id[0]
+    ]
+    return unregistered_user
+
+
+@router.get(
     "/{ma_taiKhoan}/bai-tap/de-kiem-tra/filter", status_code=status.HTTP_200_OK
 )
 async def read(

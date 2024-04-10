@@ -36,308 +36,146 @@ import HomeNavbar from "components/HomeNavbar";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import React from "react";
-
-const detailItems = [
-  {
-    title: "Test Name",
-    icon: <AbcRounded color="#009265" sx={{ color: "#009265" }} />,
-    content: "Test 1",
-  },
-  {
-    title: "Create at",
-    icon: <CalendarTodayRounded sx={{ color: "#009265" }} />,
-    content: "2021-10-10",
-  },
-  {
-    title: "Test Date",
-    icon: <DateRangeRounded sx={{ color: "#009265" }} />,
-    content: "2021-10-10 - 2021-10-10",
-  },
-  {
-    title: "Test Duration",
-    icon: <AccessAlarmRounded sx={{ color: "#009265" }} />,
-    content: "90 min",
-  },
-  {
-    title: "Class",
-    icon: <SchoolRounded sx={{ color: "#009265" }} />,
-    content: "Cong nghe phan mem",
-  },
-  {
-    title: "Unit",
-    icon: <ArticleRounded sx={{ color: "#009265" }} />,
-    content: "Unit 1",
-  },
-  {
-    title: "Instructor",
-    icon: <LocalLibraryRounded sx={{ color: "#009265" }} />,
-    content: "Hu Chuynh",
-  },
-];
-
-const statisticItems = [
-  {
-    label: "Submitted",
-    value: "10",
-    icon: (
-      <PeopleRounded
-        sx={{
-          color: "#009265",
-          fontSize: "40px",
-        }}
-      />
-    ),
-  },
-  {
-    label: "Not Submitted",
-    value: "10",
-    icon: (
-      <PersonOffRounded
-        sx={{
-          color: "#009265",
-          fontSize: "40px",
-        }}
-      />
-    ),
-  },
-  {
-    label: "Average Score",
-    value: "5",
-    icon: (
-      <StarHalfRounded
-        sx={{
-          color: "#009265",
-          fontSize: "40px",
-        }}
-      />
-    ),
-  },
-  {
-    label: "Highest Score",
-    value: "10",
-    icon: (
-      <EmojiEventsRounded
-        sx={{
-          color: "#009265",
-          fontSize: "40px",
-        }}
-      />
-    ),
-  },
-  {
-    label: "Lowest Score",
-    value: "0",
-    icon: (
-      <ThumbDownRounded
-        sx={{
-          color: "#009265",
-          fontSize: "40px",
-        }}
-      />
-    ),
-  },
-  {
-    label: "Score less than 5",
-    value: "10",
-    icon: (
-      <SentimentDissatisfiedRounded
-        sx={{
-          color: "#009265",
-          fontSize: "40px",
-        }}
-      />
-    ),
-  },
-];
-
-const submittedcolumns = [
-  { field: "id", headerName: "ID", width: 100, editable: false },
-  {
-    field: "studentname",
-    headerName: "Student Name",
-    width: 300,
-    editable: false,
-    sortable: false,
-    renderCell: (item) => {
-      return (
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Box
-            component="img"
-            alt="profile"
-            src={profileImage}
-            height="32px"
-            width="32px"
-            borderRadius="50%"
-            sx={{ objectFit: "cover" }}
-          />
-          <Typography
-            sx={{
-              fontSize: "16px",
-              color: "black",
-              marginLeft: "10px",
-              padding: "5px 0",
-            }}
-          >
-            {item.value}
-          </Typography>
-        </Box>
-      );
-    },
-  },
-  {
-    field: "examtimes",
-    headerName: "Exam Times",
-    width: 200,
-    editable: false,
-    sortable: false,
-  },
-  {
-    field: "duration",
-    headerName: "Duration",
-    width: 100,
-    editable: false,
-    sortable: false,
-  },
-  {
-    field: "score",
-    headerName: "Score",
-    width: 100,
-    editable: false,
-    sortable: false,
-  },
-  {
-    field: "detail",
-    headerName: "Detail",
-    width: 100,
-    sortable: false,
-    type: "actions",
-    getActions: () => {
-      return [
-        <GridActionsCellItem
-          icon={<VisibilityRounded sx={{ color: "#009265" }} />}
-          label="Detail"
-          className="textPrimary"
-          color="inherit"
-        />,
-      ];
-    },
-  },
-];
-
-const submittedrows = [
-  {
-    id: 1,
-    studentname: "Jimmy",
-    examtimes: "2021-10-10 22:00",
-    duration: "15:25",
-    score: "8",
-  },
-  {
-    id: 2,
-    studentname: "Tony",
-    examtimes: "2021-10-10 22:00",
-    duration: "15:25",
-    score: "10",
-  },
-  {
-    id: 3,
-    studentname: "Peter",
-    examtimes: "2021-10-10 22:00",
-    duration: "15:25",
-    score: "5",
-  },
-  {
-    id: 4,
-    studentname: "Mary",
-    examtimes: "2021-10-10 22:00",
-    duration: "15:25",
-    score: "6",
-  },
-  {
-    id: 5,
-    studentname: "John",
-    examtimes: "2021-10-10 22:00",
-    duration: "15:25",
-    score: "9",
-  },
-  {
-    id: 6,
-    studentname: "Jimmy",
-    examtimes: "2021-10-10 22:00",
-    duration: "15:25",
-    score: "8",
-  },
-];
-
-const unsubmittedcolumns = [
-  { field: "id", headerName: "ID", width: 100, editable: false },
-  {
-    field: "studentname",
-    headerName: "Student Name",
-    width: 300,
-    editable: false,
-    sortable: false,
-    renderCell: (item) => {
-      return (
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Box
-            component="img"
-            alt="profile"
-            src={profileImage}
-            height="32px"
-            width="32px"
-            borderRadius="50%"
-            sx={{ objectFit: "cover" }}
-          />
-          <Typography
-            sx={{
-              fontSize: "16px",
-              color: "black",
-              marginLeft: "10px",
-              padding: "5px 0",
-            }}
-          >
-            {item.value}
-          </Typography>
-        </Box>
-      );
-    },
-  },
-];
-
-const unsubmittedrows = [
-  {
-    id: 1,
-    studentname: "Jimmy",
-  },
-  {
-    id: 2,
-    studentname: "Tony",
-  },
-  {
-    id: 3,
-    studentname: "Peter",
-  },
-  {
-    id: 4,
-    studentname: "Mary",
-  },
-  {
-    id: 5,
-    studentname: "John",
-  },
-  {
-    id: 6,
-    studentname: "Jimmy",
-  },
-];
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  useGetTestByTestIdQuery,
+  useGetUserSubmissionsDetailsQuery,
+} from "state/api";
+import Loading from "components/Loading";
+import dayjs from "dayjs";
+import AvatarName from "components/AvatarName";
 
 const TestExcerciseDetail = () => {
+  const navigate = useNavigate();
+  const { testId } = useParams();
+
+  const submittedcolumns = [
+    {
+      field: "hoTen",
+      headerName: "Student Name",
+      width: 250,
+      editable: false,
+      sortable: false,
+      renderCell: (item) => {
+        return (
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            {/* <Box
+            component="img"
+            alt="profile"
+            src={profileImage}
+            height="32px"
+            width="32px"
+            borderRadius="50%"
+            sx={{ objectFit: "cover" }}
+          /> */}
+            <AvatarName name={item.value} />
+            <Typography
+              sx={{
+                fontSize: "16px",
+                color: "black",
+                marginLeft: "10px",
+                padding: "10px 0",
+              }}
+            >
+              {item.value}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+    {
+      field: "khoangThoiGianLamBai",
+      headerName: "Exam Times",
+      width: 300,
+      editable: false,
+      sortable: false,
+    },
+    {
+      field: "thoiGianLamBai",
+      headerName: "Duration (min)",
+      width: 150,
+      editable: false,
+      sortable: false,
+    },
+    {
+      field: "diem",
+      headerName: "Score",
+      width: 100,
+      editable: false,
+      sortable: false,
+    },
+    {
+      field: "detail",
+      headerName: "Detail",
+      width: 100,
+      sortable: false,
+      type: "actions",
+      getActions: (item) => {
+        return [
+          <GridActionsCellItem
+            icon={<VisibilityRounded color="primary" />}
+            label="Detail"
+            className="textPrimary"
+            color="inherit"
+            onClick={() => {
+              navigate(`/tests/${testId}/work/${item.row.ma_baiLamKiemTra}`);
+            }}
+          />,
+        ];
+      },
+    },
+  ];
+
+  const unsubmittedcolumns = [
+    {
+      field: "hoTen",
+      headerName: "Student Name",
+      width: 800,
+      editable: false,
+      sortable: false,
+      renderCell: (item) => {
+        return (
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            {/* <Box
+            component="img"
+            alt="profile"
+            src={profileImage}
+            height="32px"
+            width="32px"
+            borderRadius="50%"
+            sx={{ objectFit: "cover" }}
+          /> */}
+            <AvatarName name={item.value} />
+            <Typography
+              sx={{
+                fontSize: "16px",
+                color: "black",
+                marginLeft: "10px",
+                padding: "10px 0",
+              }}
+            >
+              {item.value}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+  ];
+
   const [value, setValue] = React.useState("1");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const { data: testItemData, isLoading: isTestItemLoading } =
+    useGetTestByTestIdQuery(testId);
+
+  const {
+    data: userSubmissionDetail,
+    isLoading: isUserSubmissionDetailLoading,
+  } = useGetUserSubmissionsDetailsQuery(testId);
 
   return (
     <Box>
@@ -370,30 +208,137 @@ const TestExcerciseDetail = () => {
                 Test Detail
               </Typography>
               <Chip
-                variant="outlined"
+                variant="primary"
                 color="success"
                 label="Ongoing"
                 size="small"
               />
             </FlexBetween>
-            <Box mb="10px">
-              {detailItems.map((item, index) => (
-                <FlexBetween mt="5px" key={"secretkey-" + index}>
+            {testItemData || !isTestItemLoading ? (
+              <Box mb="10px">
+                <FlexBetween mt="5px">
                   <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    {item.icon}
+                    <AbcRounded color="#009265" sx={{ color: "#009265" }} />
                     <Typography
                       variant="body1"
                       ml="10px"
                       color="#666666"
                       fontWeight="bold"
                     >
-                      <em>{item.title}:</em>
+                      <em>Test Name:</em>
                     </Typography>
                   </Box>
-                  <Typography fontWeight="bold">{item.content}</Typography>
+                  <Typography fontWeight="bold">
+                    {testItemData.tieuDe}
+                  </Typography>
                 </FlexBetween>
-              ))}
-            </Box>
+                <FlexBetween mt="5px">
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    <CalendarTodayRounded sx={{ color: "#009265" }} />
+                    <Typography
+                      variant="body1"
+                      ml="10px"
+                      color="#666666"
+                      fontWeight="bold"
+                    >
+                      <em>Create At:</em>
+                    </Typography>
+                  </Box>
+                  <Typography fontWeight="bold">
+                    {dayjs(testItemData.thoiGianTao).format("HH:mm DD/MM/YYYY")}
+                  </Typography>
+                </FlexBetween>
+                <FlexBetween mt="5px">
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    <DateRangeRounded sx={{ color: "#009265" }} />
+                    <Typography
+                      variant="body1"
+                      ml="10px"
+                      color="#666666"
+                      fontWeight="bold"
+                    >
+                      <em>Test Date:</em>
+                    </Typography>
+                  </Box>
+                  <Typography fontWeight="bold">
+                    {dayjs(testItemData.thoiGianBatDau).format(
+                      "HH:mm DD/MM/YY",
+                    ) +
+                      " - " +
+                      dayjs(testItemData.hanChotNopBai).format(
+                        "HH:mm DD/MM/YY",
+                      )}
+                  </Typography>
+                </FlexBetween>
+                <FlexBetween mt="5px">
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    <AccessAlarmRounded sx={{ color: "#009265" }} />
+                    <Typography
+                      variant="body1"
+                      ml="10px"
+                      color="#666666"
+                      fontWeight="bold"
+                    >
+                      <em>Test Duration:</em>
+                    </Typography>
+                  </Box>
+                  <Typography fontWeight="bold">
+                    {testItemData.thoiGianLamBai + " min"}
+                  </Typography>
+                </FlexBetween>
+                <FlexBetween mt="5px">
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    <SchoolRounded sx={{ color: "#009265" }} />
+                    <Typography
+                      variant="body1"
+                      ml="10px"
+                      color="#666666"
+                      fontWeight="bold"
+                    >
+                      <em>Class:</em>
+                    </Typography>
+                  </Box>
+                  <Typography fontWeight="bold">
+                    {testItemData.tenLop}
+                  </Typography>
+                </FlexBetween>
+                <FlexBetween mt="5px">
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    <ArticleRounded sx={{ color: "#009265" }} />
+                    <Typography
+                      variant="body1"
+                      ml="10px"
+                      color="#666666"
+                      fontWeight="bold"
+                    >
+                      <em>Unit:</em>
+                    </Typography>
+                  </Box>
+                  <Typography fontWeight="bold">
+                    {testItemData.tenChuong}
+                  </Typography>
+                </FlexBetween>
+                <FlexBetween mt="5px">
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    <LocalLibraryRounded sx={{ color: "#009265" }} />
+                    <Typography
+                      variant="body1"
+                      ml="10px"
+                      color="#666666"
+                      fontWeight="bold"
+                    >
+                      <em>Instructor:</em>
+                    </Typography>
+                  </Box>
+                  <Typography fontWeight="bold">
+                    {testItemData.tenGV}
+                  </Typography>
+                </FlexBetween>
+              </Box>
+            ) : (
+              <Loading />
+            )}
+
             <Divider color="#666666" />
             <Button
               variant="contained"
@@ -402,6 +347,9 @@ const TestExcerciseDetail = () => {
                 "&:hover": { backgroundColor: "#007850" },
                 width: "100%",
                 marginTop: "10px",
+              }}
+              onClick={() => {
+                navigate(`/tests/${testId}/detail`);
               }}
             >
               See Details
@@ -417,37 +365,6 @@ const TestExcerciseDetail = () => {
             padding: "20px",
           }}
         >
-          {/* <Box sx={{ flexGrow: 1, marginTop: "10px" }}>
-            <Grid
-              container
-              spacing={{ xs: 2, md: 3 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
-            >
-              {statisticItems.map((item, index) => (
-                <Grid item xs={2} sm={4} md={4} key={index}>
-                  <Paper>
-                    <Box
-                      sx={{
-                        padding: "10px",
-                        display: "flex",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <Box width="80%">
-                        <Typography variant="h4">{item.value}</Typography>
-                        <Typography variant="h7" color="#009265">
-                          {item.label}
-                        </Typography>
-                      </Box>
-                      <Box width="20%" p="15px 0">
-                        {item.icon}
-                      </Box>
-                    </Box>
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
-          </Box> */}
           <Paper sx={{ width: "100%", typography: "body1" }} elevation={3}>
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -469,7 +386,7 @@ const TestExcerciseDetail = () => {
                   <Tab label="Submitted" value="2" />
                 </TabList>
               </Box>
-              <TabPanel value="1">
+              <TabPanel value="1" sx={{ padding: "10px" }}>
                 <Box
                   sx={{
                     "& .MuiDataGrid-root": {
@@ -504,26 +421,10 @@ const TestExcerciseDetail = () => {
                   }}
                 >
                   <DataGrid
-                    rows={unsubmittedrows}
+                    loading={isUserSubmissionDetailLoading}
+                    rows={userSubmissionDetail?.users_unsubmit || []}
+                    getRowId={(row) => row.ma_taiKhoan}
                     columns={unsubmittedcolumns}
-                    slots={{
-                      toolbar: () => {
-                        return (
-                          <GridToolbarContainer>
-                            <Box pr="5px" width="300px">
-                              <TextField
-                                id="outlined-basic"
-                                label="Search"
-                                variant="outlined"
-                                size="small"
-                                color="success"
-                                fullWidth
-                              />
-                            </Box>
-                          </GridToolbarContainer>
-                        );
-                      },
-                    }}
                     initialState={{
                       pagination: { paginationModel: { pageSize: 5 } },
                     }}
@@ -532,7 +433,7 @@ const TestExcerciseDetail = () => {
                   />
                 </Box>
               </TabPanel>
-              <TabPanel value="2" p="unset">
+              <TabPanel value="2" sx={{ padding: "10px" }}>
                 <Box
                   sx={{
                     "& .MuiDataGrid-root": {
@@ -567,26 +468,10 @@ const TestExcerciseDetail = () => {
                   }}
                 >
                   <DataGrid
-                    rows={submittedrows}
+                    loading={isUserSubmissionDetailLoading}
+                    rows={userSubmissionDetail?.users_submit || []}
+                    getRowId={(row) => row.ma_baiLamKiemTra}
                     columns={submittedcolumns}
-                    slots={{
-                      toolbar: () => {
-                        return (
-                          <GridToolbarContainer>
-                            <Box pr="5px" width="300px">
-                              <TextField
-                                id="outlined-basic"
-                                label="Search"
-                                variant="outlined"
-                                size="small"
-                                color="success"
-                                fullWidth
-                              />
-                            </Box>
-                          </GridToolbarContainer>
-                        );
-                      },
-                    }}
                     initialState={{
                       pagination: { paginationModel: { pageSize: 5 } },
                     }}

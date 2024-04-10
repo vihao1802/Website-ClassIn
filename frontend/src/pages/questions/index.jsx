@@ -132,25 +132,13 @@ const Questions = () => {
                 toolbar: () => {
                   return (
                     <GridToolbarContainer>
-                      <FlexBetween width="100%">
-                        <Button
-                          color="primary"
-                          startIcon={<AddRounded />}
-                          onClick={handleOpen}
-                        >
-                          Add new question
-                        </Button>
-                        <Box pr="5px" width="300px">
-                          <TextField
-                            id="outlined-basic"
-                            label="Search"
-                            variant="outlined"
-                            size="small"
-                            color="success"
-                            fullWidth
-                          />
-                        </Box>
-                      </FlexBetween>
+                      <Button
+                        color="primary"
+                        startIcon={<AddRounded />}
+                        onClick={handleOpen}
+                      >
+                        Add new question
+                      </Button>
                     </GridToolbarContainer>
                   );
                 },

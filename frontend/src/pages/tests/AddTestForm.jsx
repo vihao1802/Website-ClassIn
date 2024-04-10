@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -27,8 +27,13 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import HomeNavbar from "components/HomeNavbar";
 import FlexBetween from "components/FlexBetween";
 import AddQuestionForm from "components/ModalAddQuestion";
+import Loading from "components/Loading";
+import {
+  useGetQuestionsDetailsQuery,
+  useGetClassByInstructorIdQuery,
+} from "state/api";
 
-const questionItems = [
+/* const questionItems = [
   {
     id: "1",
     title: "What does HTML stand for?",
@@ -154,9 +159,9 @@ const questionItems = [
       { id: 4, title: "To secure network connections", isCorrect: false },
     ],
   },
-];
+]; */
 
-const classItems = [
+/* const classItems = [
   { id: "1", label: "Công nghệ phần mềm" },
   { id: "2", label: "Hệ thống thông tin" },
   { id: "3", label: "Khoa học máy tính" },
@@ -167,7 +172,7 @@ const classItems = [
   { id: "8", label: "Kỹ thuật phần mềm" },
   { id: "9", label: "Hệ thống thông tin quản lý" },
   { id: "10", label: "Khoa học dữ liệu" },
-];
+]; */
 
 const unitItems = [
   { id: "1", label: "Unit 1" },
@@ -197,10 +202,6 @@ const AddTestForm = () => {
     setCheckedQuestion(newChecked);
   };
 
-  // autocomplete
-  const [valueClass, setValueClass] = useState(classItems[0]);
-  const [valueUnit, setValueUnit] = useState(unitItems[0]);
-
   // drag and drop
   const onDragEnd = (result) => {
     try {
@@ -227,16 +228,43 @@ const AddTestForm = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // editButton
-  const initialEditState = questionItems.map((item) => ({
-    id: item.id,
-    isEdit: false,
-  }));
-  const [edit, setEdit] = useState(initialEditState);
+  const { data: questionDetailsData, isLoading: isQuestionDetailsLoading } =
+    useGetQuestionsDetailsQuery("1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9");
+
+  const [edit, setEdit] = useState([]);
+
+  useEffect(() => {
+    if (!isQuestionDetailsLoading && questionDetailsData) {
+      const initialEditState = questionDetailsData.map((item) => ({
+        ma_cauHoi: item.cauHoi.ma_cauHoi,
+        isEdit: false,
+      }));
+      setEdit(initialEditState);
+    }
+  }, [isQuestionDetailsLoading, questionDetailsData]);
+
+  // autocomplete
+  const { data: classByInstuctorIdData, isLoading: isClassByInstuctorIdData } =
+    useGetClassByInstructorIdQuery("1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9");
+
+  const [classItems, setClassItems] = useState([]);
+  const [valueClass, setValueClass] = useState(null);
+  useEffect(() => {
+    if (!isClassByInstuctorIdData && classByInstuctorIdData) {
+      const initialClassItems = classByInstuctorIdData.map((item) => ({
+        id: item.ma_lopHoc,
+        label: item.ten,
+      }));
+      setClassItems(initialClassItems);
+      setValueClass(initialClassItems[0]);
+    }
+  }, [isClassByInstuctorIdData, classByInstuctorIdData]);
+
+  const [valueUnit, setValueUnit] = useState(unitItems[0]);
 
   return (
     <Box height="100%">
-      <HomeNavbar IsNotHomePage={true} title="Add Test" />
+      <HomeNavbar IsNotHomePage={true} title="Create Test" />
       <Box
         sx={{
           display: "flex",
@@ -304,68 +332,72 @@ const AddTestForm = () => {
             color="success"
             sx={{ marginTop: "10px" }}
           />
-          <List
-            sx={{
-              height: "100%",
-              overflowY: "scroll",
-              marginTop: "10px",
-              "::-webkit-scrollbar": { width: "10px" },
-              "::-webkit-scrollbar-track": {
-                background: "#f1f1f1",
-              },
-              "::-webkit-scrollbar-thumb": {
-                background: "#858585",
-              },
-              "::-webkit-scrollbar-thumb:hover": {
-                background: "#777",
-              },
-            }}
-          >
-            {questionItems.map((item) => {
-              const labelId = `checkbox-list-label-${item}`;
+          {questionDetailsData || !isQuestionDetailsLoading ? (
+            <List
+              sx={{
+                height: "100%",
+                overflowY: "scroll",
+                marginTop: "10px",
+                "::-webkit-scrollbar": { width: "10px" },
+                "::-webkit-scrollbar-track": {
+                  background: "#f1f1f1",
+                },
+                "::-webkit-scrollbar-thumb": {
+                  background: "#858585",
+                },
+                "::-webkit-scrollbar-thumb:hover": {
+                  background: "#777",
+                },
+              }}
+            >
+              {questionDetailsData.map((item, index) => {
+                const labelId = `checkbox-list-label-${item.cauHoi}`;
 
-              return (
-                <ListItem
-                  key={item.id}
-                  secondaryAction={
-                    <IconButton edge="end" aria-label="comments">
-                      <MoreHorizOutlined />
-                    </IconButton>
-                  }
-                  disablePadding
-                >
-                  <ListItemButton
-                    role={undefined}
-                    onClick={handleToggle(item)}
-                    dense
+                return (
+                  <ListItem
+                    key={item.cauHoi.ma_cauHoi + index}
+                    secondaryAction={
+                      <IconButton edge="end" aria-label="comments">
+                        <MoreHorizOutlined />
+                      </IconButton>
+                    }
+                    disablePadding
                   >
-                    <ListItemIcon sx={{ minWidth: "unset" }}>
-                      <Checkbox
-                        edge="start"
-                        checked={checkedQuestion.indexOf(item) !== -1}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ "aria-labelledby": labelId }}
-                        color="success"
+                    <ListItemButton
+                      role={undefined}
+                      onClick={handleToggle(item)}
+                      dense
+                    >
+                      <ListItemIcon sx={{ minWidth: "unset" }}>
+                        <Checkbox
+                          edge="start"
+                          checked={checkedQuestion.indexOf(item) !== -1}
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ "aria-labelledby": labelId }}
+                          color="success"
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        id={labelId}
+                        primary={item.cauHoi.noiDung}
+                        sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                        primaryTypographyProps={{
+                          style: {
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          },
+                        }}
                       />
-                    </ListItemIcon>
-                    <ListItemText
-                      id={labelId}
-                      primary={item.title}
-                      sx={{ paddingLeft: "10px", maxWidth: "195px" }}
-                      primaryTypographyProps={{
-                        style: {
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        },
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          ) : (
+            <Loading />
+          )}
         </Box>
 
         {/* CONTAINER */}
@@ -414,149 +446,168 @@ const AddTestForm = () => {
               />
             </Box>
           </Box>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="question-list">
-              {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {checkedQuestion.map((item, index) => (
-                    <Draggable
-                      key={item.id}
-                      draggableId={item.id}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <Paper
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          ref={provided.innerRef}
-                          sx={{ padding: "10px", marginTop: "10px" }}
-                        >
-                          {edit.find((element) => element.id === item.id)
-                            .isEdit ? (
-                            <FlexBetween>
-                              <TextField
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                color="success"
-                                defaultValue={item.title}
-                              />
 
-                              <Button
-                                sx={{ color: "#009265" }}
-                                onClick={() => {
-                                  const newEdit = edit.map((element) => {
-                                    if (element.id === item.id) {
-                                      return { ...element, isEdit: false };
-                                    }
-                                    return element;
-                                  });
-                                  setEdit(newEdit);
-                                }}
-                              >
-                                Update
-                              </Button>
-                            </FlexBetween>
-                          ) : (
-                            <FlexBetween>
-                              <Typography variant="h7" fontWeight="bold">
-                                {parseInt(index + 1) + ". " + item.title}
-                              </Typography>
-                              <Box
-                                sx={{ display: "flex", flexDirection: "row" }}
-                              >
+          {questionDetailsData || !isQuestionDetailsLoading ? (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="question-list">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef}>
+                    {checkedQuestion.map((item, index) => (
+                      <Draggable
+                        key={item.cauHoi.ma_cauHoi}
+                        draggableId={item.cauHoi.ma_cauHoi}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <Paper
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            ref={provided.innerRef}
+                            sx={{ padding: "10px", marginTop: "10px" }}
+                          >
+                            {edit?.find(
+                              (element) =>
+                                element.ma_cauHoi === item.cauHoi.ma_cauHoi,
+                            )?.isEdit ? (
+                              <FlexBetween>
+                                <TextField
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  color="success"
+                                  defaultValue={item.cauHoi.noiDung}
+                                />
+
                                 <Button
                                   sx={{ color: "#009265" }}
                                   onClick={() => {
                                     const newEdit = edit.map((element) => {
-                                      if (element.id === item.id) {
-                                        return { ...element, isEdit: true };
+                                      if (
+                                        element.ma_cauHoi ===
+                                        item.cauHoi.ma_cauHoi
+                                      ) {
+                                        return { ...element, isEdit: false };
                                       }
                                       return element;
                                     });
                                     setEdit(newEdit);
                                   }}
                                 >
-                                  Edit
+                                  Update
                                 </Button>
-                                <IconButton
-                                  sx={{
-                                    color: "#009265",
-                                    width: "40px",
-                                  }}
-                                  onClick={handleToggle(item)}
+                              </FlexBetween>
+                            ) : (
+                              <FlexBetween>
+                                <Typography>
+                                  {parseInt(index + 1) + ". "}
+                                  <Typography variant="h7" fontWeight="bold">
+                                    {item.cauHoi.noiDung}
+                                  </Typography>
+                                </Typography>
+                                <Box
+                                  sx={{ display: "flex", flexDirection: "row" }}
                                 >
-                                  <CloseRounded />
-                                </IconButton>
-                              </Box>
-                            </FlexBetween>
-                          )}
-                          <RadioGroup
-                            defaultValue={
-                              item.answer.find(
-                                (anwsers) => anwsers.isCorrect === true,
-                              ).id
-                            }
-                          >
-                            {item.answer.map((answer, answerIndex) => (
-                              <>
-                                {edit.find((element) => element.id === item.id)
-                                  .isEdit ? (
-                                  <Box
-                                    key={answer.id.toString()}
-                                    sx={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      marginTop: "10px",
+                                  <Button
+                                    sx={{ color: "#009265" }}
+                                    onClick={() => {
+                                      const newEdit = edit.map((element) => {
+                                        if (
+                                          element.ma_cauHoi ===
+                                          item.cauHoi.ma_cauHoi
+                                        ) {
+                                          return { ...element, isEdit: true };
+                                        }
+                                        return element;
+                                      });
+                                      setEdit(newEdit);
                                     }}
                                   >
-                                    <FormControlLabel
-                                      value={answer.id.toString()}
-                                      control={
-                                        <Radio
-                                          color="success"
-                                          sx={{ marginLeft: "10px" }}
-                                        />
-                                      }
-                                    />
-                                    <TextField
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      color="success"
-                                      defaultValue={answer.title}
-                                    />
-                                  </Box>
-                                ) : (
-                                  <Box
-                                    key={answer.id.toString()}
+                                    Edit
+                                  </Button>
+                                  <IconButton
                                     sx={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      marginTop: "10px",
+                                      color: "red",
+                                      width: "40px",
                                     }}
+                                    onClick={handleToggle(item)}
                                   >
-                                    <Radio
-                                      color="success"
-                                      checked={answer.isCorrect}
-                                    />
-                                    <Typography>{answer.title}</Typography>
-                                  </Box>
-                                )}
-                              </>
-                            ))}
-                          </RadioGroup>
-                        </Paper>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+                                    <CloseRounded />
+                                  </IconButton>
+                                </Box>
+                              </FlexBetween>
+                            )}
+                            <RadioGroup
+                              defaultValue={
+                                item.cauTraLoi?.find(
+                                  (anwsers) => anwsers.laCauTraLoiDung === 1,
+                                ).ma_cauTraLoi
+                              }
+                            >
+                              {item.cauTraLoi?.map((answer, answerIndex) => (
+                                <>
+                                  {edit?.find(
+                                    (element) =>
+                                      element.ma_cauHoi ===
+                                      item.cauHoi.ma_cauHoi,
+                                  )?.isEdit ? (
+                                    <Box
+                                      key={answer.ma_cauTraLoi.toString()}
+                                      sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <FormControlLabel
+                                        value={answer.ma_cauTraLoi.toString()}
+                                        control={
+                                          <Radio
+                                            color="success"
+                                            sx={{ marginLeft: "10px" }}
+                                          />
+                                        }
+                                      />
+                                      <TextField
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        color="success"
+                                        defaultValue={answer.noiDung}
+                                      />
+                                    </Box>
+                                  ) : (
+                                    <Box
+                                      key={answer.ma_cauTraLoi.toString()}
+                                      sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Radio
+                                        color="success"
+                                        checked={answer.laCauTraLoiDung === 1}
+                                      />
+                                      <Typography>{answer.noiDung}</Typography>
+                                    </Box>
+                                  )}
+                                </>
+                              ))}
+                            </RadioGroup>
+                          </Paper>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          ) : (
+            <Loading />
+          )}
         </Box>
 
         {/* RIGHBAR*/}

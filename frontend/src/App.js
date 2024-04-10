@@ -24,13 +24,24 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/tests/add" element={<AddTestForm />} />
-          <Route path="/tests/do" element={<DoTestForm />} />
+          <Route path="/tests/:testId/do" element={<DoTestForm mode="do" />} />
+          <Route
+            path="/tests/:testId/detail"
+            element={<DoTestForm mode="detail" />}
+          />
+          <Route
+            path="/tests/:testId/work/:workId"
+            element={<DoTestForm mode="work" />}
+          />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/createhomework" element={<CreateHomeWork />} />
-          <Route path="/tests/detail" element={<TestExcerciseDetail />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/classDetail" element={<ClassDetail />} />
+          <Route
+            path="/tests/:testId/common"
+            element={<TestExcerciseDetail />}
+          />
+          <Route path="/profile/:userId" element={<Profile />} />
+          <Route path="/classDetail/:classId" element={<ClassDetail />} />
           <Route element={<Layout />}>
             <Route path="/classin" element={<Classin />} />
             <Route path="/todo" element={<Todo />} />
