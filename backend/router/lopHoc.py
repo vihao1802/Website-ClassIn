@@ -139,3 +139,18 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
     )
     result = query_1 + query_2
     return result
+
+
+@router.get(
+    "/{ma_lopHoc}/taiKhoan",
+    status_code=status.HTTP_200_OK,
+    response_model=list[schemas.TaiKhoan],
+)
+async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
+    db_object = (
+        db.query(models.TaiKhoan)
+        .join(models.ThamGiaLopHoc)
+        .filter(models.ThamGiaLopHoc.ma_lopHoc == ma_lopHoc)
+        .all()
+    )
+    return db_object

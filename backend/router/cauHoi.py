@@ -57,7 +57,6 @@ async def read(ma_cauHoi: str, db: Session = Depends(database.get_db)):
 
 @router.get(
     "/taiKhoan/{ma_taiKhoan}",
-    response_model=list[schemas.CauHoi],
     status_code=status.HTTP_200_OK,
 )
 async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
@@ -69,10 +68,43 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
     )
     if db_object_check is None:
         raise HTTPException(status_code=400, detail="ma_taiKhoan not found")
-
     db_object = (
         db.query(models.CauHoi)
         .filter(models.CauHoi.ma_taiKhoan == ma_taiKhoan)
         .all()
     )
+    return db_object
+
+
+@router.get(
+    "/taiKhoan/{ma_taiKhoan}/chiTiet",
+    status_code=status.HTTP_200_OK,
+)
+async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
+    # check ma_chuong exist
+    db_object_check = (
+        db.query(models.TaiKhoan)
+        .filter(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan)
+        .first()
+    )
+    if db_object_check is None:
+        raise HTTPException(status_code=400, detail="ma_taiKhoan not found")
+    db_object = []
+    cauHoi = (
+        db.query(models.CauHoi)
+        .filter(models.CauHoi.ma_taiKhoan == ma_taiKhoan)
+        .all()
+    )
+    for ch in cauHoi:
+        cauTraLoi = (
+            db.query(models.CauTraLoi)
+            .filter(models.CauTraLoi.ma_cauHoi == ch.ma_cauHoi)
+            .all()
+        )
+        db_object.append(
+            {
+                "cauHoi": ch,
+                "cauTraLoi": cauTraLoi,
+            }
+        )
     return db_object

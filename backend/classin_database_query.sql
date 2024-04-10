@@ -1,8 +1,8 @@
-INSERT INTO nhomQuyen (`ma_nhomQuyen`,`ten_nhomQuyen`) VALUES 
+INSERT INTO nhomQuyen ("ma_nhomQuyen","ten_nhomQuyen") VALUES 
 ('3fa85f64-5717-4562-b3fc-2c963f66afa6', 'admin'), 
 ('3fa85f64-5717-4562-b3fc-2c963f62bfa6', 'users'); 
 
-INSERT INTO taiKhoan (`ma_taiKhoan`, `ma_nhomQuyen`, `hoTen`, `email`, `matKhau`, `dienThoai`, `anhDaiDien`) VALUES
+INSERT INTO taiKhoan ("ma_taiKhoan", "ma_nhomQuyen", "hoTen", "email", "matKhau", "dienThoai", "anhDaiDien") VALUES
 ('6b157e9a-4f74-4ee8-a893-06bc950f4272', '3fa85f64-5717-4562-b3fc-2c963f62bfa6', 'Lâm Tuấn Kiệt', 'lamtuankiet@gmail.com', '$2a$10$K1PwTicSjS8a5NsJlPny4.EAuGD5IbcHlXQbejkDSPxWoWcen3cKq', '0992820560', 'canhan1'),
 ('4f9fd63a-c80a-493f-b229-3cc83acd7b4b', '3fa85f64-5717-4562-b3fc-2c963f62bfa6', 'Do Van I', 'doani@gmail.com', '$2a$10$a9aNtDE./je9PcjSAMNTVuLZ3znaFuEGQy8LVKw5kckPyLbRtMvPa', '0987654321', 'canhan2'),
 ('2493643f-576b-4bea-ad12-3ffa3558eb3e', '3fa85f64-5717-4562-b3fc-2c963f62bfa6', 'Pham Thi D', 'phamthid@gmail.com', '$2a$10$gKnRwbi0mQ/yNU2UxQpBh.7WYjop9TPRhCyNVLro8AqLwuVQVkSay', '0123456789', 'canhan3'),
@@ -35,7 +35,7 @@ INSERT INTO taiKhoan (`ma_taiKhoan`, `ma_nhomQuyen`, `hoTen`, `email`, `matKhau`
  
  
 
-INSERT INTO lopHoc (`ma_lopHoc`, `ma_giangVien`, `ten`, `moTa`, `anhDaiDien`, `anLopHoc`) VALUES
+INSERT INTO lopHoc ("ma_lopHoc", "ma_giangVien", "ten", "moTa", "anhDaiDien", "anLopHoc") VALUES
 ('3ca75f6c-5ef9-46a2-9c26-324ec4e81abf', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', 'Kỹ thuật lập trình', 'Môn học về kỹ thuật lập trình', 'imglop6', 0),
 ('5d39847c-bfa7-4d67-8ec4-3e404d85cbb2', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', 'Lập trình Java', 'Môn học về lập trình Java', 'imglop1', 0),
 ('7157c695-b9ce-4774-bf67-49498235607d', '75c7bf99-071a-47d5-a6a5-84a84084cede', 'c-sharp', 'lớp học csharp', 'imglop5', 0),
@@ -55,7 +55,7 @@ INSERT INTO lopHoc (`ma_lopHoc`, `ma_giangVien`, `ten`, `moTa`, `anhDaiDien`, `a
 ('4f74a9e3-3f2e-4ee2-b952-fc4d9d8fd2f9', 'ed41454c-0284-4e8e-b179-a8beb8a58f87', 'dacing', '', 'imglop1', 0);
  
 
-INSERT INTO thamgialophoc (`ma_lopHoc`, `ma_taiKhoan`) VALUES
+INSERT INTO thamgialophoc ("ma_lopHoc", "ma_taiKhoan") VALUES
 ('3ca75f6c-5ef9-46a2-9c26-324ec4e81abf', '6b157e9a-4f74-4ee8-a893-06bc950f4272'),
 ('3ca75f6c-5ef9-46a2-9c26-324ec4e81abf', '58824edd-2ce6-46e8-97f3-8ca6970d8cbf'),
 ('3ca75f6c-5ef9-46a2-9c26-324ec4e81abf', '17593a02-3763-4b70-9454-d71c3af0bd19'),
@@ -122,7 +122,7 @@ INSERT INTO thamgialophoc (`ma_lopHoc`, `ma_taiKhoan`) VALUES
 ('480ee4e4-acef-4b0d-97db-fa644e0ad9d4', '6fcb6a47-75c2-425c-bbbd-ff7137a5fd54');
  
 
-INSERT INTO nhomChat (`ma_nhomChat`, `ma_lopHoc`, `ten`) VALUES
+INSERT INTO nhomChat ("ma_nhomChat", "ma_lopHoc", "ten") VALUES
 ('634e0fdd-576d-41ee-8fd6-0258a6c4bf5c', '63d713c2-f42a-44c5-8fc1-5410bce0c276', 'hello'),
 ('6900d94f-67d7-4dc7-95c4-1a5f8258d9e7', 'a816a89a-edee-4fce-b917-f800f2ce2e8d', 'Khoa học dữ liệu'),
 ('50cec81f-ca8b-4cd4-80aa-1d8dfe0129a0', 'ecb4386e-fbcd-4506-af3d-93ae345b8cdd', 'Tiếng Anh'),
@@ -141,7 +141,7 @@ INSERT INTO nhomChat (`ma_nhomChat`, `ma_lopHoc`, `ten`) VALUES
 ('e9187de6-9c74-4eb9-bb2c-ea36a682e0aa', '4f74a9e3-3f2e-4ee2-b952-fc4d9d8fd2f9', 'dacing'),
 ('3e934582-dc91-46cc-8a6b-eb21e40dd602', '2a4a1b9e-4263-4cb0-9d2a-51137915f600', 'Quản lý nhân sự'); 
 
-INSERT INTO tinNhan (`ma_tinNhan`, `ma_nhomChat`, `ma_taiKhoan`, `noiDung`, `thoiGianGui`, `anTinNhan`) VALUES 
+INSERT INTO tinNhan ("ma_tinNhan", "ma_nhomChat", "ma_taiKhoan", "noiDung", "thoiGianGui", "anTinNhan") VALUES 
 ('c936c6e7-adb9-4bb8-8e51-021418b6348a', '4698a513-e363-4aa4-8f39-a97eddf46695', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', 'V','2023-12-08T17:24:50.000', 0),
 ('29b0c4de-f860-4821-8aaf-14c849beff03', '4698a513-e363-4aa4-8f39-a97eddf46695', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', 'DV','2023-12-08T17:24:53.000', 0),
 ('cf47a755-f771-43e1-b6d0-1a0a739b084d', '4698a513-e363-4aa4-8f39-a97eddf46695', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', 'Hello class','2023-12-03T22:50:10.000', 0),
@@ -204,7 +204,7 @@ INSERT INTO tinNhan (`ma_tinNhan`, `ma_nhomChat`, `ma_taiKhoan`, `noiDung`, `tho
 ('2b5de5ea-041c-4add-b105-fabbecdfb88d', '4698a513-e363-4aa4-8f39-a97eddf46695', 'c3ca9950-65cb-47ee-b0a3-7796ef23d839', 'Sample Message 9','2023-12-02T12:00:00.000', 0);
  
   
-INSERT INTO chuong (`ma_chuong`, `ma_lopHoc`, `ten`, `thoiGianTao`, `anChuong`) VALUES
+INSERT INTO chuong ("ma_chuong", "ma_lopHoc", "ten", "thoiGianTao", "anChuong") VALUES
 ('106b0adc-b6d7-4fa5-b567-00fe40cb40e1', '3ca75f6c-5ef9-46a2-9c26-324ec4e81abf', 'Chương 5: OOP (Lập trình hướng đối tượng)','2023-11-17T14:10:50.660', 0),
 ('3e84d2d6-24d6-4040-a126-063daca6fb36', '480ee4e4-acef-4b0d-97db-fa644e0ad9d4', 'Chương 2: Vật lý hạt nhân','2023-11-17T14:10:50.660', 0),
 ('6ed16d56-e334-4d12-a157-09b086b861b5', 'a8ad4d61-6b4b-4684-a591-685db2058b9d', 'Chương 5: Ứng dụng thực tế với lập trình C#','2023-11-17T14:10:50.660', 0),
@@ -261,7 +261,7 @@ INSERT INTO chuong (`ma_chuong`, `ma_lopHoc`, `ten`, `thoiGianTao`, `anChuong`) 
 ('b0d183fd-8f64-4591-908c-f7d3fa56e1fa', 'a8ad4d61-6b4b-4684-a591-685db2058b9d', 'Chương 2: Cú pháp cơ bản và biến trong C#','2023-11-17T14:10:50.660', 0),
 ('bf51761b-f241-4b57-84db-ff68f7698798', '3ca75f6c-5ef9-46a2-9c26-324ec4e81abf', 'Chương 2: Cấu trúc điều khiển','2023-11-17T14:10:50.660', 0); 
   
-INSERT INTO hocLieu (`ma_hocLieu`, `ma_chuong`, `tieuDe`, `noiDung`, `daXoa`, `thoiGianTao`) VALUES
+INSERT INTO hocLieu ("ma_hocLieu", "ma_chuong", "tieuDe", "noiDung", "daXoa", "thoiGianTao") VALUES
 ('40c7b0bb-a72a-49dd-8d70-48880f0146c7', 'cc2f76b5-6a0d-4e1d-876b-4614b5a9d37e', 'Giáo trình chương 3: Hàm và thư viện', 'Đây là tài liệu chương 3', 0,'2023-11-24T21:51:32.243'),
 ('343cac63-adee-468b-8f43-5ecf10ef31af', '90e1ffc6-3eff-4ab2-b083-9761c53ba80d', 'Giáo trình chương 1', 'Đây là giáo trình chương 1', 0,'2023-11-24T16:26:19.000'),
 ('21de19d3-6dcd-46ab-959d-c2d9fb8fa99c', 'b759ddb5-599b-46a6-b040-c2554e308100', 'Tài liệu cú pháp cơ bản của Java', 'Đây là tài liệu chương 2', 0,'2023-11-25T23:28:09.837'),
@@ -271,7 +271,7 @@ INSERT INTO hocLieu (`ma_hocLieu`, `ma_chuong`, `tieuDe`, `noiDung`, `daXoa`, `t
 ('1da918de-1ac8-4a2d-a1a7-f9f04306b694', 'bf51761b-f241-4b57-84db-ff68f7698798', 'Giáo trình chương 2', 'Đây là giáo trình chương 2', 0,'2023-11-24T16:26:19.570');
   
 
-INSERT INTO fileHocLieu (`ma_hocLieu`, `tenFile`, `ma_file`) VALUES 
+INSERT INTO fileHocLieu ("ma_hocLieu", "tenFile", "ma_file") VALUES 
 ('40c7b0bb-a72a-49dd-8d70-48880f0146c7', 'Winform-7.docx', '1oSzCQGkdb49xzjH0xtgmOp-tIDbnwWop'),
 ('40c7b0bb-a72a-49dd-8d70-48880f0146c7', 'Btap OOP cơ bản.pdf', '1cFmoBXcpl4aocBeKNLrpTEhXwh5S9bhX'),
 ('f05da243-3c9c-4f1c-b8a8-c5e7bf0e65c6', 'Hộp đen.1.pdf', '1mQmNU_Fcg4yZnYQvt-5aTfd_BnkJyqvQ'),
@@ -293,7 +293,7 @@ INSERT INTO fileHocLieu (`ma_hocLieu`, `tenFile`, `ma_file`) VALUES
 ('1da918de-1ac8-4a2d-a1a7-f9f04306b694', 'ADO_NET.pdf', '1qa6sm_bmqdDoGl0kdv240D-UK79ceG0c');
   
 
-INSERT INTO banBe (`ma_nguoiKetBan`, `ma_nguoiDuocKetBan`, `thoiGianKetBan`, `daKetBan`) VALUES
+INSERT INTO banBe ("ma_nguoiKetBan", "ma_nguoiDuocKetBan", "thoiGianKetBan", "daKetBan") VALUES
 ('6b157e9a-4f74-4ee8-a893-06bc950f4272', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9','2023-12-12T15:28:12.130', 2),
 ('58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9','2023-12-14T22:08:40.177', 1),
 ('58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '17593a02-3763-4b70-9454-d71c3af0bd19','2023-12-04T00:00:00.000', 1),
@@ -306,7 +306,7 @@ INSERT INTO banBe (`ma_nguoiKetBan`, `ma_nguoiDuocKetBan`, `thoiGianKetBan`, `da
 ('6fcb6a47-75c2-425c-bbbd-ff7137a5fd54', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9','2023-12-14T22:03:47.393', 1);
   
 
-INSERT INTO tinNhanBanBe (`ma_tinNhan`, `ma_nguoiGui`, `ma_nguoiNhan`, `noiDung`, `thoiGianGui`, `daXoa`) VALUES
+INSERT INTO tinNhanBanBe ("ma_tinNhan", "ma_nguoiGui", "ma_nguoiNhan", "noiDung", "thoiGianGui", "daXoa") VALUES
 ('a9e4113c-8e40-4f70-9ccd-2f35ee7676d0', '58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '17593a02-3763-4b70-9454-d71c3af0bd19', 'hellooooo','2023-12-04T10:42:39.000', 0),
 ('552c4556-1c5a-4483-8987-76927b16a1f3', '6b157e9a-4f74-4ee8-a893-06bc950f4272', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', 'hellooooo','2023-12-12T15:29:01.933', 1),
 ('23a07305-2a3b-406d-82a4-7aa0c7c1673a', '58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', 'hello','2023-12-14T22:10:35.357', 1),
@@ -315,7 +315,7 @@ INSERT INTO tinNhanBanBe (`ma_tinNhan`, `ma_nguoiGui`, `ma_nguoiNhan`, `noiDung`
 ('2a920f4d-a5e4-4f6b-82df-da6b47cede11', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', '6b157e9a-4f74-4ee8-a893-06bc950f4272', 'haloooo','2023-12-14T22:09:11.777', 1);
   
  
-INSERT INTO baiTap (`ma_baiTap`, `ma_chuong`, `tieuDe`, `noiDungBaiTap`, `noiDungDapAn`, `thoiGianTao`, `thoiGianKetThuc`, `congKhaiDapAn`, `daXoa`, `thoiGianBatDau`, `nopBu`) VALUES 
+INSERT INTO baiTap ("ma_baiTap", "ma_chuong", "tieuDe", "noiDungBaiTap", "noiDungDapAn", "thoiGianTao", "thoiGianKetThuc", "congKhaiDapAn", "daXoa", "thoiGianBatDau", "nopBu") VALUES 
 ('d63b9dc3-ff86-4f1b-9816-0075a09d54f0', 'cccbc5d1-84a9-4d6c-8973-cbc6e462e7e2', 'Nghiên cứu và phát triển trí tuệ nhân tạo (AI).', 'Bài tập về nghiên cứu và phát triển trí tuệ nhân tạo (AI).', '', '2023-11-17T14:10:50.663', '2024-11-17T14:10:50.663', 0, 0, '2023-11-28T15:30:22.383', 0),
 ('fb28e2ea-1952-4b2c-afac-02b8bbd2d894', '663e6eed-a0f8-4560-a1c4-caf77f2ad8ed', 'Thiết kế một logo cho một thương hiệu mới.', 'Bài tập về thiết kế logo cho thương hiệu mới.', '', '2023-11-17T14:10:50.663', '2024-11-17T14:10:50.663', 0, 0, '2023-11-28T15:30:22.383', 0),
 ('52952085-36e2-4211-bcb3-0487d56e0185', 'd3602b84-0b4e-4f34-9b50-aceccf3451ff', 'Tạo chiến dịch quảng cáo trên mạng xã hội', 'Lập kế hoạch và triển khai chiến dịch quảng cáo trên các mạng xã hội.', '', '2023-11-17T14:10:50.663', '2024-11-17T14:10:50.663', 0, 0, '2023-11-28T15:30:22.383', 0),
@@ -423,7 +423,7 @@ INSERT INTO baiTap (`ma_baiTap`, `ma_chuong`, `tieuDe`, `noiDungBaiTap`, `noiDun
 ('436e8331-0330-40f4-84f2-fad1395358e7', 'b0d183fd-8f64-4591-908c-f7d3fa56e1fa', 'Tạo ứng dụng C# dự đoán thời tiết.', 'Bài tập về tạo ứng dụng C# dự đoán thời tiết.', '', '2023-11-17T14:10:50.663', '2024-11-17T14:10:50.663', 0, 0, '2023-11-28T15:30:22.383', 0);
   
 
-INSERT INTO fileBaiTap (`ma_baiTap`, `laFileDapAn`, `tenFile`, `ma_file`) VALUES
+INSERT INTO fileBaiTap ("ma_baiTap", "laFileDapAn", "tenFile", "ma_file") VALUES
 ('f6d860a0-d050-488d-8c11-1e363a1d952c', 0, 'Yêu cầu về đồ án C#.pdf', '1SZu9Fhq5bZVhvuIAqT6CjU0cfckz4BMo'),
 ('92f47ecd-fb48-41fc-b26c-cdbf1be9a876', 0, 'JUnit5.pdf', '1vtvwb0rJt4vG1q6nGUMyItNaZelr2Lyl'),
 ('5dab376b-91df-48f7-879e-dae62b242ce2', 0, 'Hộp đen.1.pdf', '1Q5saxCK-fltjc6g-Y3OiiIjvwdlhh4TS'),
@@ -434,7 +434,7 @@ INSERT INTO fileBaiTap (`ma_baiTap`, `laFileDapAn`, `tenFile`, `ma_file`) VALUES
 ('0ca51aa4-925b-440c-93f5-e44a38e938ef', 0, 'NUnit.pdf', '1hDvfXJZ5lFQuM0XimgXPqT6AkdnNnE3p');
  
 
-INSERT INTO baiLamBaiTap (`ma_baiLamBaiTap`, `ma_taiKhoan`, `ma_baiTap`, `noiDung`, `thoiGianNopBai`, `nhanXet`, `diem`, `nopTre`) VALUES 
+INSERT INTO baiLamBaiTap ("ma_baiLamBaiTap", "ma_taiKhoan", "ma_baiTap", "noiDung", "thoiGianNopBai", "nhanXet", "diem", "nopTre") VALUES 
 ('1b12deb7-58a8-4975-a589-038453835c6c', '58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '92f47ecd-fb48-41fc-b26c-cdbf1be9a876', 'Tôi không biết làm','2023-12-08T15:38:54.377', 'Kệ bạn chứ', 3, 0),
 ('5181fe7c-9701-435d-92bf-0a6e1f28a2f5', '2493643f-576b-4bea-ad12-3ffa3558eb3e', '4e3da119-c29e-4c9d-8bbb-ee276b96a4b4', 'Đây là nội dung bài làm','2023-11-18T13:34:43.303', '', 10, 0),
 ('8cdbf3c7-bbdc-44ad-8839-0b8b27a5bf6f', 'a212200e-f8f3-4a38-91aa-9e812a878ba5', '4e3da119-c29e-4c9d-8bbb-ee276b96a4b4', 'Đây là nội dung bài làm','2023-11-18T15:51:17.303', '', 5, 0),
@@ -489,12 +489,12 @@ INSERT INTO baiLamBaiTap (`ma_baiLamBaiTap`, `ma_taiKhoan`, `ma_baiTap`, `noiDun
 ('5fb30658-5d31-4a3e-bb37-fee8e85c8d0d', '58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '9a653320-430b-4b79-8db3-1be122a9b649', 'Đây là nội dung bài làm','2023-11-17T23:27:31.303', '', 6, 0);
   
    
-INSERT INTO fileBaiLamBaiTap (`ma_baiLamBaiTap`, `tenFile`, `ma_file`) VALUES 
+INSERT INTO fileBaiLamBaiTap ("ma_baiLamBaiTap", "tenFile", "ma_file") VALUES 
 ('ad44a947-8b96-452f-bd93-46eba2f6d42b', 'JUnit5.pdf', '1n_oJLv-H6gISvY9RiK_yVK881p0ilhdm'),
 ('51c871a3-422f-4840-8522-a29af9a6ac8d', 'NUnit.pdf', '15Yxae3FAwSJGiviyt3A-0cngtq3nz0BZ');
   
 
-INSERT INTO deKiemTra (`ma_deKiemTra`, `ma_chuong`, `tieuDe`, `thoiGianTao`, `thoiGianBatDau`, `thoiGianKetThuc`, `tronCauHoi`, `xemDapAn`, `daXoa`, `hinhPhat`,thoiGianLamBai) VALUES
+INSERT INTO deKiemTra ("ma_deKiemTra", "ma_chuong", "tieuDe", "thoiGianTao", "thoiGianBatDau", "thoiGianKetThuc", "tronCauHoi", "xemDapAn", "daXoa", "hinhPhat","thoiGianLamBai") VALUES
 ('8e74bf14-25a9-4b3c-aab6-16725b77ede3', '25d57ef6-c76c-4659-a09c-0ba40c0eb511', 'Bài kiểm tra tét ','2023-12-04T15:54:17.000','2023-12-04T15:55:11.573','2024-12-04T16:07:11.573', 1, 1, 0, 5,12),
 ('1eebff72-6f06-4ac6-8179-1dcf28f51a7c', '663e6eed-a0f8-4560-a1c4-caf77f2ad8ed', 'Kiểm tra chương 2','2023-11-22T23:58:28.317','2023-11-23T00:00:00.157','2023-11-23T12:00:00.087', 0, 1, 0, 25,12),
 ('3e1dc6e0-2d97-4254-b1fb-2dd14dedcf1a', '90e1ffc6-3eff-4ab2-b083-9761c53ba80d', 'Kiểm tra chương 1 lần 2','2023-11-18T19:09:15.137','2023-11-18T19:08:40.090','2023-11-18T20:00:00.040', 0, 1, 0, 0,12),
@@ -520,7 +520,7 @@ INSERT INTO deKiemTra (`ma_deKiemTra`, `ma_chuong`, `tieuDe`, `thoiGianTao`, `th
 ('f563a41c-b061-4188-8174-fc53dc257d68', '106b0adc-b6d7-4fa5-b567-00fe40cb40e1', 'Kiểm tra chương 5 lần 2','2023-11-23T12:03:37.880','2023-11-23T13:00:00.057','2023-11-24T00:00:00.057', 0, 1, 0, 25,12);
   
 
-INSERT INTO cauHoi (`ma_cauHoi`, `ma_taiKhoan`, `noiDung`, `daXoa`) VALUES 
+INSERT INTO cauHoi ("ma_cauHoi", "ma_taiKhoan", "noiDung", "daXoa") VALUES 
 ('c0c5e120-7f4c-4476-9293-047bdcbfdadc', '17593a02-3763-4b70-9454-d71c3af0bd19', '120 + 320 = ?:', 0),
 ('91b9a6eb-524d-4863-8f97-07663e9988d8', '17593a02-3763-4b70-9454-d71c3af0bd19', '450 + 200 = ?', 0),
 ('ed58d0b0-baaf-499c-a141-0cfb61a4cf6d', 'ce6180fb-58f4-45da-9488-a00e8edeff2c', 'Khi nói về RAID, phát biểu nào sau đây là sai:', 0),
@@ -605,7 +605,7 @@ INSERT INTO cauHoi (`ma_cauHoi`, `ma_taiKhoan`, `noiDung`, `daXoa`) VALUES
 ('fc0db475-b31b-4071-b5f3-ffafbf97bae1', '58824edd-2ce6-46e8-97f3-8ca6970d8cbf', 'Định nghĩa nào sau đây liên quan đến "cường độ dòng điện" trong mạch điện?', 0);
   
  
-INSERT INTO cauTraLoi (`ma_cauTraLoi`, `ma_cauHoi`, `noiDung`, `laCauTraLoiDung`) VALUES 
+INSERT INTO cauTraLoi ("ma_cauTraLoi", "ma_cauHoi", "noiDung", "laCauTraLoiDung") VALUES 
 ('10c21fd1-e955-4212-853d-00725471a295', 'ae7f5364-c8f8-431e-ba3b-319142ce3548', '9', 0),
 ('60597c0e-0421-4cfa-a3f2-02401bbba872', 'd6e836d7-c227-45ff-b378-42e7fb9494d6', '10', 0),
 ('1aab2b1e-bd71-471c-b371-03142c7d80f0', '157ed4f4-7ec8-4b36-adff-c051940a0bd3', 'Exploratory Data Analysis', 1),
@@ -928,7 +928,7 @@ INSERT INTO cauTraLoi (`ma_cauTraLoi`, `ma_cauHoi`, `noiDung`, `laCauTraLoiDung`
 ('bfaec7b8-a789-4c70-8850-fee3a80def61', 'ec49c5dc-04e9-4be5-b213-5da28820dfb8', '580', 0);
  
 
-INSERT INTO chiTietBaiKiemTra (`ma_deKiemTra`, `ma_cauHoi`, `thuTu`) VALUES
+INSERT INTO chiTietBaiKiemTra ("ma_deKiemTra", "ma_cauHoi", "thuTu") VALUES
 ('c1c9ea82-8310-49dc-b26e-f87a2344da78', '58260112-8759-4173-8bf3-22437b5ec181', 1),
 ('c1c9ea82-8310-49dc-b26e-f87a2344da78', '1150e405-0394-40a2-b1d0-22b1a2cdc7bd', 2),
 ('c1c9ea82-8310-49dc-b26e-f87a2344da78', '6bf8c500-148a-44d2-b811-5f94da6c2813', 3),
@@ -1113,7 +1113,7 @@ INSERT INTO chiTietBaiKiemTra (`ma_deKiemTra`, `ma_cauHoi`, `thuTu`) VALUES
 ('6397284a-8fad-4e9d-a920-f10501682eae', 'e2b692c8-62cd-4388-89bf-5df8cd404f1a', 10),
 ('8e74bf14-25a9-4b3c-aab6-16725b77ede3', 'c0c5e120-7f4c-4476-9293-047bdcbfdadc', 2);
 
-INSERT INTO baiLamKiemTra (`ma_baiLamKiemTra`, `ma_taiKhoan`, `ma_deKiemTra`, `diem`, `thoiGianNopBai`,`thoiGianBatDauLam`, `nopTre`, `soCauDung`) VALUES 
+INSERT INTO baiLamKiemTra ("ma_baiLamKiemTra", "ma_taiKhoan", "ma_deKiemTra", "diem", "thoiGianBatDauLam","thoiGianNopBai", "nopTre", "soCauDung") VALUES 
 ('40afdaac-b544-4979-98aa-0c965dc85681', '1b0e8e50-b3d1-48dd-aa5b-f16ad1413eaf', 'c1c9ea82-8310-49dc-b26e-f87a2344da78', 0,'2023-01-01 08:00:00', '2023-01-01 12:00:00' , 0, 0),
 ('f7791390-c0d8-41bd-91ac-18c11873d40f', '1602102f-60f2-4b87-8992-6070fb969516', 'b4d85032-7f85-4f83-aba7-acefcaa9fb1d', 7,'2023-01-02 09:30:00', '2023-01-02 15:45:00' , 0, 7),
 ('818dad66-76be-40ff-8fdd-1e477cfeec93', '2493643f-576b-4bea-ad12-3ffa3558eb3e', 'c1c9ea82-8310-49dc-b26e-f87a2344da78', 0,'2023-01-03 10:15:00', '2023-01-03 13:30:00' , 0, 0),
@@ -1163,7 +1163,7 @@ INSERT INTO baiLamKiemTra (`ma_baiLamKiemTra`, `ma_taiKhoan`, `ma_deKiemTra`, `d
 ('ccf0f0de-dc06-4cec-bc69-fbe5117c2815', 'ec6a1b6e-ae4e-45d6-b554-60ff0179fba7', 'c1c9ea82-8310-49dc-b26e-f87a2344da78', 4,'2023-02-16 08:30:00', '2023-02-16 12:15:00' , 0, 2);
 
 
-INSERT INTO chiTietBaiLamKiemTra (`ma_baiLamKiemTra`, `ma_cauHoi`, `ma_dapAnChon`, `thuTu`) VALUES
+INSERT INTO chiTietBaiLamKiemTra ("ma_baiLamKiemTra", "ma_cauHoi", "ma_dapAnChon", "thuTu") VALUES
 ('483b3c53-ec7e-4de7-9beb-e4eb28ebee83', 'f76400c4-436e-483f-b9d0-214591034ba2', '9f1d4040-c7ba-45b9-85b4-2d6b0bc2e710', 1),
 ('483b3c53-ec7e-4de7-9beb-e4eb28ebee83', '2f7f3fac-aa1f-4135-bbed-53a1609e4d62', '5522c3dc-98bd-4312-8ae5-41acf12a2277', 2),
 ('483b3c53-ec7e-4de7-9beb-e4eb28ebee83', '914c944e-ab60-4167-825c-6a1e549820a4', '2b97a6b4-70a6-4817-9513-85646fe07f6a', 3),
@@ -1484,7 +1484,7 @@ INSERT INTO chiTietBaiLamKiemTra (`ma_baiLamKiemTra`, `ma_cauHoi`, `ma_dapAnChon
 ('f0825c2e-b89d-4fe3-8fbb-219ea02cb738', 'dfd68f7b-e41a-4e22-abed-be3024fe8462', 'f1f09f2d-781a-4256-83bd-fae82aef3a45', 5),
 ('4734715d-35c4-4d4e-a9d4-65e859118c3b', 'c0c5e120-7f4c-4476-9293-047bdcbfdadc', '4615d6f0-d621-45d0-a146-fc02f6dc12bd', 6);
 
-INSERT INTO luuVetBaiLamKiemTra (`email`, `ma_deKiemTra`, `ma_cauHoi`, `ma_dapAnChon`) VALUES
+INSERT INTO luuVetBaiLamKiemTra ("email", "ma_deKiemTra", "ma_cauHoi", "ma_dapAnChon") VALUES
 ('nguyenhuyhoang@gmail.com', 'b4d85032-7f85-4f83-aba7-acefcaa9fb1d', '3637b505-eb79-4510-9029-c7b5739c5dc2', '13a05faf-b887-41b7-aec4-35b48967cb9d'),
 ('nguyenhuyhoang@gmail.com', 'b4d85032-7f85-4f83-aba7-acefcaa9fb1d', '9b541f67-0815-4539-a890-acad6ab0f9fb', 'cfd72e7b-37eb-400e-a2fe-5ba2e5374a29'),
 ('nguyenhuyhoang@gmail.com', 'b4d85032-7f85-4f83-aba7-acefcaa9fb1d', '10714ef8-e0d8-4ffc-829c-82d5ab7fd6f9', '9c5e3371-25d8-40df-8b36-73e5a7306634'),
