@@ -8,6 +8,7 @@ import {
   Link,
   Box,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -38,20 +39,51 @@ const validationSchema = yup.object({
     .required("Password Verify is required"),
 });
 
-const Siginform = () => {
+const Sigupform = () => {
   const navigate = useNavigate();
+  const [SigningUp, setSigningUp] = React.useState(false);
   const formik = useFormik({
     initialValues: {
       name: "",
       email: "",
       phonenumber: "",
       password: "",
+      name: "",
+      phonenumber: "",
       passwordverify: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log("Form data:", values);
-      alert("Email: " + values.email + ", Password: " + values.password);
+      setSigningUp(true);
+      fetch("http://localhost:8000/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          hoTen: values.name,
+          email: values.email,
+          dienThoai: values.phonenumber,
+          anhDaiDien: "",
+          matKhau: values.password,
+          cfm_password: values.passwordverify,
+          ma_nhomQuyen: "8cb96e51-9749-40c9-9799-bb5e25057816",
+        }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            setSigningUp(false);
+            navigate(`/signin`);
+          } else {
+            setSigningUp(false);
+            alert("Sign up failed");
+          }
+          return response.json();
+        })
+        .catch((err) => {
+          setSigningUp(false);
+          console.error(err);
+        });
     },
   });
 
@@ -187,8 +219,9 @@ const Siginform = () => {
                     marginTop: "8px",
                     backgroundColor: "#009265",
                   }}
+                  disabled={SigningUp}
                 >
-                  Sign Up
+                  {SigningUp ? <CircularProgress size={24} /> : "Sign In"}
                 </Button>
 
                 <Typography
@@ -215,4 +248,4 @@ const Siginform = () => {
   );
 };
 
-export default Siginform;
+export default Sigupform;

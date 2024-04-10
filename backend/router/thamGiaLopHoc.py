@@ -104,8 +104,10 @@ def update(
     return db_object
 
 
-@router.delete("/", status_code=status.HTTP_200_OK)
-async def delete(re, db: Session = Depends(database.get_db)):
+@router.delete("/{ma_lopHoc}/{ma_taiKhoan}", status_code=status.HTTP_200_OK)
+async def delete(
+    ma_lopHoc: str, ma_taiKhoan: str, db: Session = Depends(database.get_db)
+):
     print(ma_lopHoc, ma_taiKhoan)
     db_object = (
         db.query(models.ThamGiaLopHoc)

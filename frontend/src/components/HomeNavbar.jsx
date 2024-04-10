@@ -87,7 +87,7 @@ const HomeNavbar = ({
         {IsNotHomePage && (
           <WestOutlinedIcon
             sx={{ color: "#009265", fontSize: "30px", cursor: "pointer" }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate(-1)}
           />
         )}
         <Typography
@@ -96,9 +96,11 @@ const HomeNavbar = ({
             color: "#009265",
             fontSize: "30px",
             marginLeft: "30px",
+            cursor: "pointer",
           }}
+          onClick={() => navigate("/")}
         >
-          {!IsNotHomePage ? "ClassIn" : title}
+          ClassIn
         </Typography>
       </FlexBetween>
       {!IsNotHomePage && (

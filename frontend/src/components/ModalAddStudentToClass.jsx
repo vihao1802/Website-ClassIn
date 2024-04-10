@@ -58,11 +58,11 @@ const AddStudentToClass = ({
         ma_taiKhoan: item.id,
       })),
     );
+    refetchUsers();
+    refetchStudents();
+    setSelectedEmails([]);
     handleClose();
     setShowAlert({ message: "Add student successfully", state: true });
-    refetchStudents();
-    refetchUsers();
-    setSelectedEmails([]);
   };
 
   return (

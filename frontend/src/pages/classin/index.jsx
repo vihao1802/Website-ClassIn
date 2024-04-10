@@ -25,11 +25,11 @@ import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
 import ClassWidget from "components/ClassWidget";
 import ModalHandleClass from "components/ModalHandleClass";
-import { useGetClassQuery } from "state/api";
+import { useGetClassQuery, useGetAllUserQuery } from "state/api";
 import AvatarName from "components/AvatarName";
 import Loading from "components/Loading";
 
-const Clasin = () => {
+const Classin = () => {
   //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
   const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
 
@@ -70,8 +70,24 @@ const Clasin = () => {
     setOpenRegistered(!openRegistered);
   };
 
+  const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
+  const [clientId, setClientId] = useState(null);
+
   const { data: classInfo, isLoading: isClassInfoLoading } =
     useGetClassQuery(userId);
+
+  useEffect(() => {
+    if (userList && userList.length > 0 && !clientId) {
+      const uniqueUserIds = userList.map((user) => user.ma_taiKhoan);
+      const nonDuplicateIds = uniqueUserIds.filter(
+        (id, index) => uniqueUserIds.indexOf(id) === index,
+      );
+      const randomClientId =
+        nonDuplicateIds[Math.floor(Math.random() * nonDuplicateIds.length)];
+      console.log(randomClientId);
+      setClientId(randomClientId);
+    }
+  }, [userList, clientId]);
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
@@ -208,7 +224,7 @@ const Clasin = () => {
             {classInfo || !isClassInfoLoading ? (
               <List>
                 {classInfo
-                  .filter((item) => item.ma_giangVien === userId)
+                  ?.filter((item) => item.ma_giangVien === userId)
                   .map((item, index) => {
                     return (
                       <ListItem key={index} disablePadding>
@@ -273,7 +289,7 @@ const Clasin = () => {
             {classInfo || !isClassInfoLoading ? (
               <List>
                 {classInfo
-                  .filter((item) => item.ma_giangVien !== userId)
+                  ?.filter((item) => item.ma_giangVien !== userId)
                   .map((item, index) => {
                     return (
                       <ListItem key={index} disablePadding>
@@ -326,9 +342,13 @@ const Clasin = () => {
         </Box>
       </Box>
       {/* CENTER CONTAIN */}
-      {classInfo.length > 0 && <ClassWidget classItem={activeClass} />}
+      {activeClass ? (
+        <ClassWidget classItem={activeClass} clientId={userId} />
+      ) : (
+        <Loading />
+      )}
     </Box>
   );
 };
 
-export default Clasin;
+export default Classin;

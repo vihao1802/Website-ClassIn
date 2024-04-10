@@ -48,6 +48,11 @@ class TaiKhoan(TaiKhoanBase):
         from_attributes = True
 
 
+class InewAccount(TaiKhoanCreate):
+    ma_nhomQuyen: UUID = Field(example="8cb96e51-9749-40c9-9799-bb5e25057816")
+    cfm_password: str = Field(examples=["Abcd@123"])
+
+
 class LopHocBase(BaseModel):
     ten: str
     moTa: str
@@ -225,7 +230,7 @@ class BaiTapBase(BaseModel):
 
 
 class BaiTapCreate(BaiTapBase):
-    pass
+    nopBu: int
 
 
 class BaiTap(BaiTapBase):
@@ -296,7 +301,7 @@ class FileBaiLamBaiTap(FileBaiLamBaiTapBase):
 class DeKiemTraBase(BaseModel):
     tieuDe: str
     thoiGianBatDau: datetime
-    hanChotNopBai: datetime
+    thoiGianKetThuc: datetime
     thoiGianLamBai: int
     xemDapAn: int
     tronCauHoi: int
@@ -369,7 +374,7 @@ class ChiTietBaiKiemTra(ChiTietBaiKiemTraBase):
 class BaiLamKiemTraBase(BaseModel):
     ma_taiKhoan: UUID
     ma_deKiemTra: UUID
-    thoiGianNop: datetime
+    thoiGianNopBai: datetime
     thoiGianBatDauLam: datetime
     diem: int
     nopTre: int

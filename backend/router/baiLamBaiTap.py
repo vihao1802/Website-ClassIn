@@ -4,7 +4,7 @@ import schemas
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/baiLamBaiTap", tags=["baiLamBaiTap"])
+router = APIRouter(prefix="/bai-lam-bai-tap", tags=["BaiLamBaiTap"])
 
 
 @router.post(
@@ -57,18 +57,17 @@ async def read(db: Session = Depends(database.get_db)):
 
 
 @router.get(
-    "/baiTap/{ma_baiTap}",
-    response_model=list[schemas.BaiLamBaiTap],
+    "/bai-tap/{ma_baiTap}",
     status_code=status.HTTP_200_OK,
 )
 async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
     db_object = (
         db.query(models.BaiLamBaiTap)
         .filter(models.BaiLamBaiTap.ma_baiTap == ma_baiTap)
-        .all()
+        .first()
     )
     if not db_object:
-        raise HTTPException(status_code=400, detail="ma_baiTap not found")
+        raise HTTPException(status_code=404, detail="BaiLamBaiTap not found")
     return db_object
 
 

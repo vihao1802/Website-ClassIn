@@ -63,11 +63,14 @@ async def create(
 
 @router.get(
     "/",
-    response_model=list[schemas.ChiTietBaiLamKiemTra],
     status_code=status.HTTP_200_OK,
 )
 async def read(db: Session = Depends(database.get_db)):
-    db_object = db.query(models.ChiTietBaiLamKiemTra).all()
+    try:
+        db_object = db.query(models.ChiTietBaiLamKiemTra).all()
+    except Exception as e:
+        print(e)
+
     return db_object
 
 

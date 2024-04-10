@@ -25,7 +25,7 @@ const schemaCreate = yup.object({
     .required("Name is required"),
   avatar: yup
     .mixed()
-    .required("A file is required")
+    .required("An image is required")
     .test(
       "fileSize",
       "File too large",
@@ -39,7 +39,7 @@ const schemaCreate = yup.object({
     ),
 });
 
-const ModalHandleCLass = (props) => {
+const ModalHandleClass = (props) => {
   const forMikJoin = useFormik({
     initialValues: {
       code: "",
@@ -415,4 +415,4 @@ const ModalHandleCLass = (props) => {
   );
 };
 
-export default ModalHandleCLass;
+export default ModalHandleClass;

@@ -4,7 +4,6 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
   Add,
   MoreHorizOutlined,
-  SendRounded,
   ListAltRounded,
   ExpandMore,
   PersonOffRounded,
@@ -60,6 +59,7 @@ import ModalAddUnit from "components/ModalAddUnit";
 import { useGetUnitActivitiesQuery } from "state/api";
 import AvatarName from "./AvatarName";
 import Loading from "./Loading";
+import ChatBoxGroup from "./ChatBoxGroup";
 
 const rows = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -91,74 +91,6 @@ const columns = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "col1", headerName: "Column 1", width: 130 },
   { field: "col2", headerName: "Column 2", width: 130 },
-];
-
-const messageItems = [
-  {
-    text: "Chào mừng bạn đến với ứng dụng chat!",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Xin chào! Bạn cần hỗ trợ gì hôm nay?",
-    position: "left",
-    name: "User1",
-  },
-  {
-    text: "Tôi đang tìm hiểu về các tính năng của ứng dụng.",
-    position: "right",
-    name: "Admin",
-  },
-  {
-    text: "Rất vui được giúp đỡ. Bạn muốn biết điều gì cụ thể?",
-    position: "right",
-    name: "User1",
-  },
-  {
-    text: "Có tính năng nào giúp tìm kiếm bạn bè không?",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Có, bạn có thể sử dụng tính năng tìm kiếm để tìm kiếm bạn bè.",
-    position: "right",
-    name: "User1",
-  },
-  {
-    text: "Tôi thấy rất hứng thú! Làm thế nào để kết bạn mới?",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Bạn có thể sử dụng chức năng kết bạn và gửi lời mời kết bạn đến người khác.",
-    position: "left",
-    name: "User1",
-  },
-  {
-    text: "Cảm ơn bạn! Tôi sẽ thử ngay bây giờ.",
-    position: "right",
-    name: "Admin",
-  },
-  {
-    text: "Chúc bạn có trải nghiệm tuyệt vời! Hãy thông báo nếu cần thêm sự hỗ trợ.",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati ut, temporibus mollitia debitis minus itaque, cupiditate libero necessitatibus impedit blanditiis ipsa nesciunt id facere totam incidunt quasi dolor soluta nisi?",
-    position: "left",
-    name: "Admin",
-  },
-  { text: "Message 11", position: "right", name: "User1" },
-  { text: "Message 12", position: "left", name: "User2" },
-  { text: "Message 13", position: "left", name: "User3" },
-  { text: "Message 14", position: "right", name: "User2" },
-  { text: "Message 15", position: "left", name: "User1" },
-  { text: "Message 16", position: "right", name: "Admin" },
-  { text: "Message 17", position: "left", name: "User3" },
-  { text: "Message 18", position: "right", name: "User2" },
-  { text: "Message 19", position: "right", name: "User1" },
-  { text: "Message 20", position: "left", name: "User3" },
 ];
 
 const unitItems = [
@@ -434,7 +366,7 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = ({ classItem }) => {
+const ClassWidget = ({ classItem, clientId }) => {
   //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
   const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
 
@@ -574,106 +506,9 @@ const ClassWidget = ({ classItem }) => {
             height: "calc(100% - 98.8px)",
           }}
         >
-          <Box
-            sx={{
-              height: "auto",
-              overflowY: "scroll",
-              backgroundColor: "#e7e7e7",
-              padding: "10px",
-              "::-webkit-scrollbar": { width: "10px" },
-              "::-webkit-scrollbar-track": {
-                background: "#f1f1f1",
-              },
-              "::-webkit-scrollbar-thumb": {
-                background: "#858585",
-              },
-              "::-webkit-scrollbar-thumb:hover": {
-                background: "#777",
-              },
-            }}
-          >
-            {messageItems.map((item, index) => {
-              return (
-                <Box
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: "20px",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: item.position,
-                      marginBottom: "5px",
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      alt="profile"
-                      src={profileImage}
-                      height="36px"
-                      width="36px"
-                      borderRadius="50%"
-                      sx={{ objectFit: "cover" }}
-                    />
-                  </Box>
-                  <MessageBox
-                    position={item.position}
-                    type={"text"}
-                    text={item.text}
-                    date={new Date()}
-                    title={item.name}
-                    titleColor="#009265"
-                    styles={{ maxWidth: "400px" }}
-                  />
-                </Box>
-              );
-            })}
-          </Box>
-          <Box sx={{ height: "auto", padding: "10px " }}>
-            <FlexBetween
-              backgroundColor="white"
-              // border="1px solid #e7e7e7"
-              borderRadius="9px"
-              padding="0.1rem 1.5rem 0.1rem 0.5rem"
-            >
-              <TextField
-                placeholder="Type a message..."
-                sx={{
-                  width: "100%",
-                  padding: "0",
-                  color: "black",
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      border: "none",
-                    },
-                    "&:hover fieldset": {
-                      border: "none",
-                    },
-                    "&.Mui-focused fieldset": {
-                      border: "none",
-                    },
-                  },
-                }}
-                variant="outlined"
-                size="small"
-                // multiline
-                InputProps={{
-                  maxRows: 10,
-                  multiline: true,
-                }}
-              />
-              <IconButton
-                sx={{
-                  marginTop: "auto",
-                }}
-              >
-                <SendRounded sx={{ color: "#009265" }} />
-              </IconButton>
-            </FlexBetween>
-          </Box>
+          {classItem && clientId && (
+            <ChatBoxGroup classItem={classItem} clientId={clientId} />
+          )}
         </TabPanel>
 
         {/* COURSE TAB */}

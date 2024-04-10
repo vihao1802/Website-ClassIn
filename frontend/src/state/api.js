@@ -71,7 +71,10 @@ export const {
 } = api; */
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BASE_URL,
+    credentials: "include",
+  }),
   reducerPath: "api",
   tagTypes: [
     "Questions",
@@ -88,7 +91,9 @@ export const api = createApi({
     "UserSubmissionsDetails",
     "WorkDetailsByTestId",
     "WorkInfoByWorkId",
-    "UnregisteredUsers" */
+    "UnregisteredUsers"
+    "Todo",
+    "MessageClass" */
     ,
   ],
   endpoints: (build) => ({
@@ -102,6 +107,10 @@ export const api = createApi({
         url: `taiKhoan/${uid}`,
         method: "GET",
       }),
+      providesTags: ["User"],
+    }),
+    getAllUser: build.query({
+      query: () => `tai-khoan`,
       providesTags: ["User"],
     }),
     getClassDetails: build.query({
@@ -153,7 +162,7 @@ export const api = createApi({
       providesTags: ["WorkInfoByWorkId"],
     }),
     getUnregisteredUsers: build.query({
-      query: (cid) => `taiKhoan/${cid}/unregistered`,
+      query: (cid) => `tai-khoan/${cid}/unregistered`,
       providesTags: ["UnregisteredUsers"],
     }),
 
@@ -175,12 +184,41 @@ export const api = createApi({
       }),
       invalidatesTags: ["StudentsByClassId"],
     }),
+    getTodo: build.query({
+      query: ({ acc_id, selectedClass, selectedCategory }) =>
+        `tai-khoan/${acc_id}/bai-tap/de-kiem-tra/filter?selectedClass=${selectedClass}&selectedCategory=${selectedCategory}`,
+      providesTags: ["Todo"],
+    }),
+    getMessageClass: build.query({
+      query: ({ class_id, acc_id }) =>
+        `/tin-nhan/lop-hoc/${class_id}/tai-khoan/${acc_id}`,
+      providesTags: ["MessageClass"],
+    }),
+    postMessageClass: build.mutation({
+      query: ({ noiDung, acc_id, chatGroup_id }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `tin-nhan`,
+        method: "POST",
+        body: { noiDung, ma_taiKhoan: acc_id, ma_nhomChat: chatGroup_id },
+      }),
+      invalidatesTags: ["MessageClass"],
+    }),
+    deleteMessageClass: build.mutation({
+      query: ({ messageId }) => ({
+        url: `tin-nhan/${messageId}/delete-message`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["MessageClass"],
+    }),
   }),
 });
 
 export const {
   useGetQuestionsQuery,
   useGetUserQuery,
+  useGetAllUserQuery,
   useGetClassDetailsQuery,
   useGetClassQuery,
   useGetUnitActivitiesQuery,
@@ -196,4 +234,8 @@ export const {
   useGetUnregisteredUsersQuery,
   usePostUserResigeterMutation,
   useDeleteUserFromClassMutation,
+  useGetTodoQuery,
+  useGetMessageClassQuery,
+  usePostMessageClassMutation,
+  useDeleteMessageClassMutation,
 } = api;
