@@ -187,7 +187,6 @@ async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(database.get_db),
 ) -> Token:
-    # print(form_data.username, form_data.password)
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
@@ -197,7 +196,8 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(days=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"usr": user.email}, expires_delta=access_token_expires
+        data={"usr_email": user.email, "usr_id": user.ma_taiKhoan},
+        expires_delta=access_token_expires,
     )
     return Token(access_token=access_token, token_type="bearer")
 
@@ -375,3 +375,19 @@ async def log_out(req: Request, res: Response):
     if req.cookies.get("user_token"):
         res.delete_cookie("user_token")
     return {"detail": "Log out successfully", "status": 200}
+
+
+@auth.get("/me")
+async def read_current_user(request: Request):
+    token = request.cookies.get("user_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    try:
+        payload = jwt.decode(
+            token,
+            load_env_global.get_JWT_SECRET(),
+            algorithms=[load_env_global.get_JWT_ALGORITHM()],
+        )
+        return payload
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
