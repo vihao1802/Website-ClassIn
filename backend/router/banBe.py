@@ -118,7 +118,11 @@ async def read(
             .first()
         )
         if db_query is not None:
-            banBe.noiDung = db_query.noiDung
+            if db_query.daXoa == 0:
+                if db_query.ma_nguoiGui == ma_taiKhoanHienHanh:
+                    banBe.noiDung = "You: " + db_query.noiDung
+                else:
+                    banBe.noiDung = db_query.noiDung
         result.append(banBe)
 
     for banBe, taiKhoan in db_query2:
@@ -142,7 +146,11 @@ async def read(
             .first()
         )
         if db_query is not None:
-            banBe.noiDung = db_query.noiDung
+            if db_query.daXoa == 0:
+                if db_query.ma_nguoiGui == ma_taiKhoanHienHanh:
+                    banBe.noiDung = "You: " + db_query.noiDung
+                else:
+                    banBe.noiDung = db_query.noiDung
         result.append(banBe)
 
     return result
