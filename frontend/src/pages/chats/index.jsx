@@ -32,10 +32,10 @@ const Chats = () => {
 
   const [active, setActive] = useState("");
   useEffect(() => {
-    setActive(friends?.[0]);
+    if (active === "" && friends) {
+      setActive(friends?.[0]);
+    }
   }, [friends]);
-
-  const [latestMessage, setLatestMessage] = useState("");
 
   return (
     <Box
@@ -94,7 +94,7 @@ const Chats = () => {
           }}
         >
           {loadingAllFriends && !friends
-            ? [...Array(5)].map((_, index) => (
+            ? [...Array(8)].map((_, index) => (
                 <ListItem key={index}>
                   <ListItemButton
                     sx={{
@@ -147,7 +147,12 @@ const Chats = () => {
                           borderRadius="50%"
                           sx={{ objectFit: "cover" }}
                         />
-                        <Box ml="10px">
+                        <Box
+                          ml="10px"
+                          sx={{
+                            width: "calc(100% - 58px)",
+                          }}
+                        >
                           <Typography
                             sx={{
                               fontSize: "18px",
@@ -158,7 +163,13 @@ const Chats = () => {
                             {item.hoTen}
                           </Typography>
                           <Typography
-                            sx={{ fontSize: "14px", color: "#666666" }}
+                            sx={{
+                              fontSize: "14px",
+                              color: "#666666",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
                           >
                             {item.noiDung}
                           </Typography>
@@ -219,8 +230,9 @@ const Chats = () => {
           {clientId && active ? (
             <ChatBoxFriend
               clientId={clientId}
-              friendId={active.ma_taiKhoan}
+              friend={active}
               refetchAllFriends={refetchAllFriends}
+              setActive={setActive}
             />
           ) : (
             <Loading />

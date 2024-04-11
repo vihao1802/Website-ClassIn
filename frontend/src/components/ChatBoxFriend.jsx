@@ -22,7 +22,7 @@ import {
   useDeleteMessageFriendMutation,
   usePostMessageFriendMutation,
 } from "state/api";
-const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
+const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
 
@@ -54,7 +54,7 @@ const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
     refetch: refetchMessageData,
   } = useGetMessageFriendQuery({
     acc_id: clientId,
-    friend_id: friendId,
+    friend_id: friend.ma_taiKhoan,
   });
   console.log(messageData);
 
@@ -79,7 +79,7 @@ const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
 
   useEffect(() => {
     setUserScrolled(false);
-  }, [friendId]);
+  }, [friend]);
 
   // handle on scroll
   const handleOnScroll = () => {
@@ -128,7 +128,7 @@ const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
     const response = await postMessageClass({
       noiDung: messageTextField,
       acc_id_1: clientId,
-      acc_id_2: friendId,
+      acc_id_2: friend.ma_taiKhoan,
     });
     if (response.data) {
       sendMessage(clientId);
@@ -189,7 +189,9 @@ const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
       ws.onmessage = (event) => {
         const messageContent = JSON.parse(event.data);
         refetchMessageData();
+        console.log("In websocket" + friend.hoTen);
         refetchAllFriends();
+        setActive(friend);
         console.log("Message by id in websocket: " + messageContent.sendById);
         if (messageContent.type === "deleteMessage") {
         } else if (messageContent.type === "sendMessage") {
@@ -226,7 +228,7 @@ const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
         }
       };
     }
-  }, [clientId, refetchMessageData, refetchAllFriends]);
+  }, [clientId, friend, refetchMessageData, refetchAllFriends, setActive]);
 
   const sendMessage = (id) => {
     if (webSocket.current && webSocket.current.readyState === WebSocket.OPEN) {
@@ -300,30 +302,32 @@ const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
                           {`Email: ${item.email}`}
                         </Typography>
 
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "end",
-                            gap: "10px",
-                            mt: 3,
-                          }}
-                        >
-                          <Button
+                        {item.position === "left" && (
+                          <Box
                             sx={{
-                              backgroundColor: "#009265",
-                              color: "white",
-                              border: "2px solid #009265",
-                              padding: "5px 15px",
-                              "&:hover": {
-                                backgroundColor: "#007850",
-                              },
-                              width: "100%",
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
                             }}
-                            // onClick={}
                           >
-                            Add friend
-                          </Button>
-                        </Box>
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                width: "100%",
+                              }}
+                              // onClick={}
+                            >
+                              Add friend
+                            </Button>
+                          </Box>
+                        )}
                       </Box>
                     }
                     placement="top-start"
