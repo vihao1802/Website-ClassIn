@@ -114,6 +114,7 @@ async def read(
                     == banBe.ma_nguoiDuocKetBan,
                 ),
             )
+            .filter(models.TinNhanBanBe.daXoa == 0)
             .order_by(models.TinNhanBanBe.thoiGianGui.desc())
             .first()
         )
@@ -142,6 +143,7 @@ async def read(
                     == banBe.ma_nguoiDuocKetBan,
                 ),
             )
+            .filter(models.TinNhanBanBe.daXoa == 0)
             .order_by(models.TinNhanBanBe.thoiGianGui.desc())
             .first()
         )

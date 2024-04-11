@@ -299,30 +299,32 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                           {`Email: ${item.email}`}
                         </Typography>
 
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "end",
-                            gap: "10px",
-                            mt: 3,
-                          }}
-                        >
-                          <Button
+                        {item.position === "left" && (
+                          <Box
                             sx={{
-                              backgroundColor: "#009265",
-                              color: "white",
-                              border: "2px solid #009265",
-                              padding: "5px 15px",
-                              "&:hover": {
-                                backgroundColor: "#007850",
-                              },
-                              width: "100%",
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
                             }}
-                            // onClick={}
                           >
-                            Add friend
-                          </Button>
-                        </Box>
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                width: "100%",
+                              }}
+                              // onClick={}
+                            >
+                              Add friend
+                            </Button>
+                          </Box>
+                        )}
                       </Box>
                     }
                     placement="top-start"
