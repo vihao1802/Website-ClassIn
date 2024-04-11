@@ -20,9 +20,14 @@ const Chats = () => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  const clientId = "58824edd-2ce6-46e8-97f3-8ca6970d8cbf";
-  const { data: friends, isLoading: loadingAllFriends } =
-    useGetAllFriendsQuery(clientId);
+  const clientId = "58824edd-2ce6-46e8-97f3-8ca6970d8cbf"; // Huy Hoang
+  // const clientId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9"; // Hao Tuan
+  // const clientId = "17593a02-3763-4b70-9454-d71c3af0bd19"; // Vi Hao
+  const {
+    data: friends,
+    isLoading: loadingAllFriends,
+    refetch: refetchAllFriends,
+  } = useGetAllFriendsQuery(clientId);
   console.log(friends?.length);
 
   const [active, setActive] = useState("");
@@ -215,7 +220,7 @@ const Chats = () => {
             <ChatBoxFriend
               clientId={clientId}
               friendId={active.ma_taiKhoan}
-              // setLatestMessage={setLatestMessage}
+              refetchAllFriends={refetchAllFriends}
             />
           ) : (
             <Loading />

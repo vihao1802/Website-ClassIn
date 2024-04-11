@@ -67,7 +67,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         console.log("maNhomChat: " + maNhomChat.current);
       }
     }
-  }, [messageData, maNhomChat]);
+  }, [messageData, maNhomChat, classItem]);
 
   useEffect(() => {
     const scrollContainer = boxRef.current;
@@ -76,6 +76,10 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
       // console.log("scroll to bottom");
     }
   }, [messageData, userScrolled]);
+
+  useEffect(() => {
+    setUserScrolled(false);
+  }, [classItem]);
 
   // handle on scroll
   const handleOnScroll = () => {

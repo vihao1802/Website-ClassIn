@@ -22,7 +22,7 @@ import {
   useDeleteMessageFriendMutation,
   usePostMessageFriendMutation,
 } from "state/api";
-const ChatBoxGroup = ({ clientId, friendId }) => {
+const ChatBoxGroup = ({ clientId, friendId, refetchAllFriends }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
 
@@ -76,6 +76,10 @@ const ChatBoxGroup = ({ clientId, friendId }) => {
       // console.log("scroll to bottom");
     }
   }, [messageData, userScrolled]);
+
+  useEffect(() => {
+    setUserScrolled(false);
+  }, [friendId]);
 
   // handle on scroll
   const handleOnScroll = () => {
@@ -185,6 +189,7 @@ const ChatBoxGroup = ({ clientId, friendId }) => {
       ws.onmessage = (event) => {
         const messageContent = JSON.parse(event.data);
         refetchMessageData();
+        refetchAllFriends();
         console.log("Message by id in websocket: " + messageContent.sendById);
         if (messageContent.type === "deleteMessage") {
         } else if (messageContent.type === "sendMessage") {
@@ -221,7 +226,7 @@ const ChatBoxGroup = ({ clientId, friendId }) => {
         }
       };
     }
-  }, [clientId, refetchMessageData]);
+  }, [clientId, refetchMessageData, refetchAllFriends]);
 
   const sendMessage = (id) => {
     if (webSocket.current && webSocket.current.readyState === WebSocket.OPEN) {

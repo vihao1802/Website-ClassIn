@@ -94,7 +94,7 @@ async def read(
 
     # get all tin nhan
     result = []
-    db_nuoiGui = (
+    db_nguoiGui = (
         db.query(models.TinNhanBanBe, models.TaiKhoan)
         .join(
             models.TaiKhoan,
@@ -106,11 +106,11 @@ async def read(
             models.TinNhanBanBe.daXoa == 0,
         )
     )
-    db_nuoiNhan = (
+    db_nguoiNhan = (
         db.query(models.TinNhanBanBe, models.TaiKhoan)
         .join(
             models.TaiKhoan,
-            models.TinNhanBanBe.ma_nguoiNhan == models.TaiKhoan.ma_taiKhoan,
+            models.TinNhanBanBe.ma_nguoiGui == models.TaiKhoan.ma_taiKhoan,
         )
         .filter(
             models.TinNhanBanBe.ma_nguoiGui == ma_nguoiBan,
@@ -118,23 +118,27 @@ async def read(
             models.TinNhanBanBe.daXoa == 0,
         )
     )
-    for TinNhanBanBe, TaiKhoan in db_nuoiGui:
+    for TinNhanBanBe, TaiKhoan in db_nguoiGui:
         TinNhanBanBe.ten_taiKhoan = TaiKhoan.hoTen
         TinNhanBanBe.email = TaiKhoan.email
         TinNhanBanBe.anhDaiDien = TaiKhoan.anhDaiDien
 
         if TinNhanBanBe.ma_nguoiGui == ma_taiKhoanHienHanh:
             TinNhanBanBe.position = "right"
+        else:
+            TinNhanBanBe.position = "left"
 
         result.append(TinNhanBanBe)
 
-    for TinNhanBanBe, TaiKhoan in db_nuoiNhan:
+    for TinNhanBanBe, TaiKhoan in db_nguoiNhan:
         TinNhanBanBe.ten_taiKhoan = TaiKhoan.hoTen
         TinNhanBanBe.email = TaiKhoan.email
         TinNhanBanBe.anhDaiDien = TaiKhoan.anhDaiDien
 
         if TinNhanBanBe.ma_nguoiGui == ma_nguoiBan:
             TinNhanBanBe.position = "left"
+        else:
+            TinNhanBanBe.position = "right"
 
         result.append(TinNhanBanBe)
 
