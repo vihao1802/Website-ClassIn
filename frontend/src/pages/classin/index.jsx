@@ -74,7 +74,7 @@ const Classin = () => {
   const [clientId, setClientId] = useState(null);
 
   const { data: classInfo, isLoading: isClassInfoLoading } =
-    useGetClassQuery(userId);
+    useGetClassQuery(clientId);
 
   useEffect(() => {
     if (userList && userList.length > 0 && !clientId) {
@@ -343,7 +343,7 @@ const Classin = () => {
       </Box>
       {/* CENTER CONTAIN */}
       {activeClass ? (
-        <ClassWidget classItem={activeClass} clientId={userId} />
+        <ClassWidget classItem={activeClass} clientId={clientId} />
       ) : (
         <Loading />
       )}

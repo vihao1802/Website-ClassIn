@@ -22,8 +22,8 @@ import {
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import {
-  AssignmentOutlined,
-  NoteAltOutlined,
+  ArticleOutlined,
+  HistoryEduRounded,
   HourglassEmpty,
   EventAvailable,
   RefreshOutlined,
@@ -317,9 +317,9 @@ const Todo = () => {
                           >
                             <ListItemIcon>
                               {exercise.ma_baiTap ? (
-                                <AssignmentOutlined />
+                                <ArticleOutlined />
                               ) : (
-                                <NoteAltOutlined />
+                                <HistoryEduRounded />
                               )}
                             </ListItemIcon>
                             <Box>
@@ -521,9 +521,9 @@ const Todo = () => {
                         >
                           <ListItemIcon>
                             {exercise.ma_baiTap ? (
-                              <AssignmentOutlined />
+                              <ArticleOutlined />
                             ) : (
-                              <NoteAltOutlined />
+                              <HistoryEduRounded />
                             )}
                           </ListItemIcon>
                           <Box>

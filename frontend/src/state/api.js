@@ -165,6 +165,10 @@ export const api = createApi({
       query: (cid) => `tai-khoan/${cid}/unregistered`,
       providesTags: ["UnregisteredUsers"],
     }),
+    getAllFriends: build.query({
+      query: (uid) => `ban-be/tai-khoan/${uid}`,
+      providesTags: ["ListFriends"],
+    }),
 
     // POST METHODS
     postUserResigeter: build.mutation({
@@ -212,6 +216,29 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    getMessageFriend: build.query({
+      query: ({ acc_id, friend_id }) =>
+        `tin-nhan-ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}`,
+      providesTags: ["MessageFriend"],
+    }),
+    postMessageFriend: build.mutation({
+      query: ({ noiDung, acc_id_1, acc_id_2 }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `tin-nhan-ban-be`,
+        method: "POST",
+        body: { noiDung, ma_nguoiGui: acc_id_1, ma_nguoiNhan: acc_id_2 },
+      }),
+      invalidatesTags: ["MessageFriend"],
+    }),
+    deleteMessageFriend: build.mutation({
+      query: ({ messageId }) => ({
+        url: `tin-nhan-ban-be/${messageId}/delete-message`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["MessageFriend"],
+    }),
   }),
 });
 
@@ -238,4 +265,8 @@ export const {
   useGetMessageClassQuery,
   usePostMessageClassMutation,
   useDeleteMessageClassMutation,
+  useGetAllFriendsQuery,
+  useGetMessageFriendQuery,
+  usePostMessageFriendMutation,
+  useDeleteMessageFriendMutation,
 } = api;
