@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, memo } from "react";
 import { SendRounded, DeleteRounded, ArrowDownward } from "@mui/icons-material";
 import {
   IconButton,
@@ -18,11 +18,11 @@ import { MessageBox } from "react-chat-elements";
 import FlexBetween from "./FlexBetween";
 import profileImage from "assets/profile.jpg";
 import {
-  usePostMessageClassMutation,
-  useGetMessageClassQuery,
-  useDeleteMessageClassMutation,
+  useGetMessageFriendQuery,
+  useDeleteMessageFriendMutation,
+  usePostMessageFriendMutation,
 } from "state/api";
-const ChatBoxGroup = ({ classItem, clientId }) => {
+const ChatBoxGroup = ({ clientId, friendId }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
 
@@ -47,19 +47,19 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
   // message loading data to chat box
   // const [maNhomChat, setMaNhomChat] = useState("");
-  const maNhomChat = useRef("");
+  // const maNhomChat = useRef("");
   const {
     data: messageData,
     // isLoading: messageLoading,
     refetch: refetchMessageData,
-  } = useGetMessageClassQuery({
-    class_id: classItem?.ma_lopHoc,
+  } = useGetMessageFriendQuery({
     acc_id: clientId,
+    friend_id: friendId,
   });
   console.log(messageData);
 
   // scroll to bottom of chat box
-  useEffect(() => {
+  /*     useEffect(() => {
     if (messageData) {
       if (maNhomChat.current !== classItem.ma_nhomChat) {
         // setMaNhomChat(messageData[0]?.ma_nhomChat);
@@ -67,7 +67,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         console.log("maNhomChat: " + maNhomChat.current);
       }
     }
-  }, [messageData, maNhomChat]);
+  }, [messageData, maNhomChat]); */
 
   useEffect(() => {
     const scrollContainer = boxRef.current;
@@ -105,7 +105,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
   // handle message text field
   const [postMessageClass, { isLoading: loadingPostMessage }] =
-    usePostMessageClassMutation();
+    usePostMessageFriendMutation();
   const handleTextFieldChange = (event) => {
     messageTextField = event.target.value;
     // console.log(messageTextField);
@@ -119,12 +119,12 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   const handleSendMessageTF = async () => {
     messageTextField = messageTextField.trim();
     // console.log(messageTextField);
-    console.log("in TF " + maNhomChat.current);
+    // console.log("in TF " + maNhomChat.current);
     if (!messageTextField) return;
     const response = await postMessageClass({
       noiDung: messageTextField,
-      acc_id: clientId,
-      chatGroup_id: maNhomChat.current,
+      acc_id_1: clientId,
+      acc_id_2: friendId,
     });
     if (response.data) {
       sendMessage(clientId);
@@ -149,7 +149,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     handleClose();
   };
   // delete message
-  const [deleteMessageClass] = useDeleteMessageClassMutation();
+  const [deleteMessageClass] = useDeleteMessageFriendMutation();
   const handleDeleteMessage = async (messageIdDeleted) => {
     console.log("Message delete" + messageIdDeleted);
     const response = await deleteMessageClass({
@@ -173,8 +173,8 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   // web socket
   useEffect(() => {
     // Connect to WebSocket
-    if (clientId && maNhomChat) {
-      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}`;
+    if (clientId) {
+      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}/nhan-tin-ban-be`;
       const ws = new WebSocket(url);
       console.log("connecting to " + url);
 
@@ -221,7 +221,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         }
       };
     }
-  }, [clientId, maNhomChat, refetchMessageData]);
+  }, [clientId, refetchMessageData]);
 
   const sendMessage = (id) => {
     if (webSocket.current && webSocket.current.readyState === WebSocket.OPEN) {
@@ -254,7 +254,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
       >
         {messageData?.map((item, index) => {
           return (
-            item.anTinNhan === 0 && (
+            item.daXoa === 0 && (
               <Box
                 key={item.ma_tinNhan}
                 sx={{
@@ -339,21 +339,12 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                 </Box>
                 {item ? (
                   <MessageBox
-                    replyButton={item.ma_taiKhoan === clientId ? true : false}
+                    replyButton={item.ma_nguoiGui === clientId ? true : false}
                     onReplyClick={
-                      item.ma_taiKhoan === clientId
+                      item.ma_nguoiGui === clientId
                         ? handleActionMenuMessage
                         : null
                     }
-                    /* onTitleClick={
-                      item.ma_taiKhoan !== clientId
-                        ? () =>
-                            handleClickOpenUserDetail(
-                              item.email,
-                              item.ten_taiKhoan,
-                            )
-                        : null
-                    } */
                     position={item.position}
                     type={"text"}
                     text={item.noiDung}
@@ -368,7 +359,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                   <Skeleton variant="rectangular" width={300} height={200} />
                 )}
 
-                {item.ma_taiKhoan === clientId && (
+                {item.ma_nguoiGui === clientId && (
                   <Box>
                     <Menu
                       anchorEl={anchorEl}
@@ -612,4 +603,4 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   );
 };
 
-export default ChatBoxGroup;
+export default memo(ChatBoxGroup);

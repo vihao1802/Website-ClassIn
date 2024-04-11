@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy import exists, or_
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/banBe", tags=["banBe"])
+router = APIRouter(prefix="/ban-be", tags=["BanBe"])
 
 
 @router.post(
@@ -61,8 +61,7 @@ async def read(db: Session = Depends(database.get_db)):
 
 
 @router.get(
-    "/taiKhoan/{ma_taiKhoanHienHanh}",
-    response_model=list[schemas.BanBe],
+    "/tai-khoan/{ma_taiKhoanHienHanh}",
     status_code=status.HTTP_200_OK,
 )
 async def read(
@@ -78,14 +77,72 @@ async def read(
             status_code=400, detail="ma_taiKhoanHienHanh not found"
         )
 
-    db_object = (
-        db.query(models.BanBe)
-        .filter(
-            or_(
-                models.BanBe.ma_nguoiKetBan == ma_taiKhoanHienHanh,
-                models.BanBe.ma_nguoiDuocKetBan == ma_taiKhoanHienHanh,
-            )
+    db_query1 = (
+        db.query(models.BanBe, models.TaiKhoan)
+        .join(
+            models.TaiKhoan,
+            models.TaiKhoan.ma_taiKhoan == models.BanBe.ma_nguoiDuocKetBan,
         )
+        .filter(models.BanBe.ma_nguoiKetBan == ma_taiKhoanHienHanh)
         .all()
     )
-    return db_object
+    db_query2 = (
+        db.query(models.BanBe, models.TaiKhoan)
+        .join(
+            models.TaiKhoan,
+            models.TaiKhoan.ma_taiKhoan == models.BanBe.ma_nguoiKetBan,
+        )
+        .filter(models.BanBe.ma_nguoiDuocKetBan == ma_taiKhoanHienHanh)
+        .all()
+    )
+
+    result = []
+    for banBe, taiKhoan in db_query1:
+        banBe.ma_taiKhoan = taiKhoan.ma_taiKhoan
+        banBe.hoTen = taiKhoan.hoTen
+        # get latest message
+        db_query = (
+            db.query(models.TinNhanBanBe)
+            .filter(
+                or_(
+                    models.TinNhanBanBe.ma_nguoiGui == banBe.ma_nguoiKetBan,
+                    models.TinNhanBanBe.ma_nguoiGui == banBe.ma_nguoiDuocKetBan,
+                ),
+                or_(
+                    models.TinNhanBanBe.ma_nguoiNhan == banBe.ma_nguoiKetBan,
+                    models.TinNhanBanBe.ma_nguoiNhan
+                    == banBe.ma_nguoiDuocKetBan,
+                ),
+            )
+            .order_by(models.TinNhanBanBe.thoiGianGui.desc())
+            .first()
+        )
+        if db_query is not None:
+            banBe.noiDung = db_query.noiDung
+        result.append(banBe)
+
+    for banBe, taiKhoan in db_query2:
+        banBe.ma_taiKhoan = taiKhoan.ma_taiKhoan
+        banBe.hoTen = taiKhoan.hoTen
+        # get latest message
+        db_query = (
+            db.query(models.TinNhanBanBe)
+            .filter(
+                or_(
+                    models.TinNhanBanBe.ma_nguoiGui == banBe.ma_nguoiKetBan,
+                    models.TinNhanBanBe.ma_nguoiGui == banBe.ma_nguoiDuocKetBan,
+                ),
+                or_(
+                    models.TinNhanBanBe.ma_nguoiNhan == banBe.ma_nguoiKetBan,
+                    models.TinNhanBanBe.ma_nguoiNhan
+                    == banBe.ma_nguoiDuocKetBan,
+                ),
+            )
+            .order_by(models.TinNhanBanBe.thoiGianGui.desc())
+            .first()
+        )
+        if db_query is not None:
+            banBe.noiDung = db_query.noiDung
+        result.append(banBe)
+
+    return result

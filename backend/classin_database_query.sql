@@ -298,12 +298,8 @@ INSERT INTO banBe ("ma_nguoiKetBan", "ma_nguoiDuocKetBan", "thoiGianKetBan", "da
 ('58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9','2023-12-14T22:08:40.177', 1),
 ('58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '17593a02-3763-4b70-9454-d71c3af0bd19','2023-12-04T00:00:00.000', 1),
 ('58824edd-2ce6-46e8-97f3-8ca6970d8cbf', '6fcb6a47-75c2-425c-bbbd-ff7137a5fd54','2023-12-14T21:58:19.537', 0),
-('1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', '6b157e9a-4f74-4ee8-a893-06bc950f4272','2023-12-12T15:28:52.410', 2),
-('1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', '58824edd-2ce6-46e8-97f3-8ca6970d8cbf','2023-12-04T00:00:00.000', 1),
 ('1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', '17593a02-3763-4b70-9454-d71c3af0bd19','2023-12-08T00:00:00.000', 1),
-('1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', '6fcb6a47-75c2-425c-bbbd-ff7137a5fd54','2023-12-14T21:57:14.573', 1),
-('17593a02-3763-4b70-9454-d71c3af0bd19', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9','2023-12-08T17:09:45.533', 1),
-('6fcb6a47-75c2-425c-bbbd-ff7137a5fd54', '1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9','2023-12-14T22:03:47.393', 1);
+('1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9', '6fcb6a47-75c2-425c-bbbd-ff7137a5fd54','2023-12-14T21:57:14.573', 1);
   
 
 INSERT INTO tinNhanBanBe ("ma_tinNhan", "ma_nguoiGui", "ma_nguoiNhan", "noiDung", "thoiGianGui", "daXoa") VALUES
