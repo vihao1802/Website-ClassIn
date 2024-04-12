@@ -22,6 +22,7 @@ import {
   useGetMessageClassQuery,
   useDeleteMessageClassMutation,
 } from "state/api";
+import AvatarName from "./AvatarName";
 const ChatBoxGroup = ({ classItem, clientId }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
@@ -284,14 +285,19 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                           padding: "10px",
                         }}
                       >
-                        <Typography
-                          id="modal-title"
-                          variant="h6"
-                          component="h2"
-                          fontWeight={600}
-                        >
-                          {`Profile`}
-                        </Typography>
+                        <FlexBetween>
+                          <Typography
+                            id="modal-title"
+                            variant="h6"
+                            component="h2"
+                            fontWeight={600}
+                          >
+                            {`Profile`}
+                          </Typography>
+                          <Box borderRadius="50%">
+                            <AvatarName name={item.ten_taiKhoan} />
+                          </Box>
+                        </FlexBetween>
                         <Typography id="modal-description" sx={{ mt: 2 }}>
                           {`Name: ${item.ten_taiKhoan}`}
                         </Typography>
@@ -435,8 +441,20 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                     variant="outlined"
                     arrow
                     backgroundColor="white"
+                    PopperProps={{
+                      popperOptions: {
+                        modifiers: [
+                          {
+                            name: "offset",
+                            options: {
+                              offset: [0, -5], // Change these values to move the tooltip
+                            },
+                          },
+                        ],
+                      },
+                    }}
                   >
-                    <Box
+                    {/* <Box
                       component="img"
                       alt="profile"
                       src={profileImage}
@@ -444,7 +462,10 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                       width="36px"
                       borderRadius="50%"
                       sx={{ objectFit: "cover" }}
-                    />
+                    /> */}
+                    <Box borderRadius="50%">
+                      <AvatarName name={item.ten_taiKhoan} />
+                    </Box>
                   </Tooltip>
                 </Box>
                 {item ? (

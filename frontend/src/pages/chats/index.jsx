@@ -14,6 +14,7 @@ import { useGetAllFriendsQuery } from "state/api";
 import ChatBoxFriend from "components/ChatBoxFriend";
 import Loading from "components/Loading";
 import { getUserId_Cookie } from "utils/handleCookies";
+import AvatarName from "components/AvatarName";
 
 const Chats = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -140,7 +141,7 @@ const Chats = () => {
                           height: "70px",
                         }}
                       >
-                        <Box
+                        {/* <Box
                           component="img"
                           alt="profile"
                           src={profileImage}
@@ -148,7 +149,10 @@ const Chats = () => {
                           width="48px"
                           borderRadius="50%"
                           sx={{ objectFit: "cover" }}
-                        />
+                        /> */}
+                        <Box borderRadius="50%">
+                          <AvatarName name={item.hoTen} />
+                        </Box>
                         <Box
                           ml="10px"
                           sx={{
@@ -202,7 +206,7 @@ const Chats = () => {
             flexDirection: "row",
           }}
         >
-          <Box
+          {/* <Box
             component="img"
             alt="profile"
             src={profileImage}
@@ -210,7 +214,10 @@ const Chats = () => {
             width="39px"
             borderRadius="50%"
             sx={{ objectFit: "cover" }}
-          />
+          /> */}
+          <Box borderRadius="50%">
+            <AvatarName name={active.hoTen} />
+          </Box>
           <Typography
             sx={{
               margin: "7px 0 7px 20px",
