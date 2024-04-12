@@ -29,6 +29,7 @@ import {
   RefreshOutlined,
 } from "@mui/icons-material";
 import { useGetTodoQuery, useGetClassQuery } from "state/api";
+import { getUserId_Cookie } from "utils/handleCookies";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -68,14 +69,17 @@ const Todo = () => {
   const [value, setValue] = useState(0);
   const [classes, setClasses] = useState("0");
   const [categories, setCategories] = useState("0");
-  const { data: todoData, isLoading: todoLoading } = useGetTodoQuery({
-    acc_id: "6b157e9a-4f74-4ee8-a893-06bc950f4272",
+  const userId = getUserId_Cookie();
+  const {
+    data: todoData,
+    isLoading: todoLoading,
+    refetch: refetchTodoData,
+  } = useGetTodoQuery({
+    acc_id: userId,
     selectedClass: classes,
     selectedCategory: categories,
   });
-  const { data: classData, isLoading: classLoading } = useGetClassQuery(
-    "6b157e9a-4f74-4ee8-a893-06bc950f4272",
-  );
+  const { data: classData, isLoading: classLoading } = useGetClassQuery(userId);
   useEffect(() => {}, [todoData, classData, classLoading, categories, classes]);
 
   // change categories
@@ -97,6 +101,14 @@ const Todo = () => {
   const handleClickRefresh = () => {
     setClasses("0");
     setCategories("0");
+    refetchTodoData();
+  };
+
+  const handleDetailExercise = () => {
+    // navigate("/exercise/detail");
+  };
+  const handleDetailTest = () => {
+    // navigate("/tests/detail");
   };
 
   // handle change tab name
@@ -287,7 +299,8 @@ const Todo = () => {
                 }}
                 component="span"
               >
-                {Array.isArray(todoData) && todoData.length === 0 ? (
+                {(Array.isArray(todoData) && todoData.length === 0) ||
+                (todoData && !todoData.some((item) => item.da_lam === 0)) ? (
                   <Typography
                     variant="h5"
                     sx={{
@@ -473,7 +486,8 @@ const Todo = () => {
               },
             }}
           >
-            {Array.isArray(todoData) && todoData.length === 0 ? (
+            {(Array.isArray(todoData) && todoData.length === 0) ||
+            (todoData && !todoData.some((item) => item.da_lam === 1)) ? (
               <Typography
                 variant="h5"
                 sx={{
@@ -557,6 +571,35 @@ const Todo = () => {
                               | Class: {exercise.ten_lopHoc}
                             </Typography>
                           </Box>
+                          <Button
+                            onClick={
+                              exercise.ma_baiTap
+                                ? handleDetailExercise
+                                : handleDetailTest
+                            }
+                            sx={{
+                              textTransform: "none",
+                              borderRadius: "20px",
+                              marginLeft: "auto",
+                              padding: "5px 25px",
+                              backgroundColor: theme.main_theme,
+                              "&:hover": {
+                                backgroundColor: "#007850",
+                              },
+                            }}
+                          >
+                            <Box>
+                              <Typography
+                                sx={{
+                                  color: "white",
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                              >
+                                Detail
+                              </Typography>
+                            </Box>
+                          </Button>
                         </ListItemButton>
                       </ListItem>
                     ),
