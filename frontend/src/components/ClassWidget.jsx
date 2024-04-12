@@ -366,9 +366,9 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = ({ classItem, clientId }) => {
+const ClassWidget = ({ classItem, userId }) => {
   //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
-  const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
+  //const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
 
   // course tab
   const [value, setValue] = React.useState("1");
@@ -506,8 +506,8 @@ const ClassWidget = ({ classItem, clientId }) => {
             height: "calc(100% - 98.8px)",
           }}
         >
-          {classItem && clientId && (
-            <ChatBoxGroup classItem={classItem} clientId={clientId} />
+          {classItem && userId && (
+            <ChatBoxGroup classItem={classItem} clientId={userId} />
           )}
         </TabPanel>
 

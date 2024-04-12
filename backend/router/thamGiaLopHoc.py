@@ -160,5 +160,5 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
         .all()
     )
     if not db_object:
-        raise HTTPException(status_code=400, detail="TaiKhoan not found")
+        return []
     return db_object

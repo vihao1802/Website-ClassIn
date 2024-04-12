@@ -104,7 +104,7 @@ export const api = createApi({
     }),
     getUser: build.query({
       query: (uid) => ({
-        url: `taiKhoan/${uid}`,
+        url: `tai-khoan/${uid}`,
         method: "GET",
       }),
       providesTags: ["User"],
