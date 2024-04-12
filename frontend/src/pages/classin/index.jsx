@@ -94,6 +94,7 @@ const Classin = () => {
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
+    console.log(classInfo);
     if (classInfo && classInfo.length > 0) setActiveClass(classInfo[0]);
     else setActiveClass([]);
   }, [classInfo, isClassInfoLoading]);
@@ -348,7 +349,7 @@ const Classin = () => {
       {/* CENTER CONTAIN */}
       {activeClass ? (
         <>
-          {activeClass.length > 0 ? (
+          {!Array.isArray(activeClass) ? (
             <ClassWidget classItem={activeClass} userId={userId} />
           ) : (
             <Box

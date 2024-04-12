@@ -22,6 +22,7 @@ import {
   useGetMessageClassQuery,
   useDeleteMessageClassMutation,
 } from "state/api";
+import AvatarName from "./AvatarName";
 const ChatBoxGroup = ({ classItem, clientId }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
@@ -284,22 +285,55 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                           padding: "10px",
                         }}
                       >
-                        <Typography
-                          id="modal-title"
-                          variant="h6"
-                          component="h2"
-                          fontWeight={600}
-                        >
-                          {`Profile`}
-                        </Typography>
+                        <FlexBetween>
+                          <Typography
+                            id="modal-title"
+                            variant="h6"
+                            component="h2"
+                            fontWeight={600}
+                          >
+                            {`Profile`}
+                          </Typography>
+                          <Box borderRadius="50%">
+                            <AvatarName name={item.ten_taiKhoan} />
+                          </Box>
+                        </FlexBetween>
                         <Typography id="modal-description" sx={{ mt: 2 }}>
                           {`Name: ${item.ten_taiKhoan}`}
                         </Typography>
                         <Typography id="modal-description" sx={{ mt: 2 }}>
                           {`Email: ${item.email}`}
                         </Typography>
-
-                        {item.position === "left" && (
+                        {item.position === "right" && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
+                            }}
+                          >
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                "&:disabled": {
+                                  color: "white",
+                                },
+                                width: "100%",
+                              }}
+                              disabled
+                            >
+                              You
+                            </Button>
+                          </Box>
+                        )}
+                        {item.position === "left" && item.daKetBan === 0 && (
                           <Box
                             sx={{
                               display: "flex",
@@ -325,14 +359,102 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                             </Button>
                           </Box>
                         )}
+                        {item.position === "left" && item.daKetBan === 1 && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
+                            }}
+                          >
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                "&:disabled": {
+                                  color: "white",
+                                },
+                                width: "100%",
+                              }}
+                              disabled
+                            >
+                              Your friend
+                            </Button>
+                          </Box>
+                        )}
+                        {item.position === "left" && item.daKetBan === 2 && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
+                            }}
+                          >
+                            {item.ma_nguoiKetBan === item.ma_taiKhoan ? (
+                              <Button
+                                sx={{
+                                  backgroundColor: "#009265",
+                                  color: "white",
+                                  border: "2px solid #009265",
+                                  padding: "5px 15px",
+                                  "&:hover": {
+                                    backgroundColor: "#007850",
+                                  },
+                                  width: "100%",
+                                }}
+                                // onClick={}
+                              >
+                                Accept
+                              </Button>
+                            ) : (
+                              <Button
+                                sx={{
+                                  backgroundColor: "#009265",
+                                  color: "white",
+                                  border: "2px solid #009265",
+                                  padding: "5px 15px",
+                                  "&:hover": {
+                                    backgroundColor: "#007850",
+                                  },
+                                  "&:disabled": {
+                                    color: "white",
+                                  },
+                                  width: "100%",
+                                }}
+                                disabled
+                              >
+                                Requested
+                              </Button>
+                            )}
+                          </Box>
+                        )}
                       </Box>
                     }
                     placement="top-start"
                     variant="outlined"
                     arrow
                     backgroundColor="white"
+                    PopperProps={{
+                      popperOptions: {
+                        modifiers: [
+                          {
+                            name: "offset",
+                            options: {
+                              offset: [0, -5], // Change these values to move the tooltip
+                            },
+                          },
+                        ],
+                      },
+                    }}
                   >
-                    <Box
+                    {/* <Box
                       component="img"
                       alt="profile"
                       src={profileImage}
@@ -340,7 +462,10 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                       width="36px"
                       borderRadius="50%"
                       sx={{ objectFit: "cover" }}
-                    />
+                    /> */}
+                    <Box borderRadius="50%">
+                      <AvatarName name={item.ten_taiKhoan} />
+                    </Box>
                   </Tooltip>
                 </Box>
                 {item ? (

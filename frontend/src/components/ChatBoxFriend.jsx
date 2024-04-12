@@ -22,6 +22,7 @@ import {
   useDeleteMessageFriendMutation,
   usePostMessageFriendMutation,
 } from "state/api";
+import AvatarName from "./AvatarName";
 const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
@@ -287,14 +288,19 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
                           padding: "10px",
                         }}
                       >
-                        <Typography
-                          id="modal-title"
-                          variant="h6"
-                          component="h2"
-                          fontWeight={600}
-                        >
-                          {`Profile`}
-                        </Typography>
+                        <FlexBetween>
+                          <Typography
+                            id="modal-title"
+                            variant="h6"
+                            component="h2"
+                            fontWeight={600}
+                          >
+                            {`Profile`}
+                          </Typography>
+                          <Box borderRadius="50%">
+                            <AvatarName name={item.ten_taiKhoan} />
+                          </Box>
+                        </FlexBetween>
                         <Typography id="modal-description" sx={{ mt: 2 }}>
                           {`Name: ${item.ten_taiKhoan}`}
                         </Typography>
@@ -320,11 +326,15 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
                                 "&:hover": {
                                   backgroundColor: "#007850",
                                 },
+                                "&:disabled": {
+                                  backgroundColor: "#009265",
+                                  color: "white",
+                                },
                                 width: "100%",
                               }}
-                              // onClick={}
+                              disabled
                             >
-                              Add friend
+                              Your friend
                             </Button>
                           </Box>
                         )}
@@ -334,8 +344,20 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
                     variant="outlined"
                     arrow
                     backgroundColor="white"
+                    PopperProps={{
+                      popperOptions: {
+                        modifiers: [
+                          {
+                            name: "offset",
+                            options: {
+                              offset: [0, -5], // Change these values to move the tooltip
+                            },
+                          },
+                        ],
+                      },
+                    }}
                   >
-                    <Box
+                    {/* <Box
                       component="img"
                       alt="profile"
                       src={profileImage}
@@ -343,7 +365,10 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
                       width="36px"
                       borderRadius="50%"
                       sx={{ objectFit: "cover" }}
-                    />
+                    /> */}
+                    <Box borderRadius="50%">
+                      <AvatarName name={item.ten_taiKhoan} />
+                    </Box>
                   </Tooltip>
                 </Box>
                 {item ? (

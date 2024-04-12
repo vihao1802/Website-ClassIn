@@ -2,7 +2,7 @@ import database
 import models
 import schemas
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
-from sqlalchemy import exists
+from sqlalchemy import and_, exists, or_
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/tin-nhan", tags=["TinNhan"])
@@ -144,6 +144,31 @@ async def read(
         if TinNhan.ma_taiKhoan == ma_taiKhoan:
             TinNhan.position = "right"
         else:
+            # check isFriend
+            db_friend = (
+                db.query(models.BanBe)
+                .filter(
+                    or_(
+                        and_(
+                            models.BanBe.ma_nguoiKetBan == ma_taiKhoan,
+                            models.BanBe.ma_nguoiDuocKetBan
+                            == TaiKhoan.ma_taiKhoan,
+                        ),
+                        and_(
+                            models.BanBe.ma_nguoiDuocKetBan == ma_taiKhoan,
+                            models.BanBe.ma_nguoiKetBan == TaiKhoan.ma_taiKhoan,
+                        ),
+                    )
+                )
+                .first()
+            )
+            # print("Friend here" ,db_friend.ma_nguoiKetBan, db_friend.ma_nguoiDuocKetBan)
+            if db_friend is None:
+                TinNhan.daKetBan = 0
+            else:
+                TinNhan.daKetBan = db_friend.daKetBan
+                TinNhan.ma_nguoiKetBan = db_friend.ma_nguoiKetBan
+
             TinNhan.position = "left"
         result.append(TinNhan)
 

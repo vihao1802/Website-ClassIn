@@ -228,6 +228,7 @@ async def read(
             .first()
         )
         if db_object:
+            baiTap.ma_baiLamBaiTap = db_object.ma_baiLamBaiTap
             baiTap.da_lam = 1
         else:
             baiTap.da_lam = 0
@@ -254,6 +255,7 @@ async def read(
             .first()
         )
         if db_object:
+            deKiemTra.ma_baiLamKiemTra = db_object.ma_baiLamKiemTra
             deKiemTra.da_lam = 1
         else:
             deKiemTra.da_lam = 0
