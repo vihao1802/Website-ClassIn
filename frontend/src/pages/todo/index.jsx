@@ -28,7 +28,7 @@ import {
   EventAvailable,
   RefreshOutlined,
 } from "@mui/icons-material";
-import { useGetTodoQuery, useGetClassQuery } from "state/api";
+import { useGetTodoQuery, useGetAllJoinClassQuery } from "state/api";
 import { getUserId_Cookie } from "utils/handleCookies";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -79,7 +79,8 @@ const Todo = () => {
     selectedClass: classes,
     selectedCategory: categories,
   });
-  const { data: classData, isLoading: classLoading } = useGetClassQuery(userId);
+  const { data: classData, isLoading: classLoading } =
+    useGetAllJoinClassQuery(userId);
   useEffect(() => {}, [todoData, classData, classLoading, categories, classes]);
 
   // change categories
@@ -92,11 +93,11 @@ const Todo = () => {
   };
 
   // handle click button
-  const handleClickDoExercise = () => {
-    navigate("/exercise/do");
+  const handleClickDoExercise = (id) => {
+    // navigate(`/exercise/${id}/do`);
   };
-  const handleClickDoTest = () => {
-    navigate("/tests/do");
+  const handleClickDoTest = (id) => {
+    navigate(`/tests/${id}/do`);
   };
   const handleClickRefresh = () => {
     setClasses("0");
@@ -107,8 +108,8 @@ const Todo = () => {
   const handleDetailExercise = () => {
     // navigate("/exercise/detail");
   };
-  const handleDetailTest = () => {
-    // navigate("/tests/detail");
+  const handleDetailTest = (testId, workId) => {
+    navigate(`/tests/${testId}/work/${workId}`);
   };
 
   // handle change tab name
@@ -315,13 +316,11 @@ const Todo = () => {
                   </Typography>
                 ) : (
                   todoData?.map(
-                    (exercise) =>
-                      exercise.da_lam === 0 && (
+                    (item) =>
+                      item.da_lam === 0 && (
                         <ListItem
                           key={
-                            exercise.ma_baiTap
-                              ? exercise.ma_baiTap
-                              : exercise.ma_deKiemTra
+                            item.ma_baiTap ? item.ma_baiTap : item.ma_deKiemTra
                           }
                           disablePadding
                         >
@@ -329,7 +328,7 @@ const Todo = () => {
                             sx={{ height: "80px", padding: "10px 25px" }}
                           >
                             <ListItemIcon>
-                              {exercise.ma_baiTap ? (
+                              {item.ma_baiTap ? (
                                 <ArticleOutlined />
                               ) : (
                                 <HistoryEduRounded />
@@ -345,12 +344,12 @@ const Todo = () => {
                                 }}
                               >
                                 <Typography variant="h6" component="span">
-                                  {exercise.tieuDe}
+                                  {item.tieuDe}
                                 </Typography>
                                 <Stack direction="row" spacing={1}>
                                   <Chip
                                     label={
-                                      exercise.ma_baiTap ? "Assignment" : "Test"
+                                      item.ma_baiTap ? "Assignment" : "Test"
                                     }
                                     color={"success"}
                                     size="small"
@@ -361,16 +360,16 @@ const Todo = () => {
                               <Typography color="#666666">
                                 Deadline:{" "}
                                 {new Date(
-                                  exercise.thoiGianKetThuc,
+                                  item.thoiGianKetThuc,
                                 ).toLocaleString()}{" "}
-                                | Class: {exercise.ten_lopHoc}
+                                | Class: {item.ten_lopHoc}
                               </Typography>
                             </Box>
                             <Button
                               onClick={
-                                exercise.ma_baiTap
-                                  ? handleClickDoExercise
-                                  : handleClickDoTest
+                                item.ma_baiTap
+                                  ? () => handleClickDoExercise()
+                                  : () => handleClickDoTest(item.ma_deKiemTra)
                               }
                               sx={{
                                 textTransform: "none",
@@ -391,7 +390,7 @@ const Todo = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {exercise.ma_baiTap ? "Submit" : "Start"}
+                                  {item.ma_baiTap ? "Submit" : "Start"}
                                 </Typography>
                               </Box>
                             </Button>
@@ -520,13 +519,11 @@ const Todo = () => {
                 component="span"
               >
                 {todoData?.map(
-                  (exercise) =>
-                    exercise.da_lam === 1 && (
+                  (item) =>
+                    item.da_lam === 1 && (
                       <ListItem
                         key={
-                          exercise.ma_baiTap
-                            ? exercise.ma_baiTap
-                            : exercise.ma_deKiemTra
+                          item.ma_baiTap ? item.ma_baiTap : item.ma_deKiemTra
                         }
                         disablePadding
                       >
@@ -534,7 +531,7 @@ const Todo = () => {
                           sx={{ height: "80px", padding: "10px 25px" }}
                         >
                           <ListItemIcon>
-                            {exercise.ma_baiTap ? (
+                            {item.ma_baiTap ? (
                               <ArticleOutlined />
                             ) : (
                               <HistoryEduRounded />
@@ -550,13 +547,11 @@ const Todo = () => {
                               }}
                             >
                               <Typography variant="h6" component="span">
-                                {exercise.tieuDe}
+                                {item.tieuDe}
                               </Typography>
                               <Stack direction="row" spacing={1}>
                                 <Chip
-                                  label={
-                                    exercise.ma_baiTap ? "Assignment" : "Test"
-                                  }
+                                  label={item.ma_baiTap ? "Assignment" : "Test"}
                                   color={"success"}
                                   size="small"
                                   variant="outlined"
@@ -565,17 +560,19 @@ const Todo = () => {
                             </Box>
                             <Typography color="#666666">
                               Deadline:{" "}
-                              {new Date(
-                                exercise.thoiGianKetThuc,
-                              ).toLocaleString()}{" "}
-                              | Class: {exercise.ten_lopHoc}
+                              {new Date(item.thoiGianKetThuc).toLocaleString()}{" "}
+                              | Class: {item.ten_lopHoc}
                             </Typography>
                           </Box>
                           <Button
                             onClick={
-                              exercise.ma_baiTap
-                                ? handleDetailExercise
-                                : handleDetailTest
+                              item.ma_baiTap
+                                ? () => handleDetailExercise()
+                                : () =>
+                                    handleDetailTest(
+                                      item.ma_deKiemTra,
+                                      item.ma_baiLamKiemTra,
+                                    )
                             }
                             sx={{
                               textTransform: "none",

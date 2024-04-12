@@ -78,10 +78,10 @@ async def read(ma_baiLamKiemTra: str, db: Session = Depends(database.get_db)):
         "diem": blkt_query[0][0].diem,
         "hoTen": blkt_query[0][1],
         "thoiGianLamBai": (
-            blkt_query[0][0].thoiGianNop - blkt_query[0][0].thoiGianBatDauLam
+            blkt_query[0][0].thoiGianNopBai - blkt_query[0][0].thoiGianBatDauLam
         ).total_seconds()
         / 60,
-        "thoiGianNop": blkt_query[0][0].thoiGianNop,
+        "thoiGianNop": blkt_query[0][0].thoiGianNopBai,
         "thoiGianBatDauLam": blkt_query[0][0].thoiGianBatDauLam,
         "soCauDung": blkt_query[0][0].soCauDung,
         "nopTre": blkt_query[0][0].nopTre,

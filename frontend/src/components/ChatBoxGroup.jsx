@@ -298,8 +298,36 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                         <Typography id="modal-description" sx={{ mt: 2 }}>
                           {`Email: ${item.email}`}
                         </Typography>
-
-                        {item.position === "left" && (
+                        {item.position === "right" && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
+                            }}
+                          >
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                "&:disabled": {
+                                  color: "white",
+                                },
+                                width: "100%",
+                              }}
+                              disabled
+                            >
+                              You
+                            </Button>
+                          </Box>
+                        )}
+                        {item.position === "left" && item.daKetBan === 0 && (
                           <Box
                             sx={{
                               display: "flex",
@@ -323,6 +351,82 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                             >
                               Add friend
                             </Button>
+                          </Box>
+                        )}
+                        {item.position === "left" && item.daKetBan === 1 && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
+                            }}
+                          >
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                "&:disabled": {
+                                  color: "white",
+                                },
+                                width: "100%",
+                              }}
+                              disabled
+                            >
+                              Your friend
+                            </Button>
+                          </Box>
+                        )}
+                        {item.position === "left" && item.daKetBan === 2 && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
+                            }}
+                          >
+                            {item.ma_nguoiKetBan === item.ma_taiKhoan ? (
+                              <Button
+                                sx={{
+                                  backgroundColor: "#009265",
+                                  color: "white",
+                                  border: "2px solid #009265",
+                                  padding: "5px 15px",
+                                  "&:hover": {
+                                    backgroundColor: "#007850",
+                                  },
+                                  width: "100%",
+                                }}
+                                // onClick={}
+                              >
+                                Accept
+                              </Button>
+                            ) : (
+                              <Button
+                                sx={{
+                                  backgroundColor: "#009265",
+                                  color: "white",
+                                  border: "2px solid #009265",
+                                  padding: "5px 15px",
+                                  "&:hover": {
+                                    backgroundColor: "#007850",
+                                  },
+                                  "&:disabled": {
+                                    color: "white",
+                                  },
+                                  width: "100%",
+                                }}
+                                disabled
+                              >
+                                Requested
+                              </Button>
+                            )}
                           </Box>
                         )}
                       </Box>

@@ -121,6 +121,10 @@ export const api = createApi({
       query: (uid) => `lopHoc/${uid}`,
       providesTags: ["Class"],
     }),
+    getAllJoinClass: build.query({
+      query: (uid) => `thamGiaLopHoc/tai-khoan/${uid}/search-for-todo`,
+      providesTags: ["Class"],
+    }),
     getUnits: build.query({
       query: (unitId) => `chuong/${unitId}`,
       providesTags: ["Units"],
@@ -269,4 +273,5 @@ export const {
   useGetMessageFriendQuery,
   usePostMessageFriendMutation,
   useDeleteMessageFriendMutation,
+  useGetAllJoinClassQuery,
 } = api;

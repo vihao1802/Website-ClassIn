@@ -162,3 +162,29 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
     if not db_object:
         return []
     return db_object
+
+
+@router.get(
+    "/tai-khoan/{ma_taiKhoan}/search-for-todo",
+    status_code=status.HTTP_200_OK,
+)
+async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
+    db_object = (
+        db.query(models.LopHoc, models.ThamGiaLopHoc)
+        .join(
+            models.ThamGiaLopHoc,
+            models.ThamGiaLopHoc.ma_lopHoc == models.LopHoc.ma_lopHoc,
+        )
+        .filter(models.ThamGiaLopHoc.ma_taiKhoan == ma_taiKhoan)
+        .filter(models.LopHoc.anLopHoc == 0)
+        .all()
+    )
+
+    result = []
+    if not db_object:
+        return result
+
+    for lopHoc, ThamGiaLopHoc in db_object:
+        result.append(lopHoc)
+
+    return result

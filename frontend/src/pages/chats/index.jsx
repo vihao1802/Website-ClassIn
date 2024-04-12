@@ -13,6 +13,7 @@ import "react-chat-elements/dist/main.css";
 import { useGetAllFriendsQuery } from "state/api";
 import ChatBoxFriend from "components/ChatBoxFriend";
 import Loading from "components/Loading";
+import { getUserId_Cookie } from "utils/handleCookies";
 
 const Chats = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -20,9 +21,10 @@ const Chats = () => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  const clientId = "58824edd-2ce6-46e8-97f3-8ca6970d8cbf"; // Huy Hoang
+  // const clientId = "58824edd-2ce6-46e8-97f3-8ca6970d8cbf"; // Huy Hoang
   // const clientId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9"; // Hao Tuan
   // const clientId = "17593a02-3763-4b70-9454-d71c3af0bd19"; // Vi Hao
+  const clientId = getUserId_Cookie();
   const {
     data: friends,
     isLoading: loadingAllFriends,
