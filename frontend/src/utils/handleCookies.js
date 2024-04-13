@@ -1,5 +1,4 @@
 import { jwtDecode } from "jwt-decode";
-
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -7,7 +6,14 @@ function getCookie(name) {
 }
 
 function getUserId_Cookie() {
-  return jwtDecode(getCookie("user_token")).usr_id;
+  const cookie = getCookie("user_token");
+  if (cookie) {
+    return jwtDecode(cookie).usr_id;
+  } else {
+    // redirect to login page
+    window.location.href = "/signin";
+    return null;
+  }
 }
 
 export { getUserId_Cookie };
