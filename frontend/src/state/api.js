@@ -173,6 +173,10 @@ export const api = createApi({
       query: (uid) => `ban-be/tai-khoan/${uid}`,
       providesTags: ["ListFriends"],
     }),
+    getAllUserWithStatus: build.query({
+      query: (uid) => `tai-khoan/${uid}/get-all-user-with-status-friend`,
+      providesTags: ["ListFriends"],
+    }),
 
     // POST METHODS
     postUserResigeter: build.mutation({
@@ -243,6 +247,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageFriend"],
     }),
+    updateStatusFriend: build.mutation({
+      query: ({ acc_id, friend_id, status }) => ({
+        url: `ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}/change-status-friend?status=${status}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["ListFriends"],
+    }),
   }),
 });
 
@@ -274,4 +285,6 @@ export const {
   usePostMessageFriendMutation,
   useDeleteMessageFriendMutation,
   useGetAllJoinClassQuery,
+  useUpdateStatusFriendMutation,
+  useGetAllUserWithStatusQuery,
 } = api;

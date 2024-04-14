@@ -21,8 +21,10 @@ import {
   usePostMessageClassMutation,
   useGetMessageClassQuery,
   useDeleteMessageClassMutation,
+  useUpdateStatusFriendMutation,
 } from "state/api";
 import AvatarName from "./AvatarName";
+import AlertComponent from "./AlertComponent";
 const ChatBoxGroup = ({ classItem, clientId }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
@@ -235,6 +237,26 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     }
   };
 
+  // change status friend
+  const [showAlert, setShowAlert] = useState({ message: "", state: false });
+  const [updateStatusFriend] = useUpdateStatusFriendMutation();
+  const handleChangeStatusFriend = async (friendId, status, message) => {
+    const response = await updateStatusFriend({
+      acc_id: clientId,
+      friend_id: friendId,
+      status: status,
+    });
+    if (response.data) {
+      // console.log("Change status friend success");
+      // show AlertComponent
+      setShowAlert({
+        message: message,
+        state: true,
+      });
+    } else {
+      console.error("Error changing status friend");
+    }
+  };
   return (
     <>
       <Box
@@ -257,6 +279,12 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         }}
         onScroll={handleOnScroll}
       >
+        <AlertComponent
+          severity="success"
+          message={showAlert.message}
+          open={showAlert.state}
+          onClose={() => setShowAlert({ ...showAlert, state: false })}
+        />
         {messageData?.map((item, index) => {
           return (
             item.anTinNhan === 0 && (
@@ -353,7 +381,13 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                                 },
                                 width: "100%",
                               }}
-                              // onClick={}
+                              onClick={() =>
+                                handleChangeStatusFriend(
+                                  item.ma_taiKhoan,
+                                  2,
+                                  "Request sent",
+                                )
+                              }
                             >
                               Add friend
                             </Button>
@@ -409,7 +443,13 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                                   },
                                   width: "100%",
                                 }}
-                                // onClick={}
+                                onClick={() =>
+                                  handleChangeStatusFriend(
+                                    item.ma_taiKhoan,
+                                    1,
+                                    "Accept friend request",
+                                  )
+                                }
                               >
                                 Accept
                               </Button>

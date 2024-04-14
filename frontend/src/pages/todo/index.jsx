@@ -307,7 +307,9 @@ const Todo = () => {
                     sx={{
                       display: "flex",
                       justifyContent: "center",
-                      marginTop: "20px",
+                      alignItems: "center",
+                      margin: "auto",
+                      height: "100%",
                       fontWeight: "bold",
                       color: "#666666",
                     }}
@@ -492,7 +494,9 @@ const Todo = () => {
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  marginTop: "20px",
+                  alignItems: "center",
+                  margin: "auto",
+                  height: "100%",
                   fontWeight: "bold",
                   color: "#666666",
                 }}
