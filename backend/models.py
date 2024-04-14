@@ -111,7 +111,9 @@ class BanBe(Base):
     __tablename__ = "banBe"
 
     thoiGianKetBan = Column(DateTime, default=datetime.now)
-    daKetBan = Column(Integer, default=0)
+    daKetBan = Column(
+        Integer, default=2
+    )  # 0: chua ket ban, 1: da ket ban, 2: cho ket ban
 
     ma_nguoiKetBan = Column(
         String, ForeignKey("taiKhoan.ma_taiKhoan"), primary_key=True

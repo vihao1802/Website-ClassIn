@@ -308,7 +308,7 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
                           {`Email: ${item.email}`}
                         </Typography>
 
-                        {item.position === "left" && (
+                        {item.position === "left" ? (
                           <Box
                             sx={{
                               display: "flex",
@@ -335,6 +335,35 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
                               disabled
                             >
                               Your friend
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "end",
+                              gap: "10px",
+                              mt: 3,
+                            }}
+                          >
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                "&:disabled": {
+                                  backgroundColor: "#009265",
+                                  color: "white",
+                                },
+                                width: "100%",
+                              }}
+                              disabled
+                            >
+                              You
                             </Button>
                           </Box>
                         )}

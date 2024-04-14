@@ -7,24 +7,24 @@ import {
   List,
   ListItem,
   ListItemButton,
+  Button,
 } from "@mui/material";
-import profileImage from "assets/profile.jpg";
 import "react-chat-elements/dist/main.css";
-import { useGetAllFriendsQuery } from "state/api";
+import {
+  useGetAllFriendsQuery,
+  useUpdateStatusFriendMutation,
+} from "state/api";
 import ChatBoxFriend from "components/ChatBoxFriend";
-import Loading from "components/Loading";
+import FlexBetween from "components/FlexBetween";
 import { getUserId_Cookie } from "utils/handleCookies";
 import AvatarName from "components/AvatarName";
+import AlertComponent from "components/AlertComponent";
+import CardDetailFriend from "components/chats/CardDetailFriend";
+import ListFriendsItem from "components/chats/ListFriendsItem";
+import Loading from "components/Loading";
+import ModalFindPeople from "components/chats/ModalFindPeople";
 
 const Chats = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isOpen = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
-
-  // const clientId = "58824edd-2ce6-46e8-97f3-8ca6970d8cbf"; // Huy Hoang
-  // const clientId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9"; // Hao Tuan
-  // const clientId = "17593a02-3763-4b70-9454-d71c3af0bd19"; // Vi Hao
   const clientId = getUserId_Cookie();
   const {
     data: friends,
@@ -37,8 +37,40 @@ const Chats = () => {
   useEffect(() => {
     if (active === "" && friends) {
       setActive(friends?.[0]);
+    } else if (active && storeFriend && friends) {
+      setActive(friends.find((item) => item.ma_taiKhoan === storeFriend));
+      setStoreFriend("");
     }
   }, [friends]);
+
+  // update status friend
+  const [showAlert, setShowAlert] = useState({ message: "", state: false });
+  const [updateStatusFriend] = useUpdateStatusFriendMutation();
+  const [storeFriend, setStoreFriend] = useState("");
+  const handleChangeStatusFriend = async (friendId, status, message) => {
+    const response = await updateStatusFriend({
+      acc_id: clientId,
+      friend_id: friendId,
+      status: status,
+    });
+    if (response.data) {
+      // show AlertComponent
+      setStoreFriend(friendId);
+      setShowAlert({
+        message: message,
+        state: true,
+      });
+    } else {
+      console.error("Error changing status friend");
+    }
+  };
+
+  // handle modal find people
+  const [open, setOpen] = useState(false);
+  const handleOpenModal = () => setOpen(true);
+  const handleCloseModal = () => setOpen(false);
+
+  if (loadingAllFriends && !friends) return <Loading />;
 
   return (
     <Box
@@ -59,26 +91,47 @@ const Chats = () => {
           borderRight: "1px solid #e7e7e7",
         }}
       >
-        <Typography
-          sx={{
-            color: "#009265",
-            fontSize: "18px",
-            textAlign: "Left",
-            marginLeft: "10px",
-          }}
-        >
-          Your Friends
-        </Typography>
+        <FlexBetween>
+          <Typography
+            sx={{
+              color: "#009265",
+              fontSize: "18px",
+              textAlign: "Left",
+              marginLeft: "10px",
+            }}
+          >
+            Your Friends
+          </Typography>
 
-        <TextField
-          fullWidth
-          id="search"
-          label="Search"
-          variant="outlined"
-          size="small"
-          color="success"
-          sx={{ marginTop: "10px" }}
-        />
+          <Button
+            onClick={handleOpenModal}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textTransform: "none",
+              gap: "1rem",
+              backgroundColor: "#009265",
+              "&:hover": {
+                backgroundColor: "#007850",
+              },
+            }}
+          >
+            <Box textAlign="left">
+              <Typography
+                sx={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  textAlign: "center",
+                }}
+              >
+                Find People
+              </Typography>
+            </Box>
+          </Button>
+        </FlexBetween>
+        <ModalFindPeople open={open} handleCloseModal={handleCloseModal} />
         <List
           sx={{
             height: "100%",
@@ -122,68 +175,12 @@ const Chats = () => {
                 </ListItem>
               ))
             : friends?.map((item, index) => (
-                <Box key={index}>
-                  {item && (
-                    <ListItem key={index} disablePadding>
-                      <ListItemButton
-                        onClick={() => {
-                          setActive(item);
-                        }}
-                        sx={{
-                          backgroundColor:
-                            active?.ma_taiKhoan === item.ma_taiKhoan
-                              ? "#e7e7e7"
-                              : "transparent",
-                          color:
-                            active?.ma_taiKhoan === item.ma_taiKhoan
-                              ? "black"
-                              : "#666666",
-                          height: "70px",
-                        }}
-                      >
-                        {/* <Box
-                          component="img"
-                          alt="profile"
-                          src={profileImage}
-                          height="48px"
-                          width="48px"
-                          borderRadius="50%"
-                          sx={{ objectFit: "cover" }}
-                        /> */}
-                        <Box borderRadius="50%">
-                          <AvatarName name={item.hoTen} />
-                        </Box>
-                        <Box
-                          ml="10px"
-                          sx={{
-                            width: "calc(100% - 58px)",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              fontSize: "18px",
-                              fontWeight: "bold",
-                              color: "black",
-                            }}
-                          >
-                            {item.hoTen}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: "14px",
-                              color: "#666666",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            {item.noiDung}
-                          </Typography>
-                        </Box>
-                      </ListItemButton>
-                    </ListItem>
-                  )}
-                </Box>
+                <ListFriendsItem
+                  item={item}
+                  key={index}
+                  active={active}
+                  setActive={setActive}
+                />
               ))}
         </List>
       </Box>
@@ -216,7 +213,7 @@ const Chats = () => {
             sx={{ objectFit: "cover" }}
           /> */}
           <Box borderRadius="50%">
-            <AvatarName name={active.hoTen} />
+            <AvatarName name={active && active.hoTen} />
           </Box>
           <Typography
             sx={{
@@ -236,15 +233,48 @@ const Chats = () => {
             height: "calc(100% - 50px)",
           }}
         >
+          <AlertComponent
+            severity="success"
+            message={showAlert.message}
+            open={showAlert.state}
+            onClose={() => setShowAlert({ ...showAlert, state: false })}
+          />
           {clientId && active ? (
-            <ChatBoxFriend
-              clientId={clientId}
-              friend={active}
-              refetchAllFriends={refetchAllFriends}
-              setActive={setActive}
-            />
+            <>
+              {active.daKetBan === 2 ? (
+                <CardDetailFriend
+                  active={active}
+                  clientId={clientId}
+                  handleChangeStatusFriend={handleChangeStatusFriend}
+                />
+              ) : (
+                <ChatBoxFriend
+                  clientId={clientId}
+                  friend={active}
+                  refetchAllFriends={refetchAllFriends}
+                  setActive={setActive}
+                />
+              )}
+            </>
           ) : (
-            <Loading />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "24px",
+                  color: "#666666",
+                  fontWeight: "bold",
+                }}
+              >
+                No friends available
+              </Typography>
+            </Box>
           )}
         </Box>
       </Box>
