@@ -2,7 +2,16 @@ import database
 import models
 import schemas
 from email_validator import EmailNotValidError, validate_email
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    FastAPI,
+    File,
+    HTTPException,
+    Response,
+    UploadFile,
+    status,
+)
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 
@@ -64,3 +73,15 @@ async def read(ma_baiLamBaiTap: str, db: Session = Depends(database.get_db)):
     )
 
     return db_object
+
+
+@router.post("/sendFile", status_code=status.HTTP_201_CREATED)
+async def upload_file(file: UploadFile = File(...)):
+    # Do not attempt to decode file contents as UTF-8
+    # Instead, work with the file contents directly as binary data
+    contents = await file.read()
+    return {
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "content_length": len(contents),
+    }

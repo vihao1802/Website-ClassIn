@@ -71,7 +71,10 @@ export const {
 } = api; */
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BASE_URL,
+    credentials: "include",
+  }),
   reducerPath: "api",
   tagTypes: [
     "Questions",
@@ -80,8 +83,21 @@ export const api = createApi({
     "Class",
     "Todo",
     "MessageClass",
+    "ClassByInstructorId",
+    "UnitByClass",
   ],
   endpoints: (build) => ({
+    getFileFromDrive: build.query({
+      query: (fileId) => `file/${fileId}`,
+    }),
+    getHomeWorkByHomeworkId: build.query({
+      query: (homeworkId) => `bai-tap/${homeworkId}`,
+      providesTags: ["HomeWorkByHomeworkId"],
+    }),
+    getFileHomeworkByHomeworkId: build.query({
+      query: (homeworkId) => `fileBaiTap/${homeworkId}`,
+      providesTags: ["FileHomeWorkByHomeworkId"],
+    }),
     getQuestions: build.query({
       query: (uid) => `cauHoi/taiKhoan/${uid}`,
       providesTags: ["Questions"],
@@ -122,6 +138,82 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    postHomework: build.mutation({
+      query: ({
+        machuong,
+        tieuDe,
+        noidungbaitap,
+        noidungdapan,
+        thoigianbatdau,
+        thoigianketthuc,
+        congkhaidapan,
+        nopbu,
+      }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `bai-tap/${machuong}`,
+        method: "POST",
+        body: {
+          tieuDe: tieuDe,
+          noiDungBaiTap: noidungbaitap,
+          noiDungDapAn: noidungdapan,
+          thoiGianBatDau: thoigianbatdau,
+          thoiGianKetThuc: thoigianketthuc,
+          congKhaiDapAn: congkhaidapan,
+          nopBu: nopbu,
+        },
+      }),
+      // invalidatesTags: ["Todo"],
+    }),
+    postHomeworkWork: build.mutation({
+      query: ({ ma_baiTap, ma_taiKhoan, nopTre }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `bai-tap/${ma_baiTap}/tai-khoan/${ma_taiKhoan}`,
+        method: "POST",
+        body: {
+          noiDung: "",
+          ma_taiKhoan: ma_taiKhoan,
+          ma_baiTap: ma_baiTap,
+          nhanXet: "",
+          diem: -1,
+          nopTre: nopTre,
+        },
+      }),
+      // invalidatesTags: ["Todo"],
+    }),
+    postHomeworkFileWork: build.mutation({
+      query: ({ ma_baiTap, ma_taiKhoan, file }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `fileBaiTap/${ma_baiTap}/taiKhoan/${ma_taiKhoan}`,
+        method: "POST",
+        body: {
+          ma_file: file,
+        },
+      }),
+      // invalidatesTags: ["Todo"],
+    }),
+    getClassByInstructorId: build.query({
+      query: (uid) => ({
+        url: `lopHoc/taiKhoan/${uid}`,
+        method: "GET",
+        credentials: "include",
+      }),
+      providesTags: ["ClassByInstructorId"],
+    }),
+
+    getUnitByClassId: build.query({
+      query: (cid) => ({
+        url: `/chuong/lopHoc/${cid}`,
+        method: "GET",
+        credentials: "include",
+      }),
+      providesTags: ["UnitByClass"],
+    }),
   }),
 });
 
@@ -133,4 +225,9 @@ export const {
   useGetTodoQuery,
   useGetMessageClassQuery,
   usePostMessageClassMutation,
+  useGetClassByInstructorIdQuery,
+  useGetUnitByClassIdQuery,
+  usePostHomeworkMutation,
+  useGetHomeWorkByHomeworkIdQuery,
+  useGetFileHomeworkByHomeworkIdQuery,
 } = api;

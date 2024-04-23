@@ -1,19 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { Link, Button, Box, Avatar, Typography } from "@mui/material";
-import { Modal, Sheet, ModalClose } from "@mui/joy";
+import { Modal, Sheet, ModalClose, MenuItem } from "@mui/joy";
 import { v4 as uuidv4 } from "uuid";
 
 import { useDropzone } from "react-dropzone";
-export default function AddFileUploadButton({
-  Icon,
-  iconSize,
-  setListAttachment,
-  text = "",
-}) {
-  const [open, setOpen] = useState(false);
+export default function AddFileUploadButton(props) {
   const onDrop = useCallback((acceptedFile) => {
-    console.log(acceptedFile);
-    setListAttachment((currentList) => {
+    // console.log(acceptedFile);
+    props.handleClose();
+
+    props.setListAttachment((currentList) => {
       return [
         ...currentList,
         {
@@ -27,42 +23,13 @@ export default function AddFileUploadButton({
     });
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
   return (
     <>
-      <Link
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "1px solid  rgba(128, 128, 128, 0.5)",
-          borderRadius: "50%",
-          padding: "10px",
-          color: "black",
-          "&:hover": {
-            border: "1px solid  #009265",
-            color: "#009265",
-          },
-          transition: "0.5s",
-        }}
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        {Icon ? (
-          <Icon
-            sx={{
-              fontSize: iconSize,
-            }}
-          />
-        ) : null}
-        <Typography>{text}</Typography>
-      </Link>
       <Modal
         aria-labelledby="close-modal-file-upload"
-        open={open}
+        open={props.open}
         onClose={() => {
-          setOpen(false);
+          props.handleClose();
         }}
         sx={{
           display: "flex",

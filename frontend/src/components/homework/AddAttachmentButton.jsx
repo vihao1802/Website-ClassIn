@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { apiKeys } from "../../Config/config";
 import { Button, Modal, Link, Box, Avatar, TextField } from "@mui/material";
 import { ModalClose, Sheet } from "@mui/joy";
 import { Search, YouTube } from "@mui/icons-material";
@@ -24,7 +23,7 @@ export default function AddAttachmentButton({
       "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" +
       videoId +
       "&key=" +
-      apiKeys.key;
+      process.env.REACT_APP_GOOGLE_DRIVE_API_KEY;
     const data = await (await fetch(url)).json();
 
     setVideoData(data);

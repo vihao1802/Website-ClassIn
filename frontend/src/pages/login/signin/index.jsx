@@ -141,7 +141,11 @@ const Siginform = () => {
                   }}
                   disabled={SigningIn}
                 >
-                  {SigningIn ? <CircularProgress size={24} /> : "Sign In"}
+                  {SigningIn ? (
+                    <CircularProgress size={24} color="white" />
+                  ) : (
+                    "Sign In"
+                  )}
                 </Button>
                 <Typography
                   variant="body2"

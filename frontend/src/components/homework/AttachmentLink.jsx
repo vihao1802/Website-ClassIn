@@ -1,34 +1,40 @@
 import { Button, Typography, Avatar, Box, Link } from "@mui/material";
 import { Close } from "@mui/icons-material";
 export default function AttachmentLink({
+  width,
   Title,
   Subtitle,
   Thumbnail,
   handleRemove,
+  linkAttachment,
+  isRemoveAble = true,
 }) {
   return (
     <Link
+      target="_blank"
       sx={{
-        width: "100%",
+        width: { width },
+        marginLeft: "1%",
         height: "4rem",
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-evenly",
-        gap: "2%",
-        border: "1px solid gray",
+        justifyContent: "flex-start",
+        gap: "5%",
+        border: "1px solid black",
         borderRadius: "5px",
         color: "black",
         textDecoration: "none",
       }}
+      href={linkAttachment}
     >
       <Avatar
         variant="square"
         src={Thumbnail}
-        sx={{ width: "10%", height: "100%" }}
+        sx={{ width: "20%", height: "100%" }}
       ></Avatar>
       <Box
         sx={{
-          width: "80%",
+          width: "50%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -37,9 +43,11 @@ export default function AttachmentLink({
         }}
       >
         <Typography
-          variant="h6"
+          variant="subtitle1"
           sx={{
+            fontWeight: "bold",
             textOverflow: "ellipsis",
+            overflow: "hidden",
             width: "100%",
             height: "50%",
           }}
@@ -65,7 +73,7 @@ export default function AttachmentLink({
         sx={{
           width: "5%",
           height: "100%",
-          display: "flex",
+          display: isRemoveAble ? "flex" : "none",
           justifyContent: "center",
           alignItems: "center",
           color: "black",

@@ -14,6 +14,7 @@ import {
   Switch,
   Link,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import {
   YouTube,
@@ -22,40 +23,104 @@ import {
   QuestionAnswerOutlined,
   DoNotDisturbOnOutlined,
   AddLink,
+  Today,
 } from "@mui/icons-material";
 import HomeNavbar from "components/HomeNavbar";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { useFormik } from "formik";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import AttachmentLink from "components/homework/AttachmentLink";
 import AddAttachmentButton from "components/homework/AddAttachmentButton";
 import AddAnswerButton from "components/homework/AddAnswerButton";
 import AddFileUploadButton from "components/homework/AddFileUploadButton";
 import AddLinkButton from "components/homework/AddLinkButton";
-const opt = [
-  { id: "1", label: "Công nghệ phần mềm" },
-  { id: "2", label: "Hệ thống thông tin" },
-  { id: "3", label: "Khoa học máy tính" },
-  { id: "4", label: "Mạng và truyền thông" },
-  { id: "5", label: "An toàn thông tin" },
-  { id: "6", label: "Trí tuệ nhân tạo" },
-  { id: "7", label: "Đồ họa và game" },
-  { id: "8", label: "Kỹ thuật phần mềm" },
-  { id: "9", label: "Hệ thống thông tin quản lý" },
-  { id: "10", label: "Khoa học dữ liệu" },
-];
+import { DemoItem } from "@mui/x-date-pickers/internals/demo";
+import * as yup from "yup";
+
+import {
+  useGetClassByInstructorIdQuery,
+  useGetUnitByClassIdQuery,
+  usePostHomeworkMutation,
+} from "state/api";
 const PUBLIC_ANSWER_OPT = [
   { id: "1", label: "After student submited" },
   { id: "2", label: "After exam ended" },
   { id: "3", label: "Not public answer" },
 ];
 export default function CreateHomeWork() {
-  const [valueClass, setValueClass] = useState(opt[0]);
-  const [valueUnit, setValueUnit] = useState(opt[0]);
+  const [valueClass, setValueClass] = useState([]);
+  const [classItem, setClassItem] = useState({});
+  const [valueUnit, setValueUnit] = useState([]);
   const [valueAnswer, setValueAnswer] = useState(PUBLIC_ANSWER_OPT[0]);
   const [hasAnswer, setHasAnswer] = useState(false);
+  const [postHomework, { isLoading: loadingPostHomework }] =
+    usePostHomeworkMutation();
   const [listAttachment, setListAttachment] = useState([]);
   const [listAnswerAttachment, setListAnswerAttachment] = useState([]);
+  const [startTime, setStartTime] = useState(dayjs());
+  let endtime = startTime.add(5, "minute");
+  const { data: ClassQuery, isLoading: isLoadingClassQuery } =
+    useGetClassByInstructorIdQuery("4f9911c9-692b-4bf1-8719-2e397ccac21f");
+  const { data: UnitQuery, isLoading: isLoadingUnitQuery } =
+    useGetUnitByClassIdQuery(classItem.id);
+  useEffect(() => {
+    if (!isLoadingClassQuery && ClassQuery) {
+      const list = ClassQuery.map((item) => {
+        return {
+          id: item.ma_lopHoc,
+          label: item.ten,
+        };
+      });
+      setValueClass(list);
+      setClassItem(list[0]);
+    }
+  }, [isLoadingClassQuery, ClassQuery]);
+
+  useEffect(() => {
+    if (!isLoadingUnitQuery && UnitQuery) {
+      const list = UnitQuery.map((item) => {
+        return {
+          id: item.ma_chuong,
+          label: item.ten,
+        };
+      });
+      setValueUnit(list);
+    }
+  }, [isLoadingUnitQuery, UnitQuery, classItem]);
+
+  const validationSchema = yup.object({
+    homework_title: yup.string().required("Title is required"),
+    homework_content: yup.string().required("Content is required"),
+    homework_answer: yup.string(),
+    class_select: yup.object().required("Class is required"),
+    unit_select: yup.object().required("Unit is required"),
+    public_answer_select: yup.object().required("Public answer is required"),
+  });
+  const formik = useFormik({
+    initialValues: {
+      homework_title: "",
+      homework_content: "",
+      homework_answer: "",
+      class_select: "",
+      unit_select: "",
+      public_answer_select: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log("hello");
+      // postHomework({
+      //   machuong: classItem.id,
+      //   tieuDe: values.homework_title,
+      //   noidungbaitap: values.homework_content,
+      //   noidungdapan: values.homework_answer,
+      //   thoigianbatdau: startTime,
+      //   thoigianketthuc: endtime,
+      //   congkhaidapan: valueAnswer.id,
+      //   nopbu: true,
+      // });
+    },
+  });
   const handleAddAnswer = () => {
     const answerBtn = document.getElementById("add-answer-button");
     if (hasAnswer) {
@@ -83,13 +148,14 @@ export default function CreateHomeWork() {
     );
   };
   return (
-    <Box
+    <form
       id="container"
       sx={{
         width: "100vw",
         height: "100%",
         maxHeight: "auto",
       }}
+      onSubmit={formik.handleSubmit}
     >
       <HomeNavbar IsNotHomePage={true} />
       <Box
@@ -104,7 +170,6 @@ export default function CreateHomeWork() {
         <Box
           sx={{
             padding: "20px 20px",
-
             width: "70%",
           }}
         >
@@ -119,7 +184,8 @@ export default function CreateHomeWork() {
             }}
           >
             <TextField
-              id="outlined-basic"
+              id="homework-title"
+              name="homework_title"
               label="Homework Title"
               variant="filled"
               size="normal"
@@ -128,9 +194,14 @@ export default function CreateHomeWork() {
               }}
               color="success"
               fullWidth
+              error={
+                formik.touched.homework_title &&
+                Boolean(formik.errors.homework_title)
+              }
             />
             <TextField
-              id="outlined-basic"
+              id="homework-content"
+              name="homework_content"
               label="Homework Content"
               variant="filled"
               size="normal"
@@ -141,6 +212,10 @@ export default function CreateHomeWork() {
               fullWidth
               multiline
               rows={8}
+              error={
+                formik.touched.homework_content &&
+                Boolean(formik.errors.homework_content)
+              }
             />
             <Box
               sx={{
@@ -155,6 +230,7 @@ export default function CreateHomeWork() {
             >
               {listAttachment.map((attachment) => (
                 <AttachmentLink
+                  width="100%"
                   Title={attachment.Title}
                   Subtitle={attachment.Subtitle}
                   Thumbnail={attachment.Thumbnail}
@@ -225,7 +301,8 @@ export default function CreateHomeWork() {
               id="add-answer-container"
             >
               <TextField
-                id="outlined-basic"
+                id="homework-answer"
+                name="homework_answer"
                 label="Homework Answer"
                 variant="filled"
                 size="normal"
@@ -246,6 +323,7 @@ export default function CreateHomeWork() {
               >
                 {listAnswerAttachment.map((attachment) => (
                   <AttachmentLink
+                    width="100%"
                     Title={attachment.Title}
                     Subtitle={attachment.Subtitle}
                     Thumbnail={attachment.Thumbnail}
@@ -317,13 +395,18 @@ export default function CreateHomeWork() {
             Information
           </Typography>
           <Autocomplete
-            value={valueClass}
-            onChange={(event, newValue) => {
-              setValueClass(newValue);
-            }}
+            id="class-select"
+            name="class_select"
+            value={classItem.label}
             disablePortal
-            id="combo-box-demo"
-            options={opt}
+            getOptionLabel={(option) => option.label}
+            onChange={(event, newValue) => {
+              setClassItem(newValue);
+            }}
+            options={valueClass}
+            error={
+              formik.touched.class_select && Boolean(formik.errors.class_select)
+            }
             sx={{ width: 280, marginTop: "10px" }}
             renderInput={(params) => (
               <TextField
@@ -335,13 +418,16 @@ export default function CreateHomeWork() {
             )}
           />
           <Autocomplete
-            value={valueUnit}
-            onChange={(event, newValue) => {
-              setValueUnit(newValue);
-            }}
+            value={valueUnit[0]}
+            id="unit-select"
+            name="unit_select"
             disablePortal
-            id="combo-box-demo"
-            options={opt}
+            error={
+              formik.touched.unit_select && Boolean(formik.errors.unit_select)
+            }
+            getOptionLabel={(option) => option.label}
+            inputValue={classItem.label}
+            options={valueUnit}
             sx={{ width: 280 }}
             renderInput={(params) => (
               <TextField
@@ -352,27 +438,19 @@ export default function CreateHomeWork() {
               />
             )}
           />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="Begin at"
-              defaultValue={dayjs("2022-04-17T15:30")}
-              slotProps={{ textField: { size: "small", color: "success" } }}
-              sx={{ marginTop: "20px", width: 280 }}
-            />
-            <DateTimePicker
-              label="Deadline"
-              defaultValue={dayjs("2022-04-17T15:30")}
-              slotProps={{ textField: { size: "small", color: "success" } }}
-              sx={{ marginTop: "20px", width: 280 }}
-            />
-          </LocalizationProvider>
+
           <Autocomplete
-            value={valueAnswer}
+            id="public-answer-select"
+            name="public_answer_select"
+            error={
+              formik.touched.public_answer_select &&
+              Boolean(formik.errors.public_answer_select)
+            }
+            value={PUBLIC_ANSWER_OPT[0]}
             onChange={(event, newValue) => {
               setValueAnswer(newValue);
             }}
             disablePortal
-            id="combo-box-demo"
             options={PUBLIC_ANSWER_OPT}
             sx={{ width: 280 }}
             renderInput={(params) => (
@@ -385,11 +463,32 @@ export default function CreateHomeWork() {
             )}
           />
 
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoItem label="Start at">
+              <DateTimePicker
+                id="start-time"
+                name="start-time"
+                disablePast
+                defaultValue={startTime}
+                onChange={(value) => setStartTime(value)}
+              />
+            </DemoItem>
+            <DemoItem label="End">
+              <DateTimePicker
+                id="end-time"
+                name="end_time"
+                value={endtime}
+                minTime={endtime}
+              />
+            </DemoItem>
+          </LocalizationProvider>
           <Typography color="#009265" variant="h6" fontWeight="bold" mt="10px">
             Features
           </Typography>
           <FormGroup>
             <FormControlLabel
+              id="late-submit"
+              name="late_submit"
               control={<Switch color="success" />}
               label="Late submit"
             />
@@ -409,12 +508,17 @@ export default function CreateHomeWork() {
                 width: "100%",
                 alignSelf: "flex-end",
               }}
+              // disable={loadingPostHomework ? true : false}
             >
-              Add Test
+              {loadingPostHomework ? (
+                <CircularProgress color="success" />
+              ) : (
+                "Create homework"
+              )}
             </Button>
           </Box>
         </Box>
       </Box>
-    </Box>
+    </form>
   );
 }
