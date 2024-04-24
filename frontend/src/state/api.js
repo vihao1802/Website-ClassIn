@@ -1,3 +1,4 @@
+import { PostAdd } from "@mui/icons-material";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 /* export const api = createApi({
@@ -81,20 +82,19 @@ export const api = createApi({
     "User",
     "Class",
     "Units",
-    /* "classDetails",
+    "classDetails",
     "UnitAcitvities",
     "StudentsByClassId",
     "TestByTestId",
     "TestDetails",
-    "QuestionDetails",
     "ClassByInstructorId",
     "UserSubmissionsDetails",
     "WorkDetailsByTestId",
     "WorkInfoByWorkId",
-    "UnregisteredUsers"
+    "UnregisteredUsers",
+    "UserResigeter",
     "Todo",
-    "MessageClass" */
-    ,
+    "MessageClass",
   ],
   endpoints: (build) => ({
     // GET METHODS
@@ -126,8 +126,12 @@ export const api = createApi({
       providesTags: ["Units"],
     }),
     getUnitActivities: build.query({
-      query: (cid) => `chuong/${cid}/hoatdong`,
-      providesTags: ["UnitActivities"],
+      query: ({ cid, search, act }) => ({
+        url: `chuong/${cid}/hoatdong`,
+        method: "GET",
+        params: { search, act },
+      }),
+      providesTags: ["Units"],
     }),
     getStudentsByClassId: build.query({
       query: (cid) => `lopHoc/${cid}/taiKhoan`,
@@ -143,7 +147,11 @@ export const api = createApi({
     }),
     getQuestionsDetails: build.query({
       query: (uid) => `cauHoi/taiKhoan/${uid}/chiTiet`,
-      providesTags: ["QuestionDetails"],
+      providesTags: ["Questions"],
+    }),
+    getQuestionsAnswers: build.query({
+      query: (qid) => `cauHoi/${qid}/chiTiet`,
+      providesTags: ["Questions"],
     }),
     getClassByInstructorId: build.query({
       query: (uid) => `lopHoc/taiKhoan/${uid}`,
@@ -165,25 +173,6 @@ export const api = createApi({
       query: (cid) => `tai-khoan/${cid}/unregistered`,
       providesTags: ["UnregisteredUsers"],
     }),
-
-    // POST METHODS
-    postUserResigeter: build.mutation({
-      query: (data) => ({
-        url: "thamGiaLopHoc",
-        method: "POST",
-        body: data,
-      }),
-      providesTags: ["postUserResigeter"],
-    }),
-
-    // DELETE METHODS
-    deleteUserFromClass: build.mutation({
-      query: (data) => ({
-        url: `thamGiaLopHoc/${data.ma_lopHoc}/${data.ma_taiKhoan}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["StudentsByClassId"],
-    }),
     getTodo: build.query({
       query: ({ acc_id, selectedClass, selectedCategory }) =>
         `tai-khoan/${acc_id}/bai-tap/de-kiem-tra/filter?selectedClass=${selectedClass}&selectedCategory=${selectedCategory}`,
@@ -193,6 +182,20 @@ export const api = createApi({
       query: ({ class_id, acc_id }) =>
         `/tin-nhan/lop-hoc/${class_id}/tai-khoan/${acc_id}`,
       providesTags: ["MessageClass"],
+    }),
+    getUnitsCommonByClassId: build.query({
+      query: (cid) => `chuong/lopHoc/${cid}`,
+      providesTags: ["Units"],
+    }),
+
+    // POST METHODS
+    postUserResigeter: build.mutation({
+      query: (data) => ({
+        url: "thamGiaLopHoc",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["StudentsByClassId", "Class", "UnregisteredUsers"],
     }),
     postMessageClass: build.mutation({
       query: ({ noiDung, acc_id, chatGroup_id }) => ({
@@ -205,12 +208,89 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    postCreateClass: build.mutation({
+      query: (data) => ({
+        url: `lopHoc/${data.ma_taiKhoan}`,
+        method: "POST",
+        body: { ten: data.ten, moTa: data.moTa, anhDaiDien: data.anhDaiDien },
+      }),
+      invalidatesTags: ["Class"],
+    }),
+    postAddUnit: build.mutation({
+      query: (data) => ({
+        url: `chuong/${data.ma_lopHoc}`,
+        method: "POST",
+        body: { ten: data.ten },
+      }),
+      invalidatesTags: ["Units"],
+    }),
+    postAddQuestion: build.mutation({
+      query: (data) => ({
+        url: `cauHoi/${data.ma_taiKhoan}`,
+        method: "POST",
+        body: { noiDung: data.noiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+    postAddAnswers: build.mutation({
+      query: (data) => ({
+        url: `cauTraLoi/${data.ma_cauHoi}`,
+        method: "POST",
+        body: { noiDung: data.noiDung, laCauTraLoiDung: data.laCauTraLoiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+
+    // DELETE METHODS
+    deleteUserFromClass: build.mutation({
+      query: (data) => ({
+        url: `thamGiaLopHoc/${data.ma_lopHoc}/${data.ma_taiKhoan}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["StudentsByClassId", "Class", "UnregisteredUsers"],
+    }),
+
+    // PUT METHODS
     deleteMessageClass: build.mutation({
       query: ({ messageId }) => ({
         url: `tin-nhan/${messageId}/delete-message`,
         method: "PUT",
       }),
       invalidatesTags: ["MessageClass"],
+    }),
+
+    putEditUnit: build.mutation({
+      query: (data) => ({
+        url: `chuong/${data.ma_chuong}`,
+        method: "PUT",
+        body: { ten: data.ten },
+      }),
+      invalidatesTags: ["Units"],
+    }),
+
+    putEditQuestion: build.mutation({
+      query: (data) => ({
+        url: `cauHoi/${data.ma_cauHoi}`,
+        method: "PUT",
+        body: { noiDung: data.noiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+
+    putEditAnswers: build.mutation({
+      query: (data) => ({
+        url: `cauTraLoi/${data.ma_cauTraLoi}`,
+        method: "PUT",
+        body: { noiDung: data.noiDung, laCauTraLoiDung: data.laCauTraLoiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+    deleteQuestion: build.mutation({
+      query: (qid) => ({
+        url: `cauHoi/${qid}/delete`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Questions"],
     }),
   }),
 });
@@ -238,4 +318,13 @@ export const {
   useGetMessageClassQuery,
   usePostMessageClassMutation,
   useDeleteMessageClassMutation,
+  usePostCreateClassMutation,
+  usePostAddUnitMutation,
+  usePutEditUnitMutation,
+  usePostAddQuestionMutation,
+  usePostAddAnswersMutation,
+  useGetQuestionsAnswersQuery,
+  usePutEditQuestionMutation,
+  usePutEditAnswersMutation,
+  useDeleteQuestionMutation,
 } = api;

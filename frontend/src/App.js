@@ -47,7 +47,6 @@ function App() {
             <Route path="/todo" element={<Todo />} />
             <Route path="chats" element={<Chats />} />
             <Route path="/questions" element={<Questions />} />
-            <Route path="/tests" element={<Tests />} />
           </Route>
         </Routes>
       </BrowserRouter>

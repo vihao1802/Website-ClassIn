@@ -142,9 +142,10 @@ async def read(ma_deKiemTra: str, db: Session = Depends(database.get_db)):
                 "ma_baiLamKiemTra": baiLamKiemTra.ma_baiLamKiemTra,
                 "khoangThoiGianLamBai": str(baiLamKiemTra.thoiGianBatDauLam)
                 + " - "
-                + str(baiLamKiemTra.thoiGianNop.time()),
+                + str(baiLamKiemTra.thoiGianNopBai.time()),
                 "thoiGianLamBai": (
-                    baiLamKiemTra.thoiGianNop - baiLamKiemTra.thoiGianBatDauLam
+                    baiLamKiemTra.thoiGianNopBai
+                    - baiLamKiemTra.thoiGianBatDauLam
                 ).total_seconds()
                 / 60,
                 "diem": baiLamKiemTra.diem,

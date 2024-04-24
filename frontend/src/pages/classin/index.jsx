@@ -30,8 +30,8 @@ import AvatarName from "components/AvatarName";
 import Loading from "components/Loading";
 
 const Classin = () => {
-  //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
-  const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
+  const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  // const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpenModalJoin, setOpenModalJoin] = useState(false);
@@ -73,8 +73,11 @@ const Classin = () => {
   const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
   const [clientId, setClientId] = useState(null);
 
-  const { data: classInfo, isLoading: isClassInfoLoading } =
-    useGetClassQuery(userId);
+  const {
+    data: classInfo,
+    isLoading: isClassInfoLoading,
+    refetch: refetchClassInfo,
+  } = useGetClassQuery(userId);
 
   useEffect(() => {
     if (userList && userList.length > 0 && !clientId) {
@@ -84,7 +87,7 @@ const Classin = () => {
       );
       const randomClientId =
         nonDuplicateIds[Math.floor(Math.random() * nonDuplicateIds.length)];
-      console.log(randomClientId);
+      //console.log(randomClientId);
       setClientId(randomClientId);
     }
   }, [userList, clientId]);
@@ -172,6 +175,8 @@ const Classin = () => {
                 handleClose={handleCLoseModalJoin}
                 handleClass={handleJoin}
                 title={"Join class"}
+                userId={userId}
+                refetchClassInfo={refetchClassInfo}
               />
               <MenuItem onClick={handleOpenModalCreate}>Create class</MenuItem>
               <ModalHandleClass
@@ -179,19 +184,12 @@ const Classin = () => {
                 handleClose={handleCLoseModalCreate}
                 handleClass={handleCreate}
                 title={"Create class"}
+                userId={userId}
+                refetchClassInfo={refetchClassInfo}
               />
             </Menu>
           </FlexBetween>
         </FlexBetween>
-        <TextField
-          fullWidth
-          id="search"
-          label="Search"
-          variant="outlined"
-          size="small"
-          color="success"
-          sx={{ marginTop: "10px" }}
-        />
         <Box
           sx={{
             height: "100%",
@@ -343,7 +341,7 @@ const Classin = () => {
       </Box>
       {/* CENTER CONTAIN */}
       {activeClass ? (
-        <ClassWidget classItem={activeClass} clientId={userId} />
+        <ClassWidget classId={activeClass.ma_lopHoc} clientId={userId} />
       ) : (
         <Loading />
       )}

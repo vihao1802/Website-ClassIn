@@ -555,7 +555,6 @@ const ClassDetail = () => {
                       variant="contained"
                       color="success"
                       onClick={() => {
-                        console.log(classId, selectedRow.ma_taiKhoan);
                         deleteUserFromClass({
                           ma_lopHoc: classId,
                           ma_taiKhoan: selectedRow.ma_taiKhoan,

@@ -55,7 +55,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     class_id: classItem?.ma_lopHoc,
     acc_id: clientId,
   });
-  console.log(messageData);
+  //console.log(messageData);
 
   // scroll to bottom of chat box
   useEffect(() => {
@@ -63,7 +63,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
       if (maNhomChat.current !== messageData[0]?.ma_nhomChat) {
         // setMaNhomChat(messageData[0]?.ma_nhomChat);
         maNhomChat.current = messageData[0]?.ma_nhomChat;
-        console.log("maNhomChat" + maNhomChat.current);
+        //console.log("maNhomChat" + maNhomChat.current);
       }
     }
   }, [messageData, maNhomChat]);
@@ -118,7 +118,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   const handleSendMessageTF = async () => {
     messageTextField = messageTextField.trim();
     // console.log(messageTextField);
-    console.log("in TF " + maNhomChat.current);
+    //console.log("in TF " + maNhomChat.current);
     if (!messageTextField) return;
     const response = await postMessageClass({
       noiDung: messageTextField,
@@ -150,7 +150,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   // delete message
   const [deleteMessageClass] = useDeleteMessageClassMutation();
   const handleDeleteMessage = async (messageIdDeleted) => {
-    console.log("Message delete" + messageIdDeleted);
+    //console.log("Message delete" + messageIdDeleted);
     const response = await deleteMessageClass({
       messageId: messageIdDeleted,
     });
@@ -175,16 +175,16 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     if (clientId && maNhomChat) {
       const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}`;
       const ws = new WebSocket(url);
-      console.log("connecting to " + url);
+      //console.log("connecting to " + url);
 
       ws.onopen = () => {
-        console.log("WebSocket connected");
+        //console.log("WebSocket connected");
       };
 
       ws.onmessage = (event) => {
         const messageContent = JSON.parse(event.data);
         refetchMessageData();
-        console.log("Message by id in websocket: " + messageContent.sendById);
+        //console.log("Message by id in websocket: " + messageContent.sendById);
         if (messageContent.type === "deleteMessage") {
         } else if (messageContent.type === "sendMessage") {
           const scrollContainer = boxRef.current;
@@ -224,7 +224,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
   const sendMessage = (id) => {
     if (webSocket.current && webSocket.current.readyState === WebSocket.OPEN) {
-      console.log("send by id: " + id);
+      //console.log("send by id: " + id);
       webSocket.current.send("sendMessage");
     }
   };
