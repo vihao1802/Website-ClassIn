@@ -23,15 +23,18 @@ import {
 } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
+import NoClassImage from "assets/NoClass.png";
 import ClassWidget from "components/ClassWidget";
 import ModalHandleClass from "components/ModalHandleClass";
 import { useGetClassQuery, useGetAllUserQuery } from "state/api";
 import AvatarName from "components/AvatarName";
 import Loading from "components/Loading";
+import { getUserId_Cookie } from "utils/handleCookies";
 
 const Classin = () => {
-  const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
   // const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
+  const userId = getUserId_Cookie();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpenModalJoin, setOpenModalJoin] = useState(false);
@@ -70,8 +73,8 @@ const Classin = () => {
     setOpenRegistered(!openRegistered);
   };
 
-  const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
-  const [clientId, setClientId] = useState(null);
+  //const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
+  //const [clientId, setClientId] = useState(null);
 
   const {
     data: classInfo,
@@ -79,7 +82,7 @@ const Classin = () => {
     refetch: refetchClassInfo,
   } = useGetClassQuery(userId);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     if (userList && userList.length > 0 && !clientId) {
       const uniqueUserIds = userList.map((user) => user.ma_taiKhoan);
       const nonDuplicateIds = uniqueUserIds.filter(
@@ -90,11 +93,13 @@ const Classin = () => {
       //console.log(randomClientId);
       setClientId(randomClientId);
     }
-  }, [userList, clientId]);
+  }, [userList, clientId]); */
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
-    setActiveClass(classInfo?.[0]);
+    console.log(classInfo);
+    if (classInfo && classInfo.length > 0) setActiveClass(classInfo[0]);
+    else if (classInfo && classInfo.length === 0) setActiveClass([]);
   }, [classInfo, isClassInfoLoading]);
 
   if (isClassInfoLoading) {
@@ -341,7 +346,72 @@ const Classin = () => {
       </Box>
       {/* CENTER CONTAIN */}
       {activeClass ? (
-        <ClassWidget classId={activeClass.ma_lopHoc} clientId={userId} />
+        <>
+          {!Array.isArray(activeClass) ? (
+            <ClassWidget classItem={activeClass} userId={userId} />
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                gap: "1rem",
+              }}
+            >
+              <img
+                src={NoClassImage}
+                alt="return"
+                style={{
+                  width: "280px",
+                  height: "330px",
+                  borderRadius: "10px",
+                }}
+              />
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                  gap: "10px",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "white",
+                    color: "#009265",
+                    maxWidth: "140px",
+                    width: "100%",
+                    border: "1px solid #009265",
+                    "&:hover": {
+                      border: "1px solid #009265",
+                    },
+                  }}
+                  onClick={handleOpenModalCreate}
+                >
+                  Create Class
+                </Button>
+                <Button
+                  sx={{
+                    backgroundColor: "#009265",
+                    color: "white",
+                    maxWidth: "140px",
+                    width: "100%",
+                    "&:hover": {
+                      backgroundColor: "#007850",
+                    },
+                  }}
+                  onClick={handleOpenModalJoin}
+                >
+                  Join Class
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </>
       ) : (
         <Loading />
       )}

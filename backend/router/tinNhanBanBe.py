@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/tinNhanBanBe", tags=["tinNhanBanBe"])
+router = APIRouter(prefix="/tin-nhan-ban-be", tags=["TinNhanBanBe"])
 
 
 @router.post(
@@ -17,10 +17,11 @@ async def create(
     schema_object: schemas.TinNhanBanBeCreate,
     db: Session = Depends(database.get_db),
 ):
+    noiDung = str(schema_object.noiDung)
     ma_nguoiGui = str(schema_object.ma_nguoiGui)
     ma_nguoiNhan = str(schema_object.ma_nguoiNhan)
 
-    if schema_object.noiDung.strip() == "":
+    if noiDung.strip() == "":
         raise HTTPException(status_code=400, detail="noiDung empty")
     # check ma_nguoiNguoiGui exists
     db_object_check = (
@@ -44,6 +45,7 @@ async def create(
         )
 
     db_object = models.TinNhanBanBe(**schema_object.dict())
+    db_object.noiDung = noiDung
     db_object.ma_nguoiGui = ma_nguoiGui
     db_object.ma_nguoiNhan = ma_nguoiNhan
 
@@ -60,4 +62,110 @@ async def create(
 )
 async def read(db: Session = Depends(database.get_db)):
     db_object = db.query(models.TinNhanBanBe).all()
+    return db_object
+
+
+@router.get(
+    "/tai-khoan/{ma_taiKhoanHienHanh}/tai-khoan/{ma_nguoiBan}",
+    status_code=status.HTTP_200_OK,
+)
+async def read(
+    ma_taiKhoanHienHanh: str,
+    ma_nguoiBan: str,
+    db: Session = Depends(database.get_db),
+):
+    # check exists
+    taiKhoan_exists = db.query(
+        exists().where(models.TaiKhoan.ma_taiKhoan == ma_taiKhoanHienHanh)
+    ).scalar()
+    if not taiKhoan_exists:
+        raise HTTPException(
+            status_code=404,
+            detail=f"ma_taiKhoanHienHanh '{ma_taiKhoanHienHanh}' not found in taiKhoan",
+        )
+    taiKhoan_exists = db.query(
+        exists().where(models.TaiKhoan.ma_taiKhoan == ma_nguoiBan)
+    ).scalar()
+    if not taiKhoan_exists:
+        raise HTTPException(
+            status_code=404,
+            detail=f"ma_nguoiBan '{ma_nguoiBan}' not found in taiKhoan",
+        )
+
+    # get all tin nhan
+    result = []
+    db_nguoiGui = (
+        db.query(models.TinNhanBanBe, models.TaiKhoan)
+        .join(
+            models.TaiKhoan,
+            models.TinNhanBanBe.ma_nguoiGui == models.TaiKhoan.ma_taiKhoan,
+        )
+        .filter(
+            models.TinNhanBanBe.ma_nguoiGui == ma_taiKhoanHienHanh,
+            models.TinNhanBanBe.ma_nguoiNhan == ma_nguoiBan,
+            models.TinNhanBanBe.daXoa == 0,
+        )
+    )
+    db_nguoiNhan = (
+        db.query(models.TinNhanBanBe, models.TaiKhoan)
+        .join(
+            models.TaiKhoan,
+            models.TinNhanBanBe.ma_nguoiGui == models.TaiKhoan.ma_taiKhoan,
+        )
+        .filter(
+            models.TinNhanBanBe.ma_nguoiGui == ma_nguoiBan,
+            models.TinNhanBanBe.ma_nguoiNhan == ma_taiKhoanHienHanh,
+            models.TinNhanBanBe.daXoa == 0,
+        )
+    )
+    for TinNhanBanBe, TaiKhoan in db_nguoiGui:
+        TinNhanBanBe.ten_taiKhoan = TaiKhoan.hoTen
+        TinNhanBanBe.email = TaiKhoan.email
+        TinNhanBanBe.anhDaiDien = TaiKhoan.anhDaiDien
+
+        if TinNhanBanBe.ma_nguoiGui == ma_taiKhoanHienHanh:
+            TinNhanBanBe.position = "right"
+        else:
+            TinNhanBanBe.position = "left"
+
+        result.append(TinNhanBanBe)
+
+    for TinNhanBanBe, TaiKhoan in db_nguoiNhan:
+        TinNhanBanBe.ten_taiKhoan = TaiKhoan.hoTen
+        TinNhanBanBe.email = TaiKhoan.email
+        TinNhanBanBe.anhDaiDien = TaiKhoan.anhDaiDien
+
+        if TinNhanBanBe.ma_nguoiGui == ma_nguoiBan:
+            TinNhanBanBe.position = "left"
+        else:
+            TinNhanBanBe.position = "right"
+
+        result.append(TinNhanBanBe)
+
+    # sort by thoiGianGui old to new
+    result = sorted(result, key=lambda x: x.thoiGianGui)
+
+    return result
+
+
+@router.put(
+    "/{ma_tinNhan}/delete-message",
+    status_code=status.HTTP_200_OK,
+)
+async def update(
+    ma_tinNhan: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = (
+        db.query(models.TinNhanBanBe)
+        .filter(models.TinNhanBanBe.ma_tinNhan == ma_tinNhan)
+        .first()
+    )
+    if db_object is None:
+        raise HTTPException(status_code=404, detail="TinNhanBanBe not found")
+
+    db_object.daXoa = 1
+
+    db.commit()
+    db.refresh(db_object)
     return db_object

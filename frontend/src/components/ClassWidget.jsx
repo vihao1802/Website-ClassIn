@@ -194,9 +194,9 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = ({ classId, clientId }) => {
-  const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
-  // const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
+const ClassWidget = ({ classItem, userId }) => {
+  //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  //const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
 
   const { data: classItem, isLoading: isClassItemLoading } =
     useGetClassDetailsQuery(classId);
@@ -379,8 +379,8 @@ const ClassWidget = ({ classId, clientId }) => {
               height: "calc(100% - 98.8px)",
             }}
           >
-            {classItem && clientId && (
-              <ChatBoxGroup classItem={classItem} clientId={clientId} />
+            {classItem && userId && (
+              <ChatBoxGroup classItem={classItem} clientId={userId} />
             )}
           </TabPanel>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, memo } from "react";
 import { SendRounded, DeleteRounded, ArrowDownward } from "@mui/icons-material";
 import {
   IconButton,
@@ -18,14 +18,12 @@ import { MessageBox } from "react-chat-elements";
 import FlexBetween from "./FlexBetween";
 import profileImage from "assets/profile.jpg";
 import {
-  usePostMessageClassMutation,
-  useGetMessageClassQuery,
-  useDeleteMessageClassMutation,
-  useUpdateStatusFriendMutation,
+  useGetMessageFriendQuery,
+  useDeleteMessageFriendMutation,
+  usePostMessageFriendMutation,
 } from "state/api";
 import AvatarName from "./AvatarName";
-import AlertComponent from "./AlertComponent";
-const ChatBoxGroup = ({ classItem, clientId }) => {
+const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
 
@@ -50,19 +48,19 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
   // message loading data to chat box
   // const [maNhomChat, setMaNhomChat] = useState("");
-  const maNhomChat = useRef("");
+  // const maNhomChat = useRef("");
   const {
     data: messageData,
     // isLoading: messageLoading,
     refetch: refetchMessageData,
-  } = useGetMessageClassQuery({
-    class_id: classItem?.ma_lopHoc,
+  } = useGetMessageFriendQuery({
     acc_id: clientId,
+    friend_id: friend.ma_taiKhoan,
   });
-  //console.log(messageData);
+  console.log(messageData);
 
   // scroll to bottom of chat box
-  useEffect(() => {
+  /*     useEffect(() => {
     if (messageData) {
       if (maNhomChat.current !== classItem.ma_nhomChat) {
         // setMaNhomChat(messageData[0]?.ma_nhomChat);
@@ -70,7 +68,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         console.log("maNhomChat: " + maNhomChat.current);
       }
     }
-  }, [messageData, maNhomChat, classItem]);
+  }, [messageData, maNhomChat]); */
 
   useEffect(() => {
     const scrollContainer = boxRef.current;
@@ -82,7 +80,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
   useEffect(() => {
     setUserScrolled(false);
-  }, [classItem]);
+  }, [friend]);
 
   // handle on scroll
   const handleOnScroll = () => {
@@ -112,7 +110,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
   // handle message text field
   const [postMessageClass, { isLoading: loadingPostMessage }] =
-    usePostMessageClassMutation();
+    usePostMessageFriendMutation();
   const handleTextFieldChange = (event) => {
     messageTextField = event.target.value;
     // console.log(messageTextField);
@@ -126,12 +124,12 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   const handleSendMessageTF = async () => {
     messageTextField = messageTextField.trim();
     // console.log(messageTextField);
-    //console.log("in TF " + maNhomChat.current);
+    // console.log("in TF " + maNhomChat.current);
     if (!messageTextField) return;
     const response = await postMessageClass({
       noiDung: messageTextField,
-      acc_id: clientId,
-      chatGroup_id: maNhomChat.current,
+      acc_id_1: clientId,
+      acc_id_2: friend.ma_taiKhoan,
     });
     if (response.data) {
       sendMessage(clientId);
@@ -156,9 +154,9 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     handleClose();
   };
   // delete message
-  const [deleteMessageClass] = useDeleteMessageClassMutation();
+  const [deleteMessageClass] = useDeleteMessageFriendMutation();
   const handleDeleteMessage = async (messageIdDeleted) => {
-    //console.log("Message delete" + messageIdDeleted);
+    console.log("Message delete" + messageIdDeleted);
     const response = await deleteMessageClass({
       messageId: messageIdDeleted,
     });
@@ -180,19 +178,22 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   // web socket
   useEffect(() => {
     // Connect to WebSocket
-    if (clientId && maNhomChat) {
-      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}`;
+    if (clientId) {
+      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}/nhan-tin-ban-be`;
       const ws = new WebSocket(url);
-      //console.log("connecting to " + url);
+      console.log("connecting to " + url);
 
       ws.onopen = () => {
-        //console.log("WebSocket connected");
+        console.log("WebSocket connected");
       };
 
       ws.onmessage = (event) => {
         const messageContent = JSON.parse(event.data);
         refetchMessageData();
-        //console.log("Message by id in websocket: " + messageContent.sendById);
+        console.log("In websocket" + friend.hoTen);
+        refetchAllFriends();
+        setActive(friend);
+        console.log("Message by id in websocket: " + messageContent.sendById);
         if (messageContent.type === "deleteMessage") {
         } else if (messageContent.type === "sendMessage") {
           const scrollContainer = boxRef.current;
@@ -228,35 +229,15 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         }
       };
     }
-  }, [clientId, maNhomChat, refetchMessageData]);
+  }, [clientId, friend, refetchMessageData, refetchAllFriends, setActive]);
 
   const sendMessage = (id) => {
     if (webSocket.current && webSocket.current.readyState === WebSocket.OPEN) {
-      //console.log("send by id: " + id);
+      console.log("send by id: " + id);
       webSocket.current.send("sendMessage");
     }
   };
 
-  // change status friend
-  const [showAlert, setShowAlert] = useState({ message: "", state: false });
-  const [updateStatusFriend] = useUpdateStatusFriendMutation();
-  const handleChangeStatusFriend = async (friendId, status, message) => {
-    const response = await updateStatusFriend({
-      acc_id: clientId,
-      friend_id: friendId,
-      status: status,
-    });
-    if (response.data) {
-      // console.log("Change status friend success");
-      // show AlertComponent
-      setShowAlert({
-        message: message,
-        state: true,
-      });
-    } else {
-      console.error("Error changing status friend");
-    }
-  };
   return (
     <>
       <Box
@@ -279,15 +260,9 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         }}
         onScroll={handleOnScroll}
       >
-        <AlertComponent
-          severity="success"
-          message={showAlert.message}
-          open={showAlert.state}
-          onClose={() => setShowAlert({ ...showAlert, state: false })}
-        />
         {messageData?.map((item, index) => {
           return (
-            item.anTinNhan === 0 && (
+            item.daXoa === 0 && (
               <Box
                 key={item.ma_tinNhan}
                 sx={{
@@ -332,7 +307,8 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                         <Typography id="modal-description" sx={{ mt: 2 }}>
                           {`Email: ${item.email}`}
                         </Typography>
-                        {item.position === "right" && (
+
+                        {item.position === "left" ? (
                           <Box
                             sx={{
                               display: "flex",
@@ -351,67 +327,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                                   backgroundColor: "#007850",
                                 },
                                 "&:disabled": {
-                                  color: "white",
-                                },
-                                width: "100%",
-                              }}
-                              disabled
-                            >
-                              You
-                            </Button>
-                          </Box>
-                        )}
-                        {item.position === "left" && item.daKetBan === 0 && (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "end",
-                              gap: "10px",
-                              mt: 3,
-                            }}
-                          >
-                            <Button
-                              sx={{
-                                backgroundColor: "#009265",
-                                color: "white",
-                                border: "2px solid #009265",
-                                padding: "5px 15px",
-                                "&:hover": {
-                                  backgroundColor: "#007850",
-                                },
-                                width: "100%",
-                              }}
-                              onClick={() =>
-                                handleChangeStatusFriend(
-                                  item.ma_taiKhoan,
-                                  2,
-                                  "Request sent",
-                                )
-                              }
-                            >
-                              Add friend
-                            </Button>
-                          </Box>
-                        )}
-                        {item.position === "left" && item.daKetBan === 1 && (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "end",
-                              gap: "10px",
-                              mt: 3,
-                            }}
-                          >
-                            <Button
-                              sx={{
-                                backgroundColor: "#009265",
-                                color: "white",
-                                border: "2px solid #009265",
-                                padding: "5px 15px",
-                                "&:hover": {
-                                  backgroundColor: "#007850",
-                                },
-                                "&:disabled": {
+                                  backgroundColor: "#009265",
                                   color: "white",
                                 },
                                 width: "100%",
@@ -421,8 +337,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                               Your friend
                             </Button>
                           </Box>
-                        )}
-                        {item.position === "left" && item.daKetBan === 2 && (
+                        ) : (
                           <Box
                             sx={{
                               display: "flex",
@@ -431,48 +346,25 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                               mt: 3,
                             }}
                           >
-                            {item.ma_nguoiKetBan === item.ma_taiKhoan ? (
-                              <Button
-                                sx={{
+                            <Button
+                              sx={{
+                                backgroundColor: "#009265",
+                                color: "white",
+                                border: "2px solid #009265",
+                                padding: "5px 15px",
+                                "&:hover": {
+                                  backgroundColor: "#007850",
+                                },
+                                "&:disabled": {
                                   backgroundColor: "#009265",
                                   color: "white",
-                                  border: "2px solid #009265",
-                                  padding: "5px 15px",
-                                  "&:hover": {
-                                    backgroundColor: "#007850",
-                                  },
-                                  width: "100%",
-                                }}
-                                onClick={() =>
-                                  handleChangeStatusFriend(
-                                    item.ma_taiKhoan,
-                                    1,
-                                    "Accept friend request",
-                                  )
-                                }
-                              >
-                                Accept
-                              </Button>
-                            ) : (
-                              <Button
-                                sx={{
-                                  backgroundColor: "#009265",
-                                  color: "white",
-                                  border: "2px solid #009265",
-                                  padding: "5px 15px",
-                                  "&:hover": {
-                                    backgroundColor: "#007850",
-                                  },
-                                  "&:disabled": {
-                                    color: "white",
-                                  },
-                                  width: "100%",
-                                }}
-                                disabled
-                              >
-                                Requested
-                              </Button>
-                            )}
+                                },
+                                width: "100%",
+                              }}
+                              disabled
+                            >
+                              You
+                            </Button>
                           </Box>
                         )}
                       </Box>
@@ -510,21 +402,12 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                 </Box>
                 {item ? (
                   <MessageBox
-                    replyButton={item.ma_taiKhoan === clientId ? true : false}
+                    replyButton={item.ma_nguoiGui === clientId ? true : false}
                     onReplyClick={
-                      item.ma_taiKhoan === clientId
+                      item.ma_nguoiGui === clientId
                         ? handleActionMenuMessage
                         : null
                     }
-                    /* onTitleClick={
-                      item.ma_taiKhoan !== clientId
-                        ? () =>
-                            handleClickOpenUserDetail(
-                              item.email,
-                              item.ten_taiKhoan,
-                            )
-                        : null
-                    } */
                     position={item.position}
                     type={"text"}
                     text={item.noiDung}
@@ -539,7 +422,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                   <Skeleton variant="rectangular" width={300} height={200} />
                 )}
 
-                {item.ma_taiKhoan === clientId && (
+                {item.ma_nguoiGui === clientId && (
                   <Box>
                     <Menu
                       anchorEl={anchorEl}
@@ -783,4 +666,4 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   );
 };
 
-export default ChatBoxGroup;
+export default memo(ChatBoxGroup);

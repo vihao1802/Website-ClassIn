@@ -67,3 +67,15 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             await manager.broadcast(json.dumps(message))
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
+
+@router.websocket("/tai-khoan/{client_id}/nhan-tin-ban-be")
+async def websocket_endpoint(websocket: WebSocket, client_id: str):
+    await manager.connect(websocket)
+    try:
+        while True:
+            typeAction = await websocket.receive_text()
+            message = {"sendById": client_id, "type": typeAction}
+            await manager.broadcast(json.dumps(message))
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)

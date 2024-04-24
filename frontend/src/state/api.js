@@ -104,7 +104,7 @@ export const api = createApi({
     }),
     getUser: build.query({
       query: (uid) => ({
-        url: `taiKhoan/${uid}`,
+        url: `tai-khoan/${uid}`,
         method: "GET",
       }),
       providesTags: ["User"],
@@ -119,6 +119,10 @@ export const api = createApi({
     }),
     getClass: build.query({
       query: (uid) => `lopHoc/${uid}`,
+      providesTags: ["Class"],
+    }),
+    getAllJoinClass: build.query({
+      query: (uid) => `thamGiaLopHoc/tai-khoan/${uid}/search-for-todo`,
       providesTags: ["Class"],
     }),
     getUnits: build.query({
@@ -172,6 +176,33 @@ export const api = createApi({
     getUnregisteredUsers: build.query({
       query: (cid) => `tai-khoan/${cid}/unregistered`,
       providesTags: ["UnregisteredUsers"],
+    }),
+    getAllFriends: build.query({
+      query: (uid) => `ban-be/tai-khoan/${uid}`,
+      providesTags: ["ListFriends"],
+    }),
+    getAllUserWithStatus: build.query({
+      query: (uid) => `tai-khoan/${uid}/get-all-user-with-status-friend`,
+      providesTags: ["ListFriends"],
+    }),
+
+    // POST METHODS
+    postUserResigeter: build.mutation({
+      query: (data) => ({
+        url: "thamGiaLopHoc",
+        method: "POST",
+        body: data,
+      }),
+      providesTags: ["postUserResigeter"],
+    }),
+
+    // DELETE METHODS
+    deleteUserFromClass: build.mutation({
+      query: (data) => ({
+        url: `thamGiaLopHoc/${data.ma_lopHoc}/${data.ma_taiKhoan}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["StudentsByClassId"],
     }),
     getTodo: build.query({
       query: ({ acc_id, selectedClass, selectedCategory }) =>
@@ -258,6 +289,36 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    getMessageFriend: build.query({
+      query: ({ acc_id, friend_id }) =>
+        `tin-nhan-ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}`,
+      providesTags: ["MessageFriend"],
+    }),
+    postMessageFriend: build.mutation({
+      query: ({ noiDung, acc_id_1, acc_id_2 }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `tin-nhan-ban-be`,
+        method: "POST",
+        body: { noiDung, ma_nguoiGui: acc_id_1, ma_nguoiNhan: acc_id_2 },
+      }),
+      invalidatesTags: ["MessageFriend"],
+    }),
+    deleteMessageFriend: build.mutation({
+      query: ({ messageId }) => ({
+        url: `tin-nhan-ban-be/${messageId}/delete-message`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["MessageFriend"],
+    }),
+    updateStatusFriend: build.mutation({
+      query: ({ acc_id, friend_id, status }) => ({
+        url: `ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}/change-status-friend?status=${status}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["ListFriends"],
+    }),
 
     putEditUnit: build.mutation({
       query: (data) => ({
@@ -327,4 +388,11 @@ export const {
   usePutEditQuestionMutation,
   usePutEditAnswersMutation,
   useDeleteQuestionMutation,
+  useGetAllFriendsQuery,
+  useGetMessageFriendQuery,
+  usePostMessageFriendMutation,
+  useDeleteMessageFriendMutation,
+  useGetAllJoinClassQuery,
+  useUpdateStatusFriendMutation,
+  useGetAllUserWithStatusQuery,
 } = api;

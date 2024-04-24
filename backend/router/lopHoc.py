@@ -126,17 +126,28 @@ async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
 @router.get("/{ma_taiKhoan}", status_code=status.HTTP_200_OK)
 async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
     query_1 = (
-        db.query(models.LopHoc)
+        db.query(models.LopHoc, models.NhomChat)
         .join(models.ThamGiaLopHoc)
+        .join(models.NhomChat)
         .filter(models.ThamGiaLopHoc.ma_taiKhoan == ma_taiKhoan)
         .all()
     )
     query_2 = (
-        db.query(models.LopHoc)
+        db.query(models.LopHoc, models.NhomChat)
+        .join(models.NhomChat)
         .filter(models.LopHoc.ma_giangVien == ma_taiKhoan)
         .all()
     )
-    result = query_1 + query_2
+
+    result = []
+    for lopHoc, nhomChat in query_1:
+        lopHoc.ma_nhomChat = nhomChat.ma_nhomChat
+        result.append(lopHoc)
+
+    for lopHoc, nhomChat in query_2:
+        lopHoc.ma_nhomChat = nhomChat.ma_nhomChat
+        result.append(lopHoc)
+
     return result
 
 

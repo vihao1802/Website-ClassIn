@@ -22,13 +22,14 @@ import {
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import {
-  AssignmentOutlined,
-  NoteAltOutlined,
+  ArticleOutlined,
+  HistoryEduRounded,
   HourglassEmpty,
   EventAvailable,
   RefreshOutlined,
 } from "@mui/icons-material";
-import { useGetTodoQuery, useGetClassQuery } from "state/api";
+import { useGetTodoQuery, useGetAllJoinClassQuery } from "state/api";
+import { getUserId_Cookie } from "utils/handleCookies";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -68,14 +69,18 @@ const Todo = () => {
   const [value, setValue] = useState(0);
   const [classes, setClasses] = useState("0");
   const [categories, setCategories] = useState("0");
-  const { data: todoData, isLoading: todoLoading } = useGetTodoQuery({
-    acc_id: "6b157e9a-4f74-4ee8-a893-06bc950f4272",
+  const userId = getUserId_Cookie();
+  const {
+    data: todoData,
+    isLoading: todoLoading,
+    refetch: refetchTodoData,
+  } = useGetTodoQuery({
+    acc_id: userId,
     selectedClass: classes,
     selectedCategory: categories,
   });
-  const { data: classData, isLoading: classLoading } = useGetClassQuery(
-    "6b157e9a-4f74-4ee8-a893-06bc950f4272",
-  );
+  const { data: classData, isLoading: classLoading } =
+    useGetAllJoinClassQuery(userId);
   useEffect(() => {}, [todoData, classData, classLoading, categories, classes]);
 
   // change categories
@@ -88,15 +93,23 @@ const Todo = () => {
   };
 
   // handle click button
-  const handleClickDoExercise = () => {
-    navigate("/exercise/do");
+  const handleClickDoExercise = (id) => {
+    // navigate(`/exercise/${id}/do`);
   };
-  const handleClickDoTest = () => {
-    navigate("/tests/do");
+  const handleClickDoTest = (id) => {
+    navigate(`/tests/${id}/do`);
   };
   const handleClickRefresh = () => {
     setClasses("0");
     setCategories("0");
+    refetchTodoData();
+  };
+
+  const handleDetailExercise = () => {
+    // navigate("/exercise/detail");
+  };
+  const handleDetailTest = (testId, workId) => {
+    navigate(`/tests/${testId}/work/${workId}`);
   };
 
   // handle change tab name
@@ -287,13 +300,16 @@ const Todo = () => {
                 }}
                 component="span"
               >
-                {Array.isArray(todoData) && todoData.length === 0 ? (
+                {(Array.isArray(todoData) && todoData.length === 0) ||
+                (todoData && !todoData.some((item) => item.da_lam === 0)) ? (
                   <Typography
                     variant="h5"
                     sx={{
                       display: "flex",
                       justifyContent: "center",
-                      marginTop: "20px",
+                      alignItems: "center",
+                      margin: "auto",
+                      height: "100%",
                       fontWeight: "bold",
                       color: "#666666",
                     }}
@@ -302,13 +318,11 @@ const Todo = () => {
                   </Typography>
                 ) : (
                   todoData?.map(
-                    (exercise) =>
-                      exercise.da_lam === 0 && (
+                    (item) =>
+                      item.da_lam === 0 && (
                         <ListItem
                           key={
-                            exercise.ma_baiTap
-                              ? exercise.ma_baiTap
-                              : exercise.ma_deKiemTra
+                            item.ma_baiTap ? item.ma_baiTap : item.ma_deKiemTra
                           }
                           disablePadding
                         >
@@ -316,10 +330,10 @@ const Todo = () => {
                             sx={{ height: "80px", padding: "10px 25px" }}
                           >
                             <ListItemIcon>
-                              {exercise.ma_baiTap ? (
-                                <AssignmentOutlined />
+                              {item.ma_baiTap ? (
+                                <ArticleOutlined />
                               ) : (
-                                <NoteAltOutlined />
+                                <HistoryEduRounded />
                               )}
                             </ListItemIcon>
                             <Box>
@@ -332,12 +346,12 @@ const Todo = () => {
                                 }}
                               >
                                 <Typography variant="h6" component="span">
-                                  {exercise.tieuDe}
+                                  {item.tieuDe}
                                 </Typography>
                                 <Stack direction="row" spacing={1}>
                                   <Chip
                                     label={
-                                      exercise.ma_baiTap ? "Assignment" : "Test"
+                                      item.ma_baiTap ? "Assignment" : "Test"
                                     }
                                     color={"success"}
                                     size="small"
@@ -348,16 +362,16 @@ const Todo = () => {
                               <Typography color="#666666">
                                 Deadline:{" "}
                                 {new Date(
-                                  exercise.thoiGianKetThuc,
+                                  item.thoiGianKetThuc,
                                 ).toLocaleString()}{" "}
-                                | Class: {exercise.ten_lopHoc}
+                                | Class: {item.ten_lopHoc}
                               </Typography>
                             </Box>
                             <Button
                               onClick={
-                                exercise.ma_baiTap
-                                  ? handleClickDoExercise
-                                  : handleClickDoTest
+                                item.ma_baiTap
+                                  ? () => handleClickDoExercise()
+                                  : () => handleClickDoTest(item.ma_deKiemTra)
                               }
                               sx={{
                                 textTransform: "none",
@@ -378,7 +392,7 @@ const Todo = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {exercise.ma_baiTap ? "Submit" : "Start"}
+                                  {item.ma_baiTap ? "Submit" : "Start"}
                                 </Typography>
                               </Box>
                             </Button>
@@ -473,13 +487,16 @@ const Todo = () => {
               },
             }}
           >
-            {Array.isArray(todoData) && todoData.length === 0 ? (
+            {(Array.isArray(todoData) && todoData.length === 0) ||
+            (todoData && !todoData.some((item) => item.da_lam === 1)) ? (
               <Typography
                 variant="h5"
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  marginTop: "20px",
+                  alignItems: "center",
+                  margin: "auto",
+                  height: "100%",
                   fontWeight: "bold",
                   color: "#666666",
                 }}
@@ -506,13 +523,11 @@ const Todo = () => {
                 component="span"
               >
                 {todoData?.map(
-                  (exercise) =>
-                    exercise.da_lam === 1 && (
+                  (item) =>
+                    item.da_lam === 1 && (
                       <ListItem
                         key={
-                          exercise.ma_baiTap
-                            ? exercise.ma_baiTap
-                            : exercise.ma_deKiemTra
+                          item.ma_baiTap ? item.ma_baiTap : item.ma_deKiemTra
                         }
                         disablePadding
                       >
@@ -520,10 +535,10 @@ const Todo = () => {
                           sx={{ height: "80px", padding: "10px 25px" }}
                         >
                           <ListItemIcon>
-                            {exercise.ma_baiTap ? (
-                              <AssignmentOutlined />
+                            {item.ma_baiTap ? (
+                              <ArticleOutlined />
                             ) : (
-                              <NoteAltOutlined />
+                              <HistoryEduRounded />
                             )}
                           </ListItemIcon>
                           <Box>
@@ -536,13 +551,11 @@ const Todo = () => {
                               }}
                             >
                               <Typography variant="h6" component="span">
-                                {exercise.tieuDe}
+                                {item.tieuDe}
                               </Typography>
                               <Stack direction="row" spacing={1}>
                                 <Chip
-                                  label={
-                                    exercise.ma_baiTap ? "Assignment" : "Test"
-                                  }
+                                  label={item.ma_baiTap ? "Assignment" : "Test"}
                                   color={"success"}
                                   size="small"
                                   variant="outlined"
@@ -551,12 +564,43 @@ const Todo = () => {
                             </Box>
                             <Typography color="#666666">
                               Deadline:{" "}
-                              {new Date(
-                                exercise.thoiGianKetThuc,
-                              ).toLocaleString()}{" "}
-                              | Class: {exercise.ten_lopHoc}
+                              {new Date(item.thoiGianKetThuc).toLocaleString()}{" "}
+                              | Class: {item.ten_lopHoc}
                             </Typography>
                           </Box>
+                          <Button
+                            onClick={
+                              item.ma_baiTap
+                                ? () => handleDetailExercise()
+                                : () =>
+                                    handleDetailTest(
+                                      item.ma_deKiemTra,
+                                      item.ma_baiLamKiemTra,
+                                    )
+                            }
+                            sx={{
+                              textTransform: "none",
+                              borderRadius: "20px",
+                              marginLeft: "auto",
+                              padding: "5px 25px",
+                              backgroundColor: theme.main_theme,
+                              "&:hover": {
+                                backgroundColor: "#007850",
+                              },
+                            }}
+                          >
+                            <Box>
+                              <Typography
+                                sx={{
+                                  color: "white",
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                              >
+                                Detail
+                              </Typography>
+                            </Box>
+                          </Button>
                         </ListItemButton>
                       </ListItem>
                     ),
