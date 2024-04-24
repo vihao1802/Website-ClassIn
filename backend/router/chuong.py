@@ -72,3 +72,40 @@ async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
     )
 
     return db_object
+
+
+@router.get("/{ma_lopHoc}/hoatdong", status_code=status.HTTP_200_OK)
+async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
+    object_Chuong = (
+        db.query(models.Chuong)
+        .filter(models.Chuong.ma_lopHoc == ma_lopHoc)
+        .all()
+    )
+    db_object = []
+    for chuong in object_Chuong:
+        object_DeKiemTra = (
+            db.query(models.DeKiemTra)
+            .filter(models.DeKiemTra.ma_chuong == chuong.ma_chuong)
+            .all()
+        )
+        object_BaiTap = (
+            db.query(models.BaiTap)
+            .filter(models.BaiTap.ma_chuong == chuong.ma_chuong)
+            .all()
+        )
+        object_HocLieu = (
+            db.query(models.HocLieu)
+            .filter(models.HocLieu.ma_chuong == chuong.ma_chuong)
+            .all()
+        )
+        db_object.append(
+            {
+                "chuong": chuong,
+                "deKiemTra": object_DeKiemTra,
+                "baiTap": object_BaiTap,
+                "hocLieu": object_HocLieu,
+            }
+        )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="ma_chuong not found")
+    return db_object

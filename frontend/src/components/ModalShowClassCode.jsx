@@ -56,8 +56,8 @@ const ShowClassCode = ({ open, handleClose, classinfo }) => {
                 borderBottom: "2px solid #009265",
               }}
             >
-              <Typography fontSize="128px" color="#009265">
-                {classinfo.cid ? classinfo.cid.split("-")[1] : ""}
+              <Typography fontSize="63px" color="#009265" textAlign="center">
+                {classinfo?.cid}
               </Typography>
             </Box>
             <FlexBetween p="10px 0">

@@ -79,14 +79,104 @@ export const api = createApi({
   tagTypes: [
     "Questions",
     "User",
-    "classDetails",
     "Class",
-    "Todo",
-    "MessageClass",
+    "Units",
+    /* "classDetails",
+    "UnitAcitvities",
+    "StudentsByClassId",
+    "TestByTestId",
+    "TestDetails",
+    "QuestionDetails",
     "ClassByInstructorId",
-    "UnitByClass",
+    "UserSubmissionsDetails",
+    "WorkDetailsByTestId",
+    "WorkInfoByWorkId",
+    "UnregisteredUsers"
+    "Todo",
+    "MessageClass" */
+    ,
   ],
   endpoints: (build) => ({
+    // GET METHODS
+    getQuestions: build.query({
+      query: (uid) => `cauHoi/taiKhoan/${uid}`,
+      providesTags: ["Questions"],
+    }),
+    getUser: build.query({
+      query: (uid) => ({
+        url: `tai-khoan/${uid}`,
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
+    getAllUser: build.query({
+      query: () => `tai-khoan`,
+      providesTags: ["User"],
+    }),
+    getClassDetails: build.query({
+      query: (cid) => `lopHoc/lopHoc/${cid}`,
+      providesTags: ["ClassDetails"],
+    }),
+    getClass: build.query({
+      query: (uid) => `lopHoc/${uid}`,
+      providesTags: ["Class"],
+    }),
+    getAllJoinClass: build.query({
+      query: (uid) => `thamGiaLopHoc/tai-khoan/${uid}/search-for-todo`,
+      providesTags: ["Class"],
+    }),
+    getUnits: build.query({
+      query: (unitId) => `chuong/${unitId}`,
+      providesTags: ["Units"],
+    }),
+    getUnitActivities: build.query({
+      query: (cid) => `chuong/${cid}/hoatdong`,
+      providesTags: ["UnitActivities"],
+    }),
+    getStudentsByClassId: build.query({
+      query: (cid) => `lopHoc/${cid}/taiKhoan`,
+      providesTags: ["StudentsByClassId"],
+    }),
+    getTestByTestId: build.query({
+      query: (tid) => `deKiemTra/${tid}`,
+      providesTags: ["TestByTestId"],
+    }),
+    getTestDetails: build.query({
+      query: (tid) => `deKiemTra/${tid}/chiTiet`,
+      providesTags: ["TestDetails"],
+    }),
+    getQuestionsDetails: build.query({
+      query: (uid) => `cauHoi/taiKhoan/${uid}/chiTiet`,
+      providesTags: ["QuestionDetails"],
+    }),
+    getClassByInstructorId: build.query({
+      query: (uid) => `lopHoc/taiKhoan/${uid}`,
+      providesTags: ["ClassByInstructorId"],
+    }),
+    getUserSubmissionsDetails: build.query({
+      query: (tid) => `deKiemTra/${tid}/getSubmissionDetails`,
+      providesTags: ["UserSubmissionsDetails"],
+    }),
+    getWorkDetailsByTestId: build.query({
+      query: (wid) => `chiTietBaiLamKiemTra/baiLamKiemTra/${wid}`,
+      providesTags: ["WorkDetailsByTestId"],
+    }),
+    getWorkInfoByWorkId: build.query({
+      query: (wid) => `baiLamKiemTra/${wid}`,
+      providesTags: ["WorkInfoByWorkId"],
+    }),
+    getUnregisteredUsers: build.query({
+      query: (cid) => `tai-khoan/${cid}/unregistered`,
+      providesTags: ["UnregisteredUsers"],
+    }),
+    getAllFriends: build.query({
+      query: (uid) => `ban-be/tai-khoan/${uid}`,
+      providesTags: ["ListFriends"],
+    }),
+    getAllUserWithStatus: build.query({
+      query: (uid) => `tai-khoan/${uid}/get-all-user-with-status-friend`,
+      providesTags: ["ListFriends"],
+    }),
     getFileFromDrive: build.query({
       query: (fileId) => `file/${fileId}`,
     }),
@@ -98,46 +188,15 @@ export const api = createApi({
       query: (homeworkId) => `fileBaiTap/${homeworkId}`,
       providesTags: ["FileHomeWorkByHomeworkId"],
     }),
-    getQuestions: build.query({
-      query: (uid) => `cauHoi/taiKhoan/${uid}`,
-      providesTags: ["Questions"],
-    }),
-    getUser: build.query({
-      query: (uid) => ({
-        url: `taiKhoan/${uid}`,
+    getUnitByClassId: build.query({
+      query: (cid) => ({
+        url: `/chuong/lopHoc/${cid}`,
         method: "GET",
+        credentials: "include",
       }),
-      providesTags: ["User"],
+      providesTags: ["UnitByClass"],
     }),
-    getClassDetails: build.query({
-      query: (cid) => `lopHoc/lopHoc/${cid}`,
-      providesTags: ["ClassDetails"],
-    }),
-    getClass: build.query({
-      query: (uid) => `lopHoc/${uid}`,
-      providesTags: ["Class"],
-    }),
-    getTodo: build.query({
-      query: ({ acc_id, selectedClass, selectedCategory }) =>
-        `tai-khoan/${acc_id}/bai-tap/de-kiem-tra/filter?selectedClass=${selectedClass}&selectedCategory=${selectedCategory}`,
-      providesTags: ["Todo"],
-    }),
-    getMessageClass: build.query({
-      query: ({ class_id, acc_id }) =>
-        `/tin-nhan/lop-hoc/${class_id}/tai-khoan/${acc_id}`,
-      providesTags: ["MessageClass"],
-    }),
-    postMessageClass: build.mutation({
-      query: ({ noiDung, acc_id, chatGroup_id }) => ({
-        headers: {
-          "Content-Type": "application/json",
-        },
-        url: `tin-nhan`,
-        method: "POST",
-        body: { noiDung, ma_taiKhoan: acc_id, ma_nhomChat: chatGroup_id },
-      }),
-      invalidatesTags: ["MessageClass"],
-    }),
+    // POST METHODS
     postHomework: build.mutation({
       query: ({
         machuong,
@@ -197,22 +256,80 @@ export const api = createApi({
       }),
       // invalidatesTags: ["Todo"],
     }),
-    getClassByInstructorId: build.query({
-      query: (uid) => ({
-        url: `lopHoc/taiKhoan/${uid}`,
-        method: "GET",
-        credentials: "include",
+    postUserResigeter: build.mutation({
+      query: (data) => ({
+        url: "thamGiaLopHoc",
+        method: "POST",
+        body: data,
       }),
-      providesTags: ["ClassByInstructorId"],
+      providesTags: ["postUserResigeter"],
     }),
 
-    getUnitByClassId: build.query({
-      query: (cid) => ({
-        url: `/chuong/lopHoc/${cid}`,
-        method: "GET",
-        credentials: "include",
+    // DELETE METHODS
+    deleteUserFromClass: build.mutation({
+      query: (data) => ({
+        url: `thamGiaLopHoc/${data.ma_lopHoc}/${data.ma_taiKhoan}`,
+        method: "DELETE",
       }),
-      providesTags: ["UnitByClass"],
+      invalidatesTags: ["StudentsByClassId"],
+    }),
+    getTodo: build.query({
+      query: ({ acc_id, selectedClass, selectedCategory }) =>
+        `tai-khoan/${acc_id}/bai-tap/de-kiem-tra/filter?selectedClass=${selectedClass}&selectedCategory=${selectedCategory}`,
+      providesTags: ["Todo"],
+    }),
+    getMessageClass: build.query({
+      query: ({ class_id, acc_id }) =>
+        `/tin-nhan/lop-hoc/${class_id}/tai-khoan/${acc_id}`,
+      providesTags: ["MessageClass"],
+    }),
+    postMessageClass: build.mutation({
+      query: ({ noiDung, acc_id, chatGroup_id }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `tin-nhan`,
+        method: "POST",
+        body: { noiDung, ma_taiKhoan: acc_id, ma_nhomChat: chatGroup_id },
+      }),
+      invalidatesTags: ["MessageClass"],
+    }),
+    deleteMessageClass: build.mutation({
+      query: ({ messageId }) => ({
+        url: `tin-nhan/${messageId}/delete-message`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["MessageClass"],
+    }),
+    getMessageFriend: build.query({
+      query: ({ acc_id, friend_id }) =>
+        `tin-nhan-ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}`,
+      providesTags: ["MessageFriend"],
+    }),
+    postMessageFriend: build.mutation({
+      query: ({ noiDung, acc_id_1, acc_id_2 }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `tin-nhan-ban-be`,
+        method: "POST",
+        body: { noiDung, ma_nguoiGui: acc_id_1, ma_nguoiNhan: acc_id_2 },
+      }),
+      invalidatesTags: ["MessageFriend"],
+    }),
+    deleteMessageFriend: build.mutation({
+      query: ({ messageId }) => ({
+        url: `tin-nhan-ban-be/${messageId}/delete-message`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["MessageFriend"],
+    }),
+    updateStatusFriend: build.mutation({
+      query: ({ acc_id, friend_id, status }) => ({
+        url: `ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}/change-status-friend?status=${status}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["ListFriends"],
     }),
   }),
 });
@@ -220,14 +337,37 @@ export const api = createApi({
 export const {
   useGetQuestionsQuery,
   useGetUserQuery,
+  useGetAllUserQuery,
   useGetClassDetailsQuery,
   useGetClassQuery,
+  useGetUnitActivitiesQuery,
+  useGetStudentsByClassIdQuery,
+  useGetTestByTestIdQuery,
+  useGetUnitsQuery,
+  useGetTestDetailsQuery,
+  useGetQuestionsDetailsQuery,
+  useGetClassByInstructorIdQuery,
+  useGetUserSubmissionsDetailsQuery,
+  useGetWorkDetailsByTestIdQuery,
+  useGetWorkInfoByWorkIdQuery,
+  useGetUnregisteredUsersQuery,
+  usePostUserResigeterMutation,
+  useDeleteUserFromClassMutation,
   useGetTodoQuery,
   useGetMessageClassQuery,
   usePostMessageClassMutation,
-  useGetClassByInstructorIdQuery,
-  useGetUnitByClassIdQuery,
-  usePostHomeworkMutation,
+  useDeleteMessageClassMutation,
+  useGetAllFriendsQuery,
+  useGetMessageFriendQuery,
+  usePostMessageFriendMutation,
+  useDeleteMessageFriendMutation,
+  useGetAllJoinClassQuery,
+  useUpdateStatusFriendMutation,
+  useGetAllUserWithStatusQuery,
   useGetHomeWorkByHomeworkIdQuery,
   useGetFileHomeworkByHomeworkIdQuery,
+  useGetUnitByClassIdQuery,
+  usePostHomeworkMutation,
+  usePostHomeworkWorkMutation,
+  usePostHomeworkFileWorkMutation,
 } = api;

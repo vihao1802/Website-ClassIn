@@ -59,14 +59,33 @@ async def read(db: Session = Depends(database.get_db)):
 
 @router.get("/{ma_baiLamKiemTra}", status_code=status.HTTP_200_OK)
 async def read(ma_baiLamKiemTra: str, db: Session = Depends(database.get_db)):
-    db_object = (
-        db.query(models.BaiLamKiemTra)
+    blkt_query = (
+        db.query(models.BaiLamKiemTra, models.TaiKhoan.hoTen)
+        .join(
+            models.TaiKhoan,
+            models.BaiLamKiemTra.ma_taiKhoan == models.TaiKhoan.ma_taiKhoan,
+        )
+        .join(
+            models.DeKiemTra,
+            models.BaiLamKiemTra.ma_deKiemTra == models.DeKiemTra.ma_deKiemTra,
+        )
         .filter(models.BaiLamKiemTra.ma_baiLamKiemTra == ma_baiLamKiemTra)
-        .first()
+        .all()
     )
-    if db_object is None:
-        raise HTTPException(status_code=400, detail="BaiLamKiemTra not found")
-    return db_object
+    return {
+        "ma_baiLamKiemTra": blkt_query[0][0].ma_baiLamKiemTra,
+        "ma_deKiemTra": blkt_query[0][0].ma_deKiemTra,
+        "diem": blkt_query[0][0].diem,
+        "hoTen": blkt_query[0][1],
+        "thoiGianLamBai": (
+            blkt_query[0][0].thoiGianNopBai - blkt_query[0][0].thoiGianBatDauLam
+        ).total_seconds()
+        / 60,
+        "thoiGianNop": blkt_query[0][0].thoiGianNopBai,
+        "thoiGianBatDauLam": blkt_query[0][0].thoiGianBatDauLam,
+        "soCauDung": blkt_query[0][0].soCauDung,
+        "nopTre": blkt_query[0][0].nopTre,
+    }
 
 
 @router.get(

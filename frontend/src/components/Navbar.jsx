@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import { Menu as MenuIcon, Person, Logout } from "@mui/icons-material";
-
 import {
   Box,
   AppBar,
@@ -12,16 +11,23 @@ import {
   MenuItem,
   IconButton,
   Typography,
+  Skeleton,
 } from "@mui/material";
 
 import profileImage from "assets/profile.jpg";
+import { useGetUserQuery } from "state/api";
+import { getUserId_Cookie } from "utils/handleCookies";
 
 const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const userId = getUserId_Cookie();
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const navigate = useNavigate();
+
+  const { data: userData, isLoading: userDataLoading } =
+    useGetUserQuery(userId);
 
   return (
     <AppBar
@@ -58,70 +64,80 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         </FlexBetween>
 
         {/* RIGHT SIDE */}
-        <FlexBetween>
-          <Button
-            onClick={handleClick}
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              textTransform: "none",
-              gap: "1rem",
-              backgroundColor: "white",
-              "&:hover": {
-                backgroundColor: "#e7e7e7",
-              },
-              height: "40px",
-            }}
-          >
-            <Box
-              component="img"
-              alt="profile"
-              src={profileImage}
-              height="32px"
-              width="32px"
-              borderRadius="50%"
-              sx={{ objectFit: "cover" }}
-            />
-            <Box textAlign="left">
-              <Typography
-                fontWeight="bold"
-                fontSize="0.85rem"
-                sx={{ color: "#009265" }}
-              >
-                Huchuynh
-              </Typography>
-            </Box>
-            {/* <ArrowDropDownOutlined sx={{ color: "white", fontSize: "25px" }} /> */}
-          </Button>
-          <Menu
-            anchorEl={anchorEl}
-            open={isOpen}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-          >
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                navigate("/profile");
+        {userDataLoading ? (
+          <Box>
+            <FlexBetween gap={"1rem"}>
+              <Skeleton variant="circular" width={40} height={40} sx={{}} />
+              <Skeleton variant="text" width={80} height={40} />
+            </FlexBetween>
+          </Box>
+        ) : (
+          <FlexBetween>
+            <Button
+              onClick={handleClick}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                textTransform: "none",
+                gap: "1rem",
+                backgroundColor: "white",
+                "&:hover": {
+                  backgroundColor: "#e7e7e7",
+                },
+                height: "40px",
               }}
             >
-              <FlexBetween color="#009265">
-                <Person />
-                <Typography ml="5px">Your Account</Typography>
-              </FlexBetween>
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <FlexBetween color="red">
-                <Logout />
-                <Typography ml="5px">Log Out</Typography>
-              </FlexBetween>
-            </MenuItem>
-          </Menu>
-        </FlexBetween>
+              <Box
+                component="img"
+                alt="profile"
+                src={profileImage}
+                height="32px"
+                width="32px"
+                borderRadius="50%"
+                sx={{ objectFit: "cover" }}
+              />
+              <Box textAlign="left">
+                <Typography
+                  fontWeight="bold"
+                  fontSize="0.85rem"
+                  sx={{ color: "#009265" }}
+                >
+                  {/* Huchuynh */}
+                  {userData && userData.hoTen}
+                </Typography>
+              </Box>
+              {/* <ArrowDropDownOutlined sx={{ color: "white", fontSize: "25px" }} /> */}
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={isOpen}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  navigate(`/profile/${userId}`);
+                }}
+              >
+                <FlexBetween color="#009265">
+                  <Person />
+                  <Typography ml="5px">Your Account</Typography>
+                </FlexBetween>
+              </MenuItem>
+              <MenuItem onClick={handleClose}>
+                <FlexBetween color="red">
+                  <Logout />
+                  <Typography ml="5px">Log Out</Typography>
+                </FlexBetween>
+              </MenuItem>
+            </Menu>
+          </FlexBetween>
+        )}
       </Toolbar>
     </AppBar>
   );

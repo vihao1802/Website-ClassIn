@@ -2,7 +2,7 @@ import database
 import models
 import schemas
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
-from sqlalchemy import exists
+from sqlalchemy import and_, exists, or_
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/tin-nhan", tags=["TinNhan"])
@@ -95,14 +95,17 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
         .all()
     )
     if not db_object:
-        raise HTTPException(status_code=400, detail="TaiKhoan not found")
+        return []
     return db_object
+
 
 @router.get(
     "/lop-hoc/{ma_lopHoc}/tai-khoan/{ma_taiKhoan}",
     status_code=status.HTTP_200_OK,
 )
-async def read(ma_lopHoc: str,ma_taiKhoan: str ,db: Session = Depends(database.get_db)):
+async def read(
+    ma_lopHoc: str, ma_taiKhoan: str, db: Session = Depends(database.get_db)
+):
     taiKhoan_exists = db.query(
         exists().where(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan)
     ).scalar()
@@ -121,17 +124,51 @@ async def read(ma_lopHoc: str,ma_taiKhoan: str ,db: Session = Depends(database.g
         )
     result = []
     db_object = (
-        db.query(models.TinNhan,models.TaiKhoan)
-        .join(models.TaiKhoan, models.TinNhan.ma_taiKhoan == models.TaiKhoan.ma_taiKhoan)
-        .join(models.NhomChat, models.NhomChat.ma_nhomChat == models.TinNhan.ma_nhomChat)
-        .filter(models.NhomChat.ma_lopHoc == ma_lopHoc)    
+        db.query(models.TinNhan, models.TaiKhoan)
+        .join(
+            models.TaiKhoan,
+            models.TinNhan.ma_taiKhoan == models.TaiKhoan.ma_taiKhoan,
+        )
+        .join(
+            models.NhomChat,
+            models.NhomChat.ma_nhomChat == models.TinNhan.ma_nhomChat,
+        )
+        .filter(models.NhomChat.ma_lopHoc == ma_lopHoc)
+        .filter(models.TinNhan.anTinNhan == 0)
     )
-    for TinNhan,TaiKhoan in db_object:
+    for TinNhan, TaiKhoan in db_object:
         TinNhan.ten_taiKhoan = TaiKhoan.hoTen
-        
+        TinNhan.email = TaiKhoan.email
+        TinNhan.anhDaiDien = TaiKhoan.anhDaiDien
+
         if TinNhan.ma_taiKhoan == ma_taiKhoan:
             TinNhan.position = "right"
         else:
+            # check isFriend
+            db_friend = (
+                db.query(models.BanBe)
+                .filter(
+                    or_(
+                        and_(
+                            models.BanBe.ma_nguoiKetBan == ma_taiKhoan,
+                            models.BanBe.ma_nguoiDuocKetBan
+                            == TaiKhoan.ma_taiKhoan,
+                        ),
+                        and_(
+                            models.BanBe.ma_nguoiDuocKetBan == ma_taiKhoan,
+                            models.BanBe.ma_nguoiKetBan == TaiKhoan.ma_taiKhoan,
+                        ),
+                    )
+                )
+                .first()
+            )
+            # print("Friend here" ,db_friend.ma_nguoiKetBan, db_friend.ma_nguoiDuocKetBan)
+            if db_friend is None:
+                TinNhan.daKetBan = 0
+            else:
+                TinNhan.daKetBan = db_friend.daKetBan
+                TinNhan.ma_nguoiKetBan = db_friend.ma_nguoiKetBan
+
             TinNhan.position = "left"
         result.append(TinNhan)
 
@@ -139,3 +176,26 @@ async def read(ma_lopHoc: str,ma_taiKhoan: str ,db: Session = Depends(database.g
     result = sorted(result, key=lambda x: x.thoiGianGui)
 
     return result
+
+
+@router.put(
+    "/{ma_tinNhan}/delete-message",
+    status_code=status.HTTP_200_OK,
+)
+async def update(
+    ma_tinNhan: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = (
+        db.query(models.TinNhan)
+        .filter(models.TinNhan.ma_tinNhan == ma_tinNhan)
+        .first()
+    )
+    if db_object is None:
+        raise HTTPException(status_code=404, detail="TinNhan not found")
+
+    db_object.anTinNhan = 1
+
+    db.commit()
+    db.refresh(db_object)
+    return db_object

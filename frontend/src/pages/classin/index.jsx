@@ -10,178 +10,32 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  CircularProgress,
+  Avatar,
+  ListItemIcon,
+  Collapse,
 } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import {
+  Add,
+  LocalLibraryRounded,
+  ExpandLessRounded,
+  ExpandMoreRounded,
+  SchoolRounded,
+} from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
+import NoClassImage from "assets/NoClass.png";
 import ClassWidget from "components/ClassWidget";
 import ModalHandleClass from "components/ModalHandleClass";
-import { useGetClassQuery } from "state/api";
-const classItems = [
-  {
-    name: "Công nghệ phần mềm",
-    image: profileImage,
-  },
-  {
-    name: "Kỹ thuật lập trình",
-    image: profileImage,
-  },
-  {
-    name: "Cơ sở trí tuệ nhân tạo",
-    image: profileImage,
-  },
-  {
-    name: "Thiết kế giao diện",
-    image: profileImage,
-  },
-  {
-    name: "Phát tiển phần mềm mã nguồn mở",
-    image: profileImage,
-  },
-  {
-    name: "Web Development",
-    image: profileImage,
-  },
-  {
-    name: "Data Science",
-    image: profileImage,
-  },
-  {
-    name: "Mobile App Development",
-    image: profileImage,
-  },
-  {
-    name: "Artificial Intelligence",
-    image: profileImage,
-  },
-  {
-    name: "Machine Learning",
-    image: profileImage,
-  },
-  {
-    name: "Database Management",
-    image: profileImage,
-  },
-  {
-    name: "Network Security",
-    image: profileImage,
-  },
-  {
-    name: "Cloud Computing",
-    image: profileImage,
-  },
-  {
-    name: "UI/UX Design",
-    image: profileImage,
-  },
-  {
-    name: "Game Development",
-    image: profileImage,
-  },
-  {
-    name: "Class 16",
-    image: profileImage,
-  },
-  {
-    name: "Class 17",
-    image: profileImage,
-  },
-  {
-    name: "Class 18",
-    image: profileImage,
-  },
-  {
-    name: "Class 19",
-    image: profileImage,
-  },
-  {
-    name: "Class 20",
-    image: profileImage,
-  },
-  {
-    name: "Class 21",
-    image: profileImage,
-  },
-  {
-    name: "Class 22",
-    image: profileImage,
-  },
-  {
-    name: "Class 23",
-    image: profileImage,
-  },
-  {
-    name: "Class 24",
-    image: profileImage,
-  },
-  {
-    name: "Class 25",
-    image: profileImage,
-  },
-  {
-    name: "Class 26",
-    image: profileImage,
-  },
-  {
-    name: "Class 27",
-    image: profileImage,
-  },
-  {
-    name: "Class 28",
-    image: profileImage,
-  },
-  {
-    name: "Class 29",
-    image: profileImage,
-  },
-  {
-    name: "Class 30",
-    image: profileImage,
-  },
-  {
-    name: "Class 31",
-    image: profileImage,
-  },
-  {
-    name: "Class 32",
-    image: profileImage,
-  },
-  {
-    name: "Class 33",
-    image: profileImage,
-  },
-  {
-    name: "Class 34",
-    image: profileImage,
-  },
-  {
-    name: "Class 35",
-    image: profileImage,
-  },
-  {
-    name: "Class 36",
-    image: profileImage,
-  },
-  {
-    name: "Class 37",
-    image: profileImage,
-  },
-  {
-    name: "Class 38",
-    image: profileImage,
-  },
-  {
-    name: "Class 39",
-    image: profileImage,
-  },
-  {
-    name: "Class 40",
-    image: profileImage,
-  },
-];
+import { useGetClassQuery, useGetAllUserQuery } from "state/api";
+import AvatarName from "components/AvatarName";
+import Loading from "components/Loading";
+import { getUserId_Cookie } from "utils/handleCookies";
 
-const Clasin = () => {
+const Classin = () => {
+  //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  // const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
+  const userId = getUserId_Cookie();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpenModalJoin, setOpenModalJoin] = useState(false);
   const [isOpenModalCreate, setOpenModalCreate] = useState(false);
@@ -207,29 +61,46 @@ const Clasin = () => {
     console.log("Create");
   };
 
-  const { data, isLoading } = useGetClassQuery(
-    "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
-  );
+  const [openTeaching, setOpenTeaching] = React.useState(false);
+
+  const handleClickTeaching = () => {
+    setOpenTeaching(!openTeaching);
+  };
+
+  const [openRegistered, setOpenRegistered] = React.useState(true);
+
+  const handleClickRegistered = () => {
+    setOpenRegistered(!openRegistered);
+  };
+
+  //const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
+  //const [clientId, setClientId] = useState(null);
+
+  const { data: classInfo, isLoading: isClassInfoLoading } =
+    useGetClassQuery(userId);
+
+  /*   useEffect(() => {
+    if (userList && userList.length > 0 && !clientId) {
+      const uniqueUserIds = userList.map((user) => user.ma_taiKhoan);
+      const nonDuplicateIds = uniqueUserIds.filter(
+        (id, index) => uniqueUserIds.indexOf(id) === index,
+      );
+      const randomClientId =
+        nonDuplicateIds[Math.floor(Math.random() * nonDuplicateIds.length)];
+      console.log(randomClientId);
+      setClientId(randomClientId);
+    }
+  }, [userList, clientId]); */
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
-    setActiveClass(data?.[0]);
-  }, [data, isLoading]);
+    console.log(classInfo);
+    if (classInfo && classInfo.length > 0) setActiveClass(classInfo[0]);
+    else if (classInfo && classInfo.length === 0) setActiveClass([]);
+  }, [classInfo, isClassInfoLoading]);
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-          height: "calc(100% - 50.8px)",
-        }}
-      >
-        <CircularProgress color="success" />
-      </Box>
-    );
+  if (isClassInfoLoading) {
+    return <Loading />;
   }
 
   return (
@@ -301,20 +172,20 @@ const Clasin = () => {
               }}
             >
               <MenuItem onClick={handleOpenModalJoin}>Join class</MenuItem>
-              <ModalHandleClass
-                open={isOpenModalJoin}
-                handleClose={handleCLoseModalJoin}
-                handleClass={handleJoin}
-                title={"Join class"}
-              />
               <MenuItem onClick={handleOpenModalCreate}>Create class</MenuItem>
-              <ModalHandleClass
-                open={isOpenModalCreate}
-                handleClose={handleCLoseModalCreate}
-                handleClass={handleCreate}
-                title={"Create class"}
-              />
             </Menu>
+            <ModalHandleClass
+              open={isOpenModalJoin}
+              handleClose={handleCLoseModalJoin}
+              handleClass={handleJoin}
+              title={"Join class"}
+            />
+            <ModalHandleClass
+              open={isOpenModalCreate}
+              handleClose={handleCLoseModalCreate}
+              handleClass={handleCreate}
+              title={"Create class"}
+            />
           </FlexBetween>
         </FlexBetween>
         <TextField
@@ -326,11 +197,11 @@ const Clasin = () => {
           color="success"
           sx={{ marginTop: "10px" }}
         />
-        <List
+        <Box
           sx={{
             height: "100%",
             overflowY: "scroll",
-            marginTop: "10px",
+
             "::-webkit-scrollbar": { width: "10px" },
             "::-webkit-scrollbar-track": {
               background: "#f1f1f1",
@@ -343,25 +214,42 @@ const Clasin = () => {
             },
           }}
         >
-          {data?.map((item, index) => {
-            return (
-              <ListItem key={index} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setActiveClass(item);
-                  }}
-                  sx={{
-                    backgroundColor:
-                      activeClass?.ma_lopHoc === item.ma_lopHoc
-                        ? "#e7e7e7"
-                        : "transparent",
-                    color:
-                      activeClass?.ma_lopHoc === item.ma_lopHoc
-                        ? "black"
-                        : "#666666",
-                  }}
-                >
-                  <Box
+          {/* Teaching */}
+          <ListItemButton
+            onClick={handleClickTeaching}
+            sx={{ marginTop: "10px" }}
+          >
+            <ListItemIcon>
+              <LocalLibraryRounded />
+            </ListItemIcon>
+            <ListItemText primary="Teaching" />
+            {openTeaching ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+          </ListItemButton>
+          <Collapse in={openTeaching} timeout="auto" unmountOnExit>
+            {classInfo || !isClassInfoLoading ? (
+              <List>
+                {classInfo
+                  ?.filter((item) => item.ma_giangVien === userId)
+                  .map((item, index) => {
+                    return (
+                      <ListItem key={index} disablePadding>
+                        <ListItemButton
+                          onClick={() => {
+                            setActiveClass(item);
+                          }}
+                          sx={{
+                            backgroundColor:
+                              activeClass?.ma_lopHoc === item.ma_lopHoc
+                                ? "#e7e7e7"
+                                : "transparent",
+                            color:
+                              activeClass?.ma_lopHoc === item.ma_lopHoc
+                                ? "black"
+                                : "#666666",
+                          }}
+                        >
+                          <AvatarName name={item.ten} />
+                          {/* <Box
                     component="img"
                     alt="profile"
                     src={item.anhDaiDien}
@@ -369,42 +257,168 @@ const Clasin = () => {
                     width="48px"
                     borderRadius="50%"
                     sx={{ objectFit: "cover" }}
-                  />
-                  <ListItemText
-                    primary={item.ten}
-                    sx={{ paddingLeft: "10px", maxWidth: "195px" }}
-                    primaryTypographyProps={{
-                      style: {
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      },
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
+                  /> */}
+
+                          <ListItemText
+                            primary={item.ten}
+                            sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                            primaryTypographyProps={{
+                              style: {
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              },
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+              </List>
+            ) : (
+              <Loading />
+            )}
+          </Collapse>
+          {/* Registered */}
+          <ListItemButton
+            onClick={handleClickRegistered}
+            sx={{ marginTop: "10px" }}
+          >
+            <ListItemIcon>
+              <SchoolRounded />
+            </ListItemIcon>
+            <ListItemText primary="Registered" />
+            {openRegistered ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+          </ListItemButton>
+          <Collapse in={openRegistered} timeout="auto" unmountOnExit>
+            {classInfo || !isClassInfoLoading ? (
+              <List>
+                {classInfo
+                  ?.filter((item) => item.ma_giangVien !== userId)
+                  .map((item, index) => {
+                    return (
+                      <ListItem key={index} disablePadding>
+                        <ListItemButton
+                          onClick={() => {
+                            setActiveClass(item);
+                          }}
+                          sx={{
+                            backgroundColor:
+                              activeClass?.ma_lopHoc === item.ma_lopHoc
+                                ? "#e7e7e7"
+                                : "transparent",
+                            color:
+                              activeClass?.ma_lopHoc === item.ma_lopHoc
+                                ? "black"
+                                : "#666666",
+                          }}
+                        >
+                          <AvatarName name={item.ten} />
+                          {/* <Box
+                              component="img"
+                              alt="profile"
+                              src={item.anhDaiDien}
+                              height="48px"
+                              width="48px"
+                              borderRadius="50%"
+                              sx={{ objectFit: "cover" }}
+                            /> */}
+
+                          <ListItemText
+                            primary={item.ten}
+                            sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                            primaryTypographyProps={{
+                              style: {
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              },
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+              </List>
+            ) : (
+              <Loading />
+            )}
+          </Collapse>
+        </Box>
       </Box>
       {/* CENTER CONTAIN */}
       {activeClass ? (
-        <ClassWidget classItem={activeClass} />
+        <>
+          {!Array.isArray(activeClass) ? (
+            <ClassWidget classItem={activeClass} userId={userId} />
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                gap: "1rem",
+              }}
+            >
+              <img
+                src={NoClassImage}
+                alt="return"
+                style={{
+                  width: "280px",
+                  height: "330px",
+                  borderRadius: "10px",
+                }}
+              />
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                  gap: "10px",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "white",
+                    color: "#009265",
+                    maxWidth: "140px",
+                    width: "100%",
+                    border: "1px solid #009265",
+                    "&:hover": {
+                      border: "1px solid #009265",
+                    },
+                  }}
+                  onClick={handleOpenModalCreate}
+                >
+                  Create Class
+                </Button>
+                <Button
+                  sx={{
+                    backgroundColor: "#009265",
+                    color: "white",
+                    maxWidth: "140px",
+                    width: "100%",
+                    "&:hover": {
+                      backgroundColor: "#007850",
+                    },
+                  }}
+                  onClick={handleOpenModalJoin}
+                >
+                  Join Class
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </>
       ) : (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: "calc(100% - 50.8px)",
-          }}
-        >
-          <CircularProgress color="success" />
-        </Box>
+        <Loading />
       )}
     </Box>
   );
 };
 
-export default Clasin;
+export default Classin;

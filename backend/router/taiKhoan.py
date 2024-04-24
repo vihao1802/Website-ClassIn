@@ -3,7 +3,7 @@ import models
 import schemas
 from email_validator import EmailNotValidError, validate_email
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
-from sqlalchemy import exists
+from sqlalchemy import and_, exists, or_
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/tai-khoan", tags=["TaiKhoan"])
@@ -158,6 +158,39 @@ async def read(ma_nhomQuyen: str, db: Session = Depends(database.get_db)):
 
 
 @router.get(
+    "/{ma_lopHoc}/unregistered",
+    status_code=status.HTTP_200_OK,
+)
+async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
+    all_user = (
+        db.query(models.TaiKhoan)
+        .filter(
+            models.TaiKhoan.ma_nhomQuyen
+            != "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        )
+        .all()
+    )
+    registered_user = (
+        db.query(models.ThamGiaLopHoc)
+        .filter(models.ThamGiaLopHoc.ma_lopHoc == ma_lopHoc)
+        .all()
+    )
+    instructor_user_id = (
+        db.query(models.LopHoc.ma_giangVien)
+        .filter(models.LopHoc.ma_lopHoc == ma_lopHoc)
+        .first()
+    )
+    registered_user_id = [user.ma_taiKhoan for user in registered_user]
+    unregistered_user = [
+        {"ma_taiKhoan": user.ma_taiKhoan, "email": user.email}
+        for user in all_user
+        if user.ma_taiKhoan not in registered_user_id
+        and user.ma_taiKhoan != instructor_user_id[0]
+    ]
+    return unregistered_user
+
+
+@router.get(
     "/{ma_taiKhoan}/bai-tap/de-kiem-tra/filter", status_code=status.HTTP_200_OK
 )
 async def read(
@@ -195,6 +228,7 @@ async def read(
             .first()
         )
         if db_object:
+            baiTap.ma_baiLamBaiTap = db_object.ma_baiLamBaiTap
             baiTap.da_lam = 1
         else:
             baiTap.da_lam = 0
@@ -221,6 +255,7 @@ async def read(
             .first()
         )
         if db_object:
+            deKiemTra.ma_baiLamKiemTra = db_object.ma_baiLamKiemTra
             deKiemTra.da_lam = 1
         else:
             deKiemTra.da_lam = 0
@@ -238,5 +273,48 @@ async def read(
         result = [x for x in result if hasattr(x, "ma_baiTap")]
     elif selectedCategory == "2":  # Test
         result = [x for x in result if hasattr(x, "ma_deKiemTra")]
+
+    return result
+
+
+@router.get(
+    "/{ma_taiKhoanHienHanh}/get-all-user-with-status-friend",
+    status_code=status.HTTP_200_OK,
+)
+async def read(
+    ma_taiKhoanHienHanh: str, db: Session = Depends(database.get_db)
+):
+    # get all user without ma_taiKhoanHienHanh
+    db_object = (
+        db.query(models.TaiKhoan)
+        .filter(models.TaiKhoan.ma_taiKhoan != ma_taiKhoanHienHanh)
+        .all()
+    )
+
+    result = []
+    for user in db_object:
+        db_check = (
+            db.query(models.BanBe)
+            .filter(
+                or_(
+                    and_(
+                        models.BanBe.ma_nguoiKetBan == ma_taiKhoanHienHanh,
+                        models.BanBe.ma_nguoiDuocKetBan == user.ma_taiKhoan,
+                    ),
+                    and_(
+                        models.BanBe.ma_nguoiKetBan == user.ma_taiKhoan,
+                        models.BanBe.ma_nguoiDuocKetBan == ma_taiKhoanHienHanh,
+                    ),
+                )
+            )
+            .first()
+        )
+
+        if db_check is None:
+            user.daKetBan = 0
+        else:
+            user.ma_nguoiKetBan = db_check.ma_nguoiKetBan
+            user.daKetBan = db_check.daKetBan
+        result.append(user)
 
     return result

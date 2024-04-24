@@ -1,113 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  Button,
+  Skeleton,
   TextField,
   List,
   ListItem,
   ListItemButton,
-  InputBase,
-  IconButton,
+  Button,
 } from "@mui/material";
-import { SendRounded } from "@mui/icons-material";
-import FlexBetween from "components/FlexBetween";
-import profileImage from "assets/profile.jpg";
 import "react-chat-elements/dist/main.css";
-import { ChatItem, MessageBox } from "react-chat-elements";
-
-const usersItems = [
-  {
-    name: "Stephen Chow",
-    image: profileImage,
-  },
-  {
-    name: "John Cena",
-    image: profileImage,
-  },
-  {
-    name: "Hu Chuynh",
-    image: profileImage,
-  },
-  {
-    name: "Jackie Chan",
-    image: profileImage,
-  },
-  {
-    name: "Bruce Lee",
-    image: profileImage,
-  },
-];
-
-const messageItems = [
-  {
-    text: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sed ducimus inventore rerum! In earum nesciunt est velit omnis illo qui adipisci, vel obcaecati molestiae ipsum voluptate repellendus dicta aperiam aspernatur.Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sed ducimus inventore rerum! In earum nesciunt est velit omnis illo qui adipisci, vel obcaecati molestiae ipsum voluptate repellendus dicta aperiam aspernatur.",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Xin chào! Bạn cần hỗ trợ gì hôm nay?",
-    position: "left",
-    name: "User1",
-  },
-  {
-    text: "Tôi đang tìm hiểu về các tính năng của ứng dụng.",
-    position: "right",
-    name: "Admin",
-  },
-  {
-    text: "Rất vui được giúp đỡ. Bạn muốn biết điều gì cụ thể?",
-    position: "right",
-    name: "User1",
-  },
-  {
-    text: "Có tính năng nào giúp tìm kiếm bạn bè không?",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Có, bạn có thể sử dụng tính năng tìm kiếm để tìm kiếm bạn bè.",
-    position: "right",
-    name: "User1",
-  },
-  {
-    text: "Tôi thấy rất hứng thú! Làm thế nào để kết bạn mới?",
-    position: "left",
-    name: "Admin",
-  },
-  {
-    text: "Bạn có thể sử dụng chức năng kết bạn và gửi lời mời kết bạn đến người khác.",
-    position: "left",
-    name: "User1",
-  },
-  {
-    text: "Cảm ơn bạn! Tôi sẽ thử ngay bây giờ.",
-    position: "right",
-    name: "Admin",
-  },
-  {
-    text: "Chúc bạn có trải nghiệm tuyệt vời! Hãy thông báo nếu cần thêm sự hỗ trợ.",
-    position: "left",
-    name: "Admin",
-  },
-  { text: "Message 11", position: "right", name: "User1" },
-  { text: "Message 12", position: "left", name: "User2" },
-  { text: "Message 13", position: "left", name: "User3" },
-  { text: "Message 14", position: "right", name: "User2" },
-  { text: "Message 15", position: "left", name: "User1" },
-  { text: "Message 16", position: "right", name: "Admin" },
-  { text: "Message 17", position: "left", name: "User3" },
-  { text: "Message 18", position: "right", name: "User2" },
-  { text: "Message 19", position: "right", name: "User1" },
-  { text: "Message 20", position: "left", name: "User3" },
-];
+import {
+  useGetAllFriendsQuery,
+  useUpdateStatusFriendMutation,
+} from "state/api";
+import ChatBoxFriend from "components/ChatBoxFriend";
+import FlexBetween from "components/FlexBetween";
+import { getUserId_Cookie } from "utils/handleCookies";
+import AvatarName from "components/AvatarName";
+import AlertComponent from "components/AlertComponent";
+import CardDetailFriend from "components/chats/CardDetailFriend";
+import ListFriendsItem from "components/chats/ListFriendsItem";
+import Loading from "components/Loading";
+import ModalFindPeople from "components/chats/ModalFindPeople";
 
 const Chats = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isOpen = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const clientId = getUserId_Cookie();
+  const {
+    data: friends,
+    isLoading: loadingAllFriends,
+    refetch: refetchAllFriends,
+  } = useGetAllFriendsQuery(clientId);
+  console.log(friends?.length);
+
   const [active, setActive] = useState("");
+  useEffect(() => {
+    if (active === "" && friends) {
+      setActive(friends?.[0]);
+    } else if (active && storeFriend && friends) {
+      setActive(friends.find((item) => item.ma_taiKhoan === storeFriend));
+      setStoreFriend("");
+    }
+  }, [friends]);
+
+  // update status friend
+  const [showAlert, setShowAlert] = useState({ message: "", state: false });
+  const [updateStatusFriend] = useUpdateStatusFriendMutation();
+  const [storeFriend, setStoreFriend] = useState("");
+  const handleChangeStatusFriend = async (friendId, status, message) => {
+    const response = await updateStatusFriend({
+      acc_id: clientId,
+      friend_id: friendId,
+      status: status,
+    });
+    if (response.data) {
+      // show AlertComponent
+      setStoreFriend(friendId);
+      setShowAlert({
+        message: message,
+        state: true,
+      });
+    } else {
+      console.error("Error changing status friend");
+    }
+  };
+
+  // handle modal find people
+  const [open, setOpen] = useState(false);
+  const handleOpenModal = () => setOpen(true);
+  const handleCloseModal = () => setOpen(false);
+
+  if (loadingAllFriends && !friends) return <Loading />;
 
   return (
     <Box
@@ -128,26 +91,47 @@ const Chats = () => {
           borderRight: "1px solid #e7e7e7",
         }}
       >
-        <Typography
-          sx={{
-            color: "#009265",
-            fontSize: "18px",
-            textAlign: "Left",
-            marginLeft: "10px",
-          }}
-        >
-          Your Friends
-        </Typography>
+        <FlexBetween>
+          <Typography
+            sx={{
+              color: "#009265",
+              fontSize: "18px",
+              textAlign: "Left",
+              marginLeft: "10px",
+            }}
+          >
+            Your Friends
+          </Typography>
 
-        <TextField
-          fullWidth
-          id="search"
-          label="Search"
-          variant="outlined"
-          size="small"
-          color="success"
-          sx={{ marginTop: "10px" }}
-        />
+          <Button
+            onClick={handleOpenModal}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textTransform: "none",
+              gap: "1rem",
+              backgroundColor: "#009265",
+              "&:hover": {
+                backgroundColor: "#007850",
+              },
+            }}
+          >
+            <Box textAlign="left">
+              <Typography
+                sx={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  textAlign: "center",
+                }}
+              >
+                Find People
+              </Typography>
+            </Box>
+          </Button>
+        </FlexBetween>
+        <ModalFindPeople open={open} handleCloseModal={handleCloseModal} />
         <List
           sx={{
             height: "100%",
@@ -165,47 +149,39 @@ const Chats = () => {
             },
           }}
         >
-          {usersItems.map((item) => {
-            return (
-              <ListItem key={item.name} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    setActive(item.name);
-                  }}
-                  sx={{
-                    backgroundColor:
-                      active === item.name ? "#e7e7e7" : "transparent",
-                    color: active === item.name ? "black" : "#666666",
-                    height: "70px",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    alt="profile"
-                    src={item.image}
-                    height="48px"
-                    width="48px"
-                    borderRadius="50%"
-                    sx={{ objectFit: "cover" }}
-                  />
-                  <Box ml="10px">
-                    <Typography
+          {loadingAllFriends && !friends
+            ? [...Array(8)].map((_, index) => (
+                <ListItem key={index}>
+                  <ListItemButton
+                    sx={{
+                      padding: "0",
+                      gap: "10px",
+                    }}
+                  >
+                    <Skeleton
+                      variant="circular"
+                      width={48}
+                      height={48}
                       sx={{
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                        color: "black",
+                        padding: "0",
                       }}
-                    >
-                      {item.name}
-                    </Typography>
-                    <Typography sx={{ fontSize: "14px", color: "#666666" }}>
-                      You: What a wonderful day!
-                    </Typography>
-                  </Box>
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
+                    />
+                    <Skeleton
+                      variant="rounded"
+                      width={"calc(100% - 58px)"}
+                      height={30}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))
+            : friends?.map((item, index) => (
+                <ListFriendsItem
+                  item={item}
+                  key={index}
+                  active={active}
+                  setActive={setActive}
+                />
+              ))}
         </List>
       </Box>
 
@@ -227,7 +203,7 @@ const Chats = () => {
             flexDirection: "row",
           }}
         >
-          <Box
+          {/* <Box
             component="img"
             alt="profile"
             src={profileImage}
@@ -235,89 +211,71 @@ const Chats = () => {
             width="39px"
             borderRadius="50%"
             sx={{ objectFit: "cover" }}
-          />
+          /> */}
+          <Box borderRadius="50%">
+            <AvatarName name={active && active.hoTen} />
+          </Box>
           <Typography
             sx={{
               margin: "7px 0 7px 20px",
               fontSize: "18px",
             }}
           >
-            Stephen Chow
+            {friends && active && active.hoTen}
           </Typography>
         </Box>
         {/* MESSAGE BOX */}
         <Box
           sx={{
-            minHeight: "500px",
-            padding: "10px",
-            height: "500px",
-            overflowY: "scroll",
-            backgroundColor: "#e7e7e7",
-            "::-webkit-scrollbar": { width: "10px" },
-            "::-webkit-scrollbar-track": {
-              background: "#f1f1f1",
-            },
-            "::-webkit-scrollbar-thumb": {
-              background: "#858585",
-            },
-            "::-webkit-scrollbar-thumb:hover": {
-              background: "#777",
-            },
+            display: "flex",
+            flexDirection: "column",
+            padding: "unset",
+            height: "calc(100% - 50px)",
           }}
         >
-          {messageItems.map((item) => {
-            return (
-              <Box
+          <AlertComponent
+            severity="success"
+            message={showAlert.message}
+            open={showAlert.state}
+            onClose={() => setShowAlert({ ...showAlert, state: false })}
+          />
+          {clientId && active ? (
+            <>
+              {active.daKetBan === 2 ? (
+                <CardDetailFriend
+                  active={active}
+                  clientId={clientId}
+                  handleChangeStatusFriend={handleChangeStatusFriend}
+                />
+              ) : (
+                <ChatBoxFriend
+                  clientId={clientId}
+                  friend={active}
+                  refetchAllFriends={refetchAllFriends}
+                  setActive={setActive}
+                />
+              )}
+            </>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <Typography
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: "20px",
+                  fontSize: "24px",
+                  color: "#666666",
+                  fontWeight: "bold",
                 }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: item.position,
-                    marginBottom: "5px",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    alt="profile"
-                    src={profileImage}
-                    height="36px"
-                    width="36px"
-                    borderRadius="50%"
-                    sx={{ objectFit: "cover" }}
-                  />
-                </Box>
-                <MessageBox
-                  position={item.position}
-                  type={"text"}
-                  text={item.text}
-                  date={new Date()}
-                  title={item.name}
-                  titleColor="#009265"
-                  styles={{ maxWidth: "400px" }}
-                />
-              </Box>
-            );
-          })}
-        </Box>
-        {/* TEXT FIELD */}
-        <Box p="0 20px" mt="10px">
-          <FlexBetween
-            backgroundColor="white"
-            border="1px solid #e7e7e7"
-            borderRadius="9px"
-            gap="3rem"
-            padding="0.1rem 1.5rem"
-          >
-            <InputBase placeholder="Aa" />
-            <IconButton>
-              <SendRounded sx={{ color: "#009265" }} />
-            </IconButton>
-          </FlexBetween>
+                No friends available
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>

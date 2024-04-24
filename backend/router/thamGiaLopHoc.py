@@ -1,3 +1,5 @@
+from typing import List, Union
+
 import database
 import models
 import schemas
@@ -10,14 +12,29 @@ router = APIRouter(prefix="/thamGiaLopHoc", tags=["thamGiaLopHoc"])
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=schemas.ThamGiaLopHoc,
+    response_model=Union[schemas.ThamGiaLopHoc, List[schemas.ThamGiaLopHoc]],
 )
 async def create(
-    schema_object: schemas.ThamGiaLopHocCreate,
+    schema_objects: Union[
+        schemas.ThamGiaLopHocCreate, List[schemas.ThamGiaLopHocCreate]
+    ],
     db: Session = Depends(database.get_db),
 ):
+    if isinstance(schema_objects, list):
+        db_objects = []
+        for schema_object in schema_objects:
+            db_object = create_db_object_thamGiaLopHoc(schema_object, db)
+            db_objects.append(db_object)
+        return db_objects
+    else:
+        db_object = create_db_object_thamGiaLopHoc(schema_objects, db)
+        return db_object
+
+
+def create_db_object_thamGiaLopHoc(schema_object, db):
     ma_lopHoc = str(schema_object.ma_lopHoc)
     ma_taiKhoan = str(schema_object.ma_taiKhoan)
+
     # check ma_lopHoc
     db_object_check = (
         db.query(models.LopHoc)
@@ -87,6 +104,24 @@ def update(
     return db_object
 
 
+@router.delete("/{ma_lopHoc}/{ma_taiKhoan}", status_code=status.HTTP_200_OK)
+async def delete(
+    ma_lopHoc: str, ma_taiKhoan: str, db: Session = Depends(database.get_db)
+):
+    print(ma_lopHoc, ma_taiKhoan)
+    db_object = (
+        db.query(models.ThamGiaLopHoc)
+        .filter(models.ThamGiaLopHoc.ma_lopHoc == ma_lopHoc)
+        .filter(models.ThamGiaLopHoc.ma_taiKhoan == ma_taiKhoan)
+        .first()
+    )
+    if db_object is None:
+        raise HTTPException(status_code=400, detail="ThamGiaLopHoc not found")
+    db.delete(db_object)
+    db.commit()
+    return {"detail": "Delete successfully"}
+
+
 @router.get(
     "/",
     response_model=list[schemas.ThamGiaLopHoc],
@@ -125,5 +160,31 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
         .all()
     )
     if not db_object:
-        raise HTTPException(status_code=400, detail="TaiKhoan not found")
+        return []
     return db_object
+
+
+@router.get(
+    "/tai-khoan/{ma_taiKhoan}/search-for-todo",
+    status_code=status.HTTP_200_OK,
+)
+async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
+    db_object = (
+        db.query(models.LopHoc, models.ThamGiaLopHoc)
+        .join(
+            models.ThamGiaLopHoc,
+            models.ThamGiaLopHoc.ma_lopHoc == models.LopHoc.ma_lopHoc,
+        )
+        .filter(models.ThamGiaLopHoc.ma_taiKhoan == ma_taiKhoan)
+        .filter(models.LopHoc.anLopHoc == 0)
+        .all()
+    )
+
+    result = []
+    if not db_object:
+        return result
+
+    for lopHoc, ThamGiaLopHoc in db_object:
+        result.append(lopHoc)
+
+    return result

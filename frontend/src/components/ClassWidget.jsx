@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
   Add,
   MoreHorizOutlined,
-  SendRounded,
   ListAltRounded,
   ExpandMore,
   PersonOffRounded,
@@ -18,12 +17,14 @@ import {
   SettingsRounded,
   EditRounded,
   DeleteRounded,
+  HistoryEduRounded,
 } from "@mui/icons-material";
 import {
   Tab,
   IconButton,
   Box,
   Typography,
+  InputBase,
   TextField,
   FormControl,
   Select,
@@ -42,21 +43,23 @@ import {
   Grid,
   Divider,
   Chip,
+  Modal,
+  Avatar,
   CircularProgress,
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import "react-chat-elements/dist/main.css";
+import dayjs from "dayjs";
 import { MessageBox } from "react-chat-elements";
 import FlexBetween from "./FlexBetween";
 import profileImage from "assets/profile.jpg";
 import DataGridCustomToolbar from "./DataGridCustomToolbar";
 import { DataGrid } from "@mui/x-data-grid";
 import ModalAddUnit from "components/ModalAddUnit";
-import {
-  useGetClassDetailsQuery,
-  usePostMessageClassMutation,
-  useGetMessageClassQuery,
-} from "state/api";
+import { useGetUnitActivitiesQuery } from "state/api";
+import AvatarName from "./AvatarName";
+import Loading from "./Loading";
+import ChatBoxGroup from "./ChatBoxGroup";
 
 const rows = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -363,7 +366,10 @@ const statisticItems = [
   },
 ];
 
-const ClassWidget = ({ classItem }) => {
+const ClassWidget = ({ classItem, userId }) => {
+  //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  //const userId = "ce6180fb-58f4-45da-9488-a00e8edeff2c";
+
   // course tab
   const [value, setValue] = React.useState("1");
   const handleChangeTab = (event, newValue) => {
@@ -392,6 +398,9 @@ const ClassWidget = ({ classItem }) => {
 
   const navigate = useNavigate();
 
+  const { data: unitsData, isLoading: isUnitsLoading } =
+    useGetUnitActivitiesQuery(classItem?.ma_lopHoc);
+
   // grade tab
   const [age, setAge] = React.useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -401,47 +410,9 @@ const ClassWidget = ({ classItem }) => {
     setAge(event.target.value);
   };
 
-  // message loading data to chat box
-  const { data: messageData, isLoading: messageLoading } =
-    useGetMessageClassQuery({
-      class_id: classItem?.ma_lopHoc,
-      acc_id: "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
-    });
-  const [maNhomChat, setMaNhomChat] = useState("");
-
-  // scroll to bottom of chat box
-  const boxRef = useRef(null);
-  useEffect(() => {
-    if (boxRef.current) {
-      boxRef.current.scrollTop = boxRef.current.scrollHeight;
-    }
-    setMaNhomChat(messageData?.[0]?.ma_nhomChat);
-  }, [messageData]);
-
-  // handle message text field
-  const [messageTextField, setMessageTextField] = useState("");
-  const [postMessageClass, { isLoading: loadingPostMessage }] =
-    usePostMessageClassMutation();
-  const handleTextFieldChange = (event) => {
-    setMessageTextField(event.target.value);
-  };
-  const isMessageTextFieldEmpty = messageTextField.trim() === "";
-  const handleEnterKeyDown = (event) => {
-    if (event.key === "Enter" && event.shiftKey) {
-      // allow new line
-      return;
-    } else if (event.key === "Enter" && !isMessageTextFieldEmpty) {
-      postMessageClass({
-        noiDung: messageTextField,
-        acc_id: "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
-        chatGroup_id: maNhomChat,
-      });
-      setMessageTextField("");
-      event.preventDefault(); // prevent new line
-    } else if (event.key === "Enter" && isMessageTextFieldEmpty) {
-      event.preventDefault(); // prevent new line
-    }
-  };
+  if (isUnitsLoading) {
+    return <Loading />;
+  }
   return (
     <Box
       sx={{
@@ -460,7 +431,8 @@ const ClassWidget = ({ classItem }) => {
           flexDirection: "row",
         }}
       >
-        <Box
+        <AvatarName name={classItem?.ten} />
+        {/* <Box
           component="img"
           alt="profile"
           src={classItem?.anhDaiDien}
@@ -468,7 +440,8 @@ const ClassWidget = ({ classItem }) => {
           width="39px"
           borderRadius="50%"
           sx={{ objectFit: "cover" }}
-        />
+        /> */}
+
         <Typography
           sx={{
             height: "40px",
@@ -505,18 +478,22 @@ const ClassWidget = ({ classItem }) => {
           >
             <Tab label="Chat Room" value="1" />
             <Tab label="Course" value="2" />
-            <Tab label="Grade" value="3" />
+            {classItem?.ma_giangVien === userId && (
+              <Tab label="Grade" value="3" />
+            )}
           </TabList>
-          <IconButton
-            sx={{
-              color: "#666666",
-              width: "40px",
-              marginRight: "30px",
-            }}
-            onClick={() => navigate("/classDetail")}
-          >
-            <SettingsRounded />
-          </IconButton>
+          {classItem?.ma_giangVien === userId && (
+            <IconButton
+              sx={{
+                color: "#666666",
+                width: "40px",
+                marginRight: "30px",
+              }}
+              onClick={() => navigate(`/classDetail/${classItem?.ma_lopHoc}`)}
+            >
+              <SettingsRounded />
+            </IconButton>
+          )}
         </Box>
 
         {/* CHATROOM TAB */}
@@ -529,140 +506,9 @@ const ClassWidget = ({ classItem }) => {
             height: "calc(100% - 98.8px)",
           }}
         >
-          {messageLoading && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                height: "calc(100% - 50.8px)",
-              }}
-            >
-              <CircularProgress color="success" />
-            </Box>
+          {classItem && userId && (
+            <ChatBoxGroup classItem={classItem} clientId={userId} />
           )}
-          <Box
-            ref={boxRef}
-            sx={{
-              height: "100%",
-              overflowY: "scroll",
-              backgroundColor: "#e7e7e7",
-              padding: "10px",
-              "::-webkit-scrollbar": { width: "10px" },
-              "::-webkit-scrollbar-track": {
-                background: "#f1f1f1",
-              },
-              "::-webkit-scrollbar-thumb": {
-                background: "#858585",
-              },
-              "::-webkit-scrollbar-thumb:hover": {
-                background: "#777",
-              },
-            }}
-          >
-            {messageData?.map((item, index) => {
-              return (
-                <Box
-                  key={item.ma_tinNhan}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: "20px",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: item.position,
-                      marginBottom: "5px",
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      alt="profile"
-                      src={profileImage}
-                      height="36px"
-                      width="36px"
-                      borderRadius="50%"
-                      sx={{ objectFit: "cover" }}
-                    />
-                  </Box>
-                  <MessageBox
-                    position={item.position}
-                    type={"text"}
-                    text={item.noiDung}
-                    date={item.thoiGianGui}
-                    title={item.ten_taiKhoan}
-                    titleColor="#009265"
-                    styles={{ maxWidth: "400px" }}
-                  />
-                </Box>
-              );
-            })}
-          </Box>
-          <Box sx={{ height: "auto", padding: "10px " }}>
-            <FlexBetween
-              backgroundColor="white"
-              // border="1px solid #e7e7e7"
-              borderRadius="9px"
-              padding="0.1rem 1.5rem 0.1rem 0.5rem"
-            >
-              <TextField
-                placeholder="Type a message..."
-                sx={{
-                  width: "100%",
-                  padding: "0",
-                  color: "black",
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      border: "none",
-                    },
-                    "&:hover fieldset": {
-                      border: "none",
-                    },
-                    "&.Mui-focused fieldset": {
-                      border: "none",
-                    },
-                  },
-                }}
-                variant="outlined"
-                size="small"
-                // multiline
-                InputProps={{
-                  maxRows: 10,
-                  multiline: true,
-                }}
-                value={messageTextField}
-                onChange={handleTextFieldChange}
-                onKeyDown={handleEnterKeyDown}
-              />
-              {loadingPostMessage ? (
-                <CircularProgress color="success" />
-              ) : (
-                <IconButton
-                  sx={{
-                    marginTop: "auto",
-                  }}
-                  disabled={isMessageTextFieldEmpty}
-                >
-                  <SendRounded
-                    sx={{ color: isMessageTextFieldEmpty ? "gray" : "#009265" }}
-                  />
-                </IconButton>
-              )}
-              {/* <IconButton
-                sx={{
-                  marginTop: "auto",
-                }}
-                disabled={isMessageTextFieldEmpty}
-              >
-                <SendRounded
-                  sx={{ color: isMessageTextFieldEmpty ? "gray" : "#009265" }}
-                />
-              </IconButton> */}
-            </FlexBetween>
-          </Box>
         </TabPanel>
 
         {/* COURSE TAB */}
@@ -706,94 +552,96 @@ const ClassWidget = ({ classItem }) => {
                   <MenuItem value={30}>Document</MenuItem>
                 </Select>
               </FormControl>
-              <FlexBetween>
-                <Button
-                  onClick={handleClickCreateMenu}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    textTransform: "none",
-                    gap: "1rem",
-                    backgroundColor: "#009265",
-                    "&:hover": {
-                      backgroundColor: "#007850",
-                    },
-                    width: "100px",
-                    height: "40px",
-                  }}
-                >
-                  <Box textAlign="left">
-                    <Typography
+              {classItem?.ma_giangVien === userId && (
+                <FlexBetween>
+                  <Button
+                    onClick={handleClickCreateMenu}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      textTransform: "none",
+                      gap: "1rem",
+                      backgroundColor: "#009265",
+                      "&:hover": {
+                        backgroundColor: "#007850",
+                      },
+                      width: "100px",
+                      height: "40px",
+                    }}
+                  >
+                    <Box textAlign="left">
+                      <Typography
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                          textAlign: "center",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        Create
+                      </Typography>
+                    </Box>
+                    <Add
                       sx={{
                         color: "white",
-                        fontWeight: "bold",
-                        fontSize: "14px",
-                        textAlign: "center",
-                        marginLeft: "5px",
+                        fontSize: "18px",
+                        marginRight: "10px",
                       }}
-                    >
-                      Create
-                    </Typography>
-                  </Box>
-                  <Add
-                    sx={{
-                      color: "white",
-                      fontSize: "18px",
-                      marginRight: "10px",
-                    }}
-                  />
-                </Button>
-                <Menu
-                  anchorEl={anchorElCreateMenu}
-                  open={isOpenCreateMenu}
-                  onClose={handleCloseCreateMenu}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                >
-                  <nav>
-                    <MenuItem
-                      onClick={
-                        (handleCloseCreateMenu, () => navigate("/tests/add"))
-                      }
-                    >
-                      <FlexBetween width="60%">
-                        <ArticleOutlined />
-                        <Typography>Test</Typography>
-                      </FlexBetween>
-                    </MenuItem>
-                    <MenuItem onClick={handleCloseCreateMenu}>
-                      <FlexBetween width="90%">
-                        <ArticleOutlined />
-                        <Typography>Exercise</Typography>
-                      </FlexBetween>
-                    </MenuItem>
-                    <MenuItem onClick={handleCloseCreateMenu}>
-                      <FlexBetween>
-                        <BookOutlined />
-                        <Typography>Document</Typography>
-                      </FlexBetween>
-                    </MenuItem>
-                  </nav>
-                  <Divider color="#666666" />
-                  <nav>
-                    <MenuItem
-                      onClick={(handleCloseCreateMenu, handleOpenAddUnit)}
-                    >
-                      <FlexBetween width="60%">
-                        <ListAltRounded />
-                        <Typography>Unit</Typography>
-                      </FlexBetween>
-                    </MenuItem>
-                    <ModalAddUnit
-                      open={openAddUnit}
-                      handleClose={handleCloseAddUnit}
                     />
-                  </nav>
-                </Menu>
-              </FlexBetween>
+                  </Button>
+                  <Menu
+                    anchorEl={anchorElCreateMenu}
+                    open={isOpenCreateMenu}
+                    onClose={handleCloseCreateMenu}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                  >
+                    <nav>
+                      <MenuItem
+                        onClick={
+                          (handleCloseCreateMenu, () => navigate("/tests/add"))
+                        }
+                      >
+                        <FlexBetween width="60%">
+                          <HistoryEduRounded />
+                          <Typography>Test</Typography>
+                        </FlexBetween>
+                      </MenuItem>
+                      <MenuItem onClick={handleCloseCreateMenu}>
+                        <FlexBetween width="90%">
+                          <ArticleOutlined />
+                          <Typography>Exercise</Typography>
+                        </FlexBetween>
+                      </MenuItem>
+                      <MenuItem onClick={handleCloseCreateMenu}>
+                        <FlexBetween>
+                          <BookOutlined />
+                          <Typography>Document</Typography>
+                        </FlexBetween>
+                      </MenuItem>
+                    </nav>
+                    <Divider color="#666666" />
+                    <nav>
+                      <MenuItem
+                        onClick={(handleCloseCreateMenu, handleOpenAddUnit)}
+                      >
+                        <FlexBetween width="60%">
+                          <ListAltRounded />
+                          <Typography>Unit</Typography>
+                        </FlexBetween>
+                      </MenuItem>
+                      <ModalAddUnit
+                        open={openAddUnit}
+                        handleClose={handleCloseAddUnit}
+                      />
+                    </nav>
+                  </Menu>
+                </FlexBetween>
+              )}
             </FlexBetween>
           </FlexBetween>
 
@@ -816,7 +664,7 @@ const ClassWidget = ({ classItem }) => {
               },
             }}
           >
-            {lessons.map((lesson, index) => (
+            {unitsData?.map((unit, index) => (
               <Accordion
                 key={index}
                 sx={{
@@ -829,42 +677,123 @@ const ClassWidget = ({ classItem }) => {
                     expandIcon={<ExpandMore />}
                     aria-controls="panel3-content"
                     id="panel3-header"
-                    sx={{ flexDirection: "row-reverse", width: "100%" }}
-                  >
-                    {lesson.title}
-                  </AccordionSummary>
-                  <IconButton
                     sx={{
-                      color: "#009265",
-                      width: "40px",
-                      marginRight: "30px",
+                      flexDirection: "row-reverse",
+                      width: "100%",
+                      ".MuiAccordionSummary-content": { marginLeft: "12px" },
+                      ".MuiAccordionSummary-content.Mui-expanded": {
+                        margin: "12px 0 12px 12px",
+                      },
                     }}
-                    onClick={handleClickActivityMenu}
                   >
-                    <MoreHorizOutlined />
-                  </IconButton>
+                    {unit.chuong.ten}
+                  </AccordionSummary>
+                  {classItem?.ma_giangVien === userId && (
+                    <IconButton
+                      sx={{
+                        color: "#009265",
+                        width: "40px",
+                        marginRight: "30px",
+                      }}
+                      onClick={handleClickActivityMenu}
+                    >
+                      <MoreHorizOutlined />
+                    </IconButton>
+                  )}
                 </FlexBetween>
 
                 <AccordionDetails sx={{ padding: "unset" }}>
                   <List>
-                    {lesson.tests.map((test, testIndex) => (
-                      <ListItem key={testIndex} disablePadding>
+                    {unit.deKiemTra.map((test, testIndex) => (
+                      <ListItem
+                        key={testIndex}
+                        disablePadding
+                        onClick={() =>
+                          classItem?.ma_giangVien === userId
+                            ? navigate(`/tests/${test.ma_deKiemTra}/common`)
+                            : navigate(`/tests/${test.ma_deKiemTra}/do`)
+                        }
+                      >
+                        <ListItemButton sx={{ height: "80px" }}>
+                          <ListItemIcon>
+                            <HistoryEduRounded />
+                          </ListItemIcon>
+                          <Box width="100%">
+                            <Box display="flex" flexDirection="row">
+                              <Typography variant="h6">
+                                {test.tieuDe}
+                              </Typography>
+                              <Box p="3px 0 3px 10px">
+                                <Chip
+                                  label="Ongoing"
+                                  color="success"
+                                  size="small"
+                                />
+                              </Box>
+                            </Box>
+                            <Typography color="#666666">
+                              Deadline:{" "}
+                              {dayjs(test.thoiGianBatDau).format(
+                                "HH:mm - DD/MM/YYYY",
+                              ) +
+                                " to " +
+                                dayjs(test.hanChotNopBai).format(
+                                  "HH:mm - DD/MM/YYYY",
+                                )}
+                            </Typography>
+                          </Box>
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                    {unit.baiTap.map((exercise, exerciseIndex) => (
+                      <ListItem key={exerciseIndex} disablePadding>
                         <ListItemButton sx={{ height: "80px" }}>
                           <ListItemIcon>
                             <ArticleOutlined />
                           </ListItemIcon>
-                          <Box>
-                            <FlexBetween>
-                              <Typography variant="h6">{test.name}</Typography>
-                              <Chip
-                                label="Ongoing"
-                                color="success"
-                                size="small"
-                                sx={{ marginLeft: "10px" }}
-                              />
-                            </FlexBetween>
+                          <Box width="100%">
+                            <Box display="flex" flexDirection="row">
+                              <Typography variant="h6">
+                                {exercise.tieuDe}
+                              </Typography>
+                              <Box p="3px 0 3px 10px">
+                                <Chip
+                                  label="Ongoing"
+                                  color="success"
+                                  size="small"
+                                />
+                              </Box>
+                            </Box>
                             <Typography color="#666666">
-                              Deadline: {test.deadline}
+                              Deadline:{" "}
+                              {dayjs(exercise.thoiGianBatDau).format(
+                                "HH:mm - DD/MM/YYYY",
+                              ) +
+                                " to " +
+                                dayjs(exercise.thoiGianKetThuc).format(
+                                  "HH:mm - DD/MM/YYYY",
+                                )}
+                            </Typography>
+                          </Box>
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                    {unit.hocLieu.map((document, documentIndex) => (
+                      <ListItem key={documentIndex} disablePadding>
+                        <ListItemButton sx={{ height: "80px" }}>
+                          <ListItemIcon>
+                            <BookOutlined />
+                          </ListItemIcon>
+                          <Box width="100%">
+                            <Typography variant="h6">
+                              {document.tieuDe}
+                            </Typography>
+                            <Typography color="#666666">
+                              Create at:
+                              {" " +
+                                dayjs(document.thoiGianTao).format(
+                                  "HH:mm - DD/MM/YYYY",
+                                )}
                             </Typography>
                           </Box>
                         </ListItemButton>
@@ -902,132 +831,133 @@ const ClassWidget = ({ classItem }) => {
         </TabPanel>
 
         {/* GRADE TAB */}
-        <TabPanel
-          value="3"
-          sx={{
-            padding: "10px 20px",
-            height: "100%",
-            overflowY: "scroll",
-            "::-webkit-scrollbar": { width: "10px" },
-            "::-webkit-scrollbar-track": {
-              background: "#f1f1f1",
-            },
-            "::-webkit-scrollbar-thumb": {
-              background: "#858585",
-            },
-            "::-webkit-scrollbar-thumb:hover": {
-              background: "#777",
-            },
-          }}
-        >
-          <Box>
-            <FormControl
-              sx={{
-                m: 1,
-                minWidth: 120,
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Select
-                value={age}
-                onChange={handleChange}
-                displayEmpty
-                inputProps={{ "aria-label": "Without label" }}
-                size="small"
+        {classItem?.ma_giangVien === userId && (
+          <TabPanel
+            value="3"
+            sx={{
+              padding: "10px 20px",
+              height: "100%",
+              overflowY: "scroll",
+              "::-webkit-scrollbar": { width: "10px" },
+              "::-webkit-scrollbar-track": {
+                background: "#f1f1f1",
+              },
+              "::-webkit-scrollbar-thumb": {
+                background: "#858585",
+              },
+              "::-webkit-scrollbar-thumb:hover": {
+                background: "#777",
+              },
+            }}
+          >
+            <Box>
+              <FormControl
                 sx={{
-                  minWidth: "200px",
+                  m: 1,
+                  minWidth: 120,
+                  display: "flex",
+                  flexDirection: "row",
                 }}
-                color="success"
               >
-                <MenuItem value="">Exercise</MenuItem>
-                <MenuItem value={2}>Test</MenuItem>
-              </Select>
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={unitItems}
-                sx={{ width: 400, marginLeft: "10px" }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Unit" color="success" />
-                )}
-                size="small"
-              />
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={testItems}
-                sx={{ width: 400, marginLeft: "10px" }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Test Title" color="success" />
-                )}
-                size="small"
-              />
-            </FormControl>
-            <Typography variant="h6" color="#009265" fontWeight="bold">
-              General
-            </Typography>
-            <Box sx={{ flexGrow: 1, marginTop: "10px" }}>
-              <Grid
-                container
-                spacing={{ xs: 2, md: 3 }}
-                columns={{ xs: 4, sm: 8, md: 12 }}
+                <Select
+                  value={age}
+                  onChange={handleChange}
+                  displayEmpty
+                  inputProps={{ "aria-label": "Without label" }}
+                  size="small"
+                  sx={{
+                    minWidth: "200px",
+                  }}
+                  color="success"
+                >
+                  <MenuItem value="">Exercise</MenuItem>
+                  <MenuItem value={2}>Test</MenuItem>
+                </Select>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={unitItems}
+                  sx={{ width: 400, marginLeft: "10px" }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Unit" color="success" />
+                  )}
+                  size="small"
+                />
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={testItems}
+                  sx={{ width: 400, marginLeft: "10px" }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Test Title" color="success" />
+                  )}
+                  size="small"
+                />
+              </FormControl>
+              <Typography variant="h6" color="#009265" fontWeight="bold">
+                General
+              </Typography>
+              <Box sx={{ flexGrow: 1, marginTop: "10px" }}>
+                <Grid
+                  container
+                  spacing={{ xs: 2, md: 3 }}
+                  columns={{ xs: 4, sm: 8, md: 12 }}
+                >
+                  {statisticItems.map((item, index) => (
+                    <Grid item xs={2} sm={4} md={4} key={index}>
+                      <Paper>
+                        <Box
+                          sx={{
+                            padding: "10px",
+                            display: "flex",
+                            flexDirection: "row",
+                          }}
+                        >
+                          <Box width="80%">
+                            <Typography variant="h4">{item.value}</Typography>
+                            <Typography variant="h7" color="#009265">
+                              {item.label}
+                            </Typography>
+                          </Box>
+                          <Box width="20%" p="15px 0">
+                            {item.icon}
+                          </Box>
+                        </Box>
+                      </Paper>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+              <Typography
+                variant="h6"
+                color="#009265"
+                fontWeight="bold"
+                mt="10px"
               >
-                {statisticItems.map((item, index) => (
-                  <Grid item xs={2} sm={4} md={4} key={index}>
-                    <Paper>
-                      <Box
-                        sx={{
-                          padding: "10px",
-                          display: "flex",
-                          flexDirection: "row",
-                        }}
-                      >
-                        <Box width="80%">
-                          <Typography variant="h4">{item.value}</Typography>
-                          <Typography variant="h7" color="#009265">
-                            {item.label}
-                          </Typography>
-                        </Box>
-                        <Box width="20%" p="15px 0">
-                          {item.icon}
-                        </Box>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-            <Typography
-              variant="h6"
-              color="#009265"
-              fontWeight="bold"
-              mt="10px"
-            >
-              Chart
-            </Typography>
-            <LineChart
-              xAxis={[{ data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }]}
-              series={[
-                {
-                  data: [2, 5, 2, 8, 1, 5, 10, 3, 7, 4],
-                },
-              ]}
-              fullWidth
-              height={500}
-            />
-            <Typography
-              variant="h6"
-              color="#009265"
-              fontWeight="bold"
-              mt="10px"
-            >
-              Score Table
-            </Typography>
-            <Box
-              height="80vh"
-              mt="10px"
-              /* sx={{
+                Chart
+              </Typography>
+              <LineChart
+                xAxis={[{ data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }]}
+                series={[
+                  {
+                    data: [2, 5, 2, 8, 1, 5, 10, 3, 7, 4],
+                  },
+                ]}
+                fullWidth
+                height={500}
+              />
+              <Typography
+                variant="h6"
+                color="#009265"
+                fontWeight="bold"
+                mt="10px"
+              >
+                Score Table
+              </Typography>
+              <Box
+                height="80vh"
+                mt="10px"
+                /* sx={{
                 "& .MuiDataGrid-root": {
                   border: "none",
                 },
@@ -1051,22 +981,23 @@ const ClassWidget = ({ classItem }) => {
                   color: `${theme.palette.secondary[200]} !important`,
                 },
               }} */
-            >
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                rowsPerPageOptions={[20, 50, 100]}
-                pagination
-                paginationMode="server"
-                sortingMode="server"
-                components={{ Toolbar: DataGridCustomToolbar }}
-                componentsProps={{
-                  toolbar: { searchInput, setSearchInput, setSearch },
-                }}
-              />
+              >
+                <DataGrid
+                  rows={rows}
+                  columns={columns}
+                  rowsPerPageOptions={[20, 50, 100]}
+                  pagination
+                  paginationMode="server"
+                  sortingMode="server"
+                  components={{ Toolbar: DataGridCustomToolbar }}
+                  componentsProps={{
+                    toolbar: { searchInput, setSearchInput, setSearch },
+                  }}
+                />
+              </Box>
             </Box>
-          </Box>
-        </TabPanel>
+          </TabPanel>
+        )}
       </TabContext>
     </Box>
   );

@@ -29,6 +29,7 @@ from router import (
     thamGiaLopHoc,
     tinNhan,
     tinNhanBanBe,
+    webSocket,
 )
 
 models.Base.metadata.create_all(bind=engine)
@@ -123,6 +124,7 @@ main_route.include_router(
 main_route.include_router(
     lopHoc.router, dependencies=[Depends(verify_token_middleware)]
 )
+main_route.include_router(webSocket.router)
 
 app.include_router(main_route, prefix="/api")
 app.include_router(auth.auth, prefix="/auth")
