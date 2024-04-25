@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import theme from "../../theme";
 import PropTypes from "prop-types";
 import {
@@ -12,24 +11,19 @@ import {
   MenuItem,
   List,
   ListItem,
-  ListItemIcon,
-  ListItemButton,
-  Chip,
-  Stack,
-  Button,
   IconButton,
   CircularProgress,
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import {
-  ArticleOutlined,
-  HistoryEduRounded,
   HourglassEmpty,
   EventAvailable,
   RefreshOutlined,
 } from "@mui/icons-material";
 import { useGetTodoQuery, useGetAllJoinClassQuery } from "state/api";
 import { getUserId_Cookie } from "utils/handleCookies";
+import TodoListItemPending from "components/todo/TodoListItemPending";
+import TodoListItemDone from "components/todo/TodoListItemDone";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -65,7 +59,6 @@ function a11yProps(index) {
 }
 
 const Todo = () => {
-  const navigate = useNavigate();
   const [value, setValue] = useState(0);
   const [classes, setClasses] = useState("0");
   const [categories, setCategories] = useState("0");
@@ -93,23 +86,10 @@ const Todo = () => {
   };
 
   // handle click button
-  const handleClickDoExercise = (id) => {
-    // navigate(`/exercise/${id}/do`);
-  };
-  const handleClickDoTest = (id) => {
-    navigate(`/tests/${id}/do`);
-  };
   const handleClickRefresh = () => {
     setClasses("0");
     setCategories("0");
     refetchTodoData();
-  };
-
-  const handleDetailExercise = () => {
-    // navigate("/exercise/detail");
-  };
-  const handleDetailTest = (testId, workId) => {
-    navigate(`/tests/${testId}/work/${workId}`);
   };
 
   // handle change tab name
@@ -326,77 +306,7 @@ const Todo = () => {
                           }
                           disablePadding
                         >
-                          <ListItemButton
-                            sx={{ height: "80px", padding: "10px 25px" }}
-                          >
-                            <ListItemIcon>
-                              {item.ma_baiTap ? (
-                                <ArticleOutlined />
-                              ) : (
-                                <HistoryEduRounded />
-                              )}
-                            </ListItemIcon>
-                            <Box>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  gap: "10px",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Typography variant="h6" component="span">
-                                  {item.tieuDe}
-                                </Typography>
-                                <Stack direction="row" spacing={1}>
-                                  <Chip
-                                    label={
-                                      item.ma_baiTap ? "Assignment" : "Test"
-                                    }
-                                    color={"success"}
-                                    size="small"
-                                    variant="outlined"
-                                  />
-                                </Stack>
-                              </Box>
-                              <Typography color="#666666">
-                                Deadline:{" "}
-                                {new Date(
-                                  item.thoiGianKetThuc,
-                                ).toLocaleString()}{" "}
-                                | Class: {item.ten_lopHoc}
-                              </Typography>
-                            </Box>
-                            <Button
-                              onClick={
-                                item.ma_baiTap
-                                  ? () => handleClickDoExercise()
-                                  : () => handleClickDoTest(item.ma_deKiemTra)
-                              }
-                              sx={{
-                                textTransform: "none",
-                                borderRadius: "20px",
-                                marginLeft: "auto",
-                                padding: "5px 25px",
-                                backgroundColor: theme.main_theme,
-                                "&:hover": {
-                                  backgroundColor: "#007850",
-                                },
-                              }}
-                            >
-                              <Box>
-                                <Typography
-                                  sx={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  {item.ma_baiTap ? "Submit" : "Start"}
-                                </Typography>
-                              </Box>
-                            </Button>
-                          </ListItemButton>
+                          <TodoListItemPending item={item} />
                         </ListItem>
                       ),
                   )
@@ -531,77 +441,7 @@ const Todo = () => {
                         }
                         disablePadding
                       >
-                        <ListItemButton
-                          sx={{ height: "80px", padding: "10px 25px" }}
-                        >
-                          <ListItemIcon>
-                            {item.ma_baiTap ? (
-                              <ArticleOutlined />
-                            ) : (
-                              <HistoryEduRounded />
-                            )}
-                          </ListItemIcon>
-                          <Box>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                gap: "10px",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Typography variant="h6" component="span">
-                                {item.tieuDe}
-                              </Typography>
-                              <Stack direction="row" spacing={1}>
-                                <Chip
-                                  label={item.ma_baiTap ? "Assignment" : "Test"}
-                                  color={"success"}
-                                  size="small"
-                                  variant="outlined"
-                                />
-                              </Stack>
-                            </Box>
-                            <Typography color="#666666">
-                              Deadline:{" "}
-                              {new Date(item.thoiGianKetThuc).toLocaleString()}{" "}
-                              | Class: {item.ten_lopHoc}
-                            </Typography>
-                          </Box>
-                          <Button
-                            onClick={
-                              item.ma_baiTap
-                                ? () => handleDetailExercise()
-                                : () =>
-                                    handleDetailTest(
-                                      item.ma_deKiemTra,
-                                      item.ma_baiLamKiemTra,
-                                    )
-                            }
-                            sx={{
-                              textTransform: "none",
-                              borderRadius: "20px",
-                              marginLeft: "auto",
-                              padding: "5px 25px",
-                              backgroundColor: theme.main_theme,
-                              "&:hover": {
-                                backgroundColor: "#007850",
-                              },
-                            }}
-                          >
-                            <Box>
-                              <Typography
-                                sx={{
-                                  color: "white",
-                                  fontWeight: "bold",
-                                  textAlign: "center",
-                                }}
-                              >
-                                Detail
-                              </Typography>
-                            </Box>
-                          </Button>
-                        </ListItemButton>
+                        <TodoListItemDone item={item} />
                       </ListItem>
                     ),
                 )}

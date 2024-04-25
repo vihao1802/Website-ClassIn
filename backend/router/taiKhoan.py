@@ -225,6 +225,7 @@ async def read(
         db_object = (
             db.query(models.BaiLamBaiTap)
             .filter(models.BaiLamBaiTap.ma_baiTap == baiTap.ma_baiTap)
+            .filter(models.BaiLamBaiTap.ma_taiKhoan == ma_taiKhoan)
             .first()
         )
         if db_object:
@@ -252,6 +253,7 @@ async def read(
         db_object = (
             db.query(models.BaiLamKiemTra)
             .filter(models.BaiLamKiemTra.ma_deKiemTra == deKiemTra.ma_deKiemTra)
+            .filter(models.BaiLamKiemTra.ma_taiKhoan == ma_taiKhoan)
             .first()
         )
         if db_object:
