@@ -15,6 +15,7 @@ import TestExcerciseDetail from "pages/tests/TestExcerciseDetail";
 import Profile from "pages/profile";
 import ClassDetail from "pages/classDetail";
 import CreateHomeWork from "pages/homework";
+import DoHomework from "pages/do_homework";
 function App() {
   return (
     <div className="app">
@@ -36,6 +37,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/createhomework" element={<CreateHomeWork />} />
+          <Route path="/dohomework/:homeworkId" element={<DoHomework />} />
           <Route
             path="/tests/:testId/common"
             element={<TestExcerciseDetail />}

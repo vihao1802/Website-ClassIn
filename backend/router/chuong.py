@@ -70,8 +70,7 @@ async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
         .filter(models.Chuong.ma_lopHoc == ma_lopHoc)
         .all()
     )
-    if not db_object:
-        raise HTTPException(status_code=400, detail="ma_lopHoc not found")
+
     return db_object
 
 
