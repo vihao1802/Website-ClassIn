@@ -13,8 +13,8 @@ export default function AttachmentLink({
     <Link
       target="_blank"
       sx={{
+        position: "relative",
         width: { width },
-        marginLeft: "1%",
         height: "4rem",
         display: "flex",
         flexDirection: "row",
@@ -77,6 +77,8 @@ export default function AttachmentLink({
           justifyContent: "center",
           alignItems: "center",
           color: "black",
+          position: "absolute",
+          right: "0",
         }}
         onClick={handleRemove}
       >

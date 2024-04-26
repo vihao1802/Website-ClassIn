@@ -42,14 +42,13 @@ const validationSchema = yup.object({
 const Sigupform = () => {
   const navigate = useNavigate();
   const [SigningUp, setSigningUp] = React.useState(false);
+  const [message, setMessage] = React.useState("");
   const formik = useFormik({
     initialValues: {
       name: "",
       email: "",
       phonenumber: "",
       password: "",
-      name: "",
-      phonenumber: "",
       passwordverify: "",
     },
     validationSchema: validationSchema,
@@ -72,17 +71,17 @@ const Sigupform = () => {
       })
         .then((response) => {
           if (response.ok) {
-            setSigningUp(false);
             navigate(`/signin`);
-          } else {
-            setSigningUp(false);
-            alert("Sign up failed");
           }
           return response.json();
         })
+        .then((data) => {
+          setSigningUp(false);
+          setMessage(data.detail);
+        })
         .catch((err) => {
           setSigningUp(false);
-          console.error(err);
+          // setMessage("Server error");
         });
     },
   });
@@ -120,6 +119,17 @@ const Sigupform = () => {
                   fontWeight="bold"
                 >
                   Sign up
+                </Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    backgroundColor: "#f8d7da",
+                    color: "#721c24",
+                    textAlign: "center",
+                    lineHeight: "2.5rem",
+                  }}
+                >
+                  {message}
                 </Typography>
                 <TextField
                   fullWidth
@@ -221,7 +231,16 @@ const Sigupform = () => {
                   }}
                   disabled={SigningUp}
                 >
-                  {SigningUp ? <CircularProgress size={24} /> : "Sign In"}
+                  {SigningUp ? (
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        color: "white",
+                      }}
+                    />
+                  ) : (
+                    "Sign up"
+                  )}
                 </Button>
 
                 <Typography

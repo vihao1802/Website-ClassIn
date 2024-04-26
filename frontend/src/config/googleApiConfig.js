@@ -1,0 +1,29 @@
+export const ggOauthKey = {
+  client_id:
+    "575040790562-lklqcn02udb1hr8id60vcmbrrrnffhqn.apps.googleusercontent.com",
+  project_id: "xenon-timer-421207",
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_secret: "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",
+  redirect_uris: ["https://developers.google.com/oauthplayground"],
+  refresh_token:
+    "1//04pKftar_OpXFCgYIARAAGAQSNwF-L9Irtg-NCgK_Ua-gmVgUFvf3hFMlLdE6v06OxwLNVk_qDwZwzfw-rVhq9pdIxEVzUrphr68",
+  access_token:
+    "ya29.a0Ad52N38EZUxgiQzJCAgOikXSjUMiYCb2yDuHxUcRqg5mcaaXO9vcxzqAZWq3ML6OYGjc7zCR8MIL9xSZREJy5fU3ahju7dg0rRoloA3qXA-MmdqSKjzSeX-9ROSJuJXttCuizbFReSSpR5XhJcys1MrmdmOgz6mxqklTaCgYKAY4SARISFQHGX2Mimqw4GZ9aY6QtymvKhCDT4A0171",
+};
+export const ggServiceKey = {
+  type: "service_account",
+  project_id: "classin2024",
+  private_key_id: "beca3ec0f231229b59de532e90456e2bbc75e05b",
+  private_key:
+    "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCL0j9Ijoj5l3xG\nxdjst3QUDyWe6/68l96a5urTao/OjKLUkLoYwu2ySc8WthuyubjdRbtsnMr/g0S/\nxQIVaNYnJTN+LPOVYkXkUClJ8h/C8vuP7hkVPH15cRFyr9EZyCpchCtc+ehRlE4V\nlj3hPibW2S38yRaSMFqa6WI1VoXfTqdT/CzZCZ2mqVegjDyoKi6j/U3TLB79WNYZ\nekNXJliUpxGrsCTZm53IriVQkTSb8Z+wiYnK2SYFkke3G+KyCvqveVylE75ERjwL\n+fYSUwaWOahyFNdf/8+B5ZiBzPk3DaEU/S1jEUiwHpDkTTRm/JB9JpBvbdbCDdHe\nDpMoAomRAgMBAAECggEAB3GU/ubfsfH3osjrqIaHvn2j8hb8Q8wOBM8gV0sIBuYD\n0S83SRQvlVtKlBnz1Yr/pYAN31VllT7GzTLOzpb7N7BKUoBQI3bM47/EwvQJ7tYC\nwIHbgf7rayiy1hk4F5hJcQ10RYnkbVto4MtT1gb6CFwdj6Sg9/1tBWxBVzeY/u9b\n3U8TiTh4/r9HlDdjTNPtokQJsbez6r0P9G7EDQbPTByrmTj7AOlmO30AbDGUESFr\n5zmGHtz2Lfn00+dcV3TPicmGO1ER5BPEKeNXPC9LrxRAvSp98FmHn2D5ScAphr8z\n2QGSmLcQbllv+QRQYJzA4EYDSLB0eMuGgpICypQltQKBgQDFjob8inYnxviM0RLi\nee9c6CSLF6QiiZL1afemc1ZjwCnaqxH1HS4nlyYe7pxQCW1/m4ywb5DTwrX3fwl7\npCxPECyWAQmiYytjGi/nVOT5zJP7Yd7c3HwPdBJ7w1og8XP0/b09nRepZtN0UoI0\nlAGoG7Kk9CjcSE+9y2fEMCPxywKBgQC1L0RCjh3mfGVp68xyTfvUulR4pK7T2CY9\nUef6v/FkEeezc6ABFBRNZ/UQfmzpqA1UykMdkMQGniCQprSKNqd+dCbXKVZBXMOp\nf0oomivzOenHqsqy6bCCkuFfBTiQ4twIFfi4WvK24diy4N5XSmwpGBZmsonwCcZY\n49/d0d3WkwKBgGMsvc8ho1csp7Hpc1WGaQd28oFxCNDdx4yz+cLxu7ivy1Me9hDa\n6USuuFBm8MmtMe8Ro3sfRtFHuhnZCGWtcSDvubJEKxX+OtWxW8MB90D/1nooE71E\nYnNPjcfbte87xz6B8vJvXmWIXTbUBNFoS7ycyv3MJIcRNhbNefYfRKwpAoGASlRX\nxo4TCiliWW/Y8dO4Sm8elFfLOTFljqZ5as8vsoP98AqxS3/3TEInsVqMR9cfkPdh\nTVHEeYqJhY4+Zq1BTYlNHdvhfPMXegO0Yq/M8/2AQN96RKfGN+sV9itoJ1hKOC77\nWHZHOGuywL+rt1faw4kUN5FrMURxUKo7fv7H6W0CgYA/3x1SlgdqkLUHdk/msJ/i\nSca/RrK+hlPQq+cY6OKe/CKBG5UuRbgOjkvoH7ftD33ey0+XydKm1FTlOIWEGdH8\ncx8yFSc412MR58VDJvo7WfW5nTVQ3CpDvmgfPO//dauIpZCphBfMVqyuzTn8qQ7F\nxSFRRWjD6GMy8EaJbTXG9w==\n-----END PRIVATE KEY-----\n",
+  client_email: "classin-file-storage@classin2024.iam.gserviceaccount.com",
+  client_id: "100497693966319204631",
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_x509_cert_url:
+    "https://www.googleapis.com/robot/v1/metadata/x509/classin-file-storage%40classin2024.iam.gserviceaccount.com",
+  universe_domain: "googleapis.com",
+};

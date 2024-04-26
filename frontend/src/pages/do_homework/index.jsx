@@ -5,27 +5,28 @@ import {
   useGetFileHomeworkByHomeworkIdQuery,
 } from "state/api";
 import { Typography, Box, Button } from "@mui/material";
-import {
-  Add,
-  FileUploadOutlined,
-  InsertLinkRounded,
-} from "@mui/icons-material";
+import { Add, AttachFile, InsertLink } from "@mui/icons-material";
 import { MenuItem, Menu, Dropdown, MenuButton } from "@mui/joy";
 import { useState } from "react";
 import AttachmentLink from "components/homework/AttachmentLink";
 import DohomeworkFile from "components/homework/DohomeworkFile";
+import DohomeworkLink from "components/homework/DohomeworkLink";
+import { useParams } from "react-router-dom";
+import { ggOauthKey } from "config/googleApiConfig";
 
-export default function DoHomework({ mabaitap }) {
+export default function DoHomework() {
+  const { homeworkId } = useParams();
   const { data: HomeworkQuery, isLoading: isLoadingHomeworkQuery } =
-    useGetHomeWorkByHomeworkIdQuery("366b71e2-d12d-4a57-9240-b7411b3b84bd");
+    useGetHomeWorkByHomeworkIdQuery(homeworkId);
   const { data: FileQuery, isLoading: isLoadingFileQuery } =
-    useGetFileHomeworkByHomeworkIdQuery("366b71e2-d12d-4a57-9240-b7411b3b84bd");
+    useGetFileHomeworkByHomeworkIdQuery(homeworkId);
   const [homework, setHomework] = useState({});
   const [fileHomework, setFileHomework] = useState([]);
   const [listAttachment, setListAttachment] = useState([]);
   const handleClose = () => setAnchorEl(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openUploadFile, setOpenUploadFile] = useState(false);
+  const [openUploadLink, setOpenUploadLink] = useState(false);
   const isOpen = Boolean(anchorEl);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const handleClick = (event) => {
@@ -36,21 +37,41 @@ export default function DoHomework({ mabaitap }) {
       setIsOpenMenu(true);
     }
   };
+
   const handleSubmit = async (e) => {
     try {
+      // const metadata = {
+      //   name: listAttachment[0].file.name, // Filename at Google Drive
+      //   mimeType: listAttachment[0].file.type, // MIME type
+      //   parents: ["11QuuncFo8yO4u8xZUgBeHwjXTBHkMLoP"],
+      // };
+      // // Multpart POST body
+      // const formData = new FormData();
+      // formData.append(
+      //   "metadata",
+      //   new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+      // );
+      // formData.append("file", listAttachment[0].file);
+      // console.log(formData);
+      // const response = await fetch(
+      //   "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+      //   {
+      //     method: "POST",
+      //     headers: new Headers({
+      //       Authorization: "Bearer " + ggOauthKey.access_token,
+      //     }),
+      //     body: formData,
+      //   },
+      // );
+      // const data = await response.json();
+      // console.log("File uploaded successfully:", data);
       const formData = new FormData();
       formData.append("file", listAttachment[0].file);
-      // console.log(formData);
-      const response = await fetch(
-        "https://www.googleapis.com/upload/drive/v2/files?uploadType=media",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_GOOGLE_DRIVE_API_KEY}`,
-          },
-          body: formData,
-        },
-      );
+      const response = await fetch("http://localhost:8000/sendFile", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
       const data = await response.json();
       console.log("File uploaded successfully:", data);
     } catch (error) {
@@ -67,6 +88,12 @@ export default function DoHomework({ mabaitap }) {
   };
   const handleCloseModalFile = () => {
     setOpenUploadFile(false);
+  };
+  const handleOpenModalLink = () => {
+    setOpenUploadLink(true);
+  };
+  const handleCloseModalLink = () => {
+    setOpenUploadLink(false);
   };
   useEffect(() => {
     if (!isLoadingHomeworkQuery && HomeworkQuery) {
@@ -113,6 +140,7 @@ export default function DoHomework({ mabaitap }) {
       }}
       onSubmit={(e) => {
         e.preventDefault();
+        console.log("hello");
         handleSubmit(e);
       }}
     >
@@ -307,13 +335,46 @@ export default function DoHomework({ mabaitap }) {
                 vertical: "bottom",
                 horizontal: "left",
               }}
+              sx={{
+                width: "22%",
+              }}
             >
-              <MenuItem onClick={handleOpenModalFile}>Upload file</MenuItem>
+              <MenuItem
+                sx={{
+                  paddingLeft: "10%",
+                  display: "flex",
+                  flexDirection: "row",
+
+                  gap: "10%",
+                }}
+                onClick={handleOpenModalFile}
+              >
+                <AttachFile />
+                <Typography variant="subtitle1">File</Typography>
+              </MenuItem>
               <DohomeworkFile
                 open={openUploadFile}
                 handleClose={handleCloseModalFile}
                 // handleClass={handleJoin}
-                title={"Join class"}
+                setListAttachment={setListAttachment}
+              />
+              <MenuItem
+                sx={{
+                  paddingLeft: "10%",
+                  display: "flex",
+                  flexDirection: "row",
+
+                  gap: "10%",
+                }}
+                onClick={handleOpenModalLink}
+              >
+                <InsertLink />
+                <Typography variant="subtitle1">Link</Typography>
+              </MenuItem>
+              <DohomeworkLink
+                open={openUploadLink}
+                handleClose={handleCloseModalLink}
+                // handleClass={handleJoin}
                 setListAttachment={setListAttachment}
               />
             </Menu>

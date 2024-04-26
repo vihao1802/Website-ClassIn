@@ -75,13 +75,15 @@ async def read(ma_baiLamBaiTap: str, db: Session = Depends(database.get_db)):
     return db_object
 
 
-@router.post("/sendFile", status_code=status.HTTP_201_CREATED)
-async def upload_file(file: UploadFile = File(...)):
-    # Do not attempt to decode file contents as UTF-8
-    # Instead, work with the file contents directly as binary data
-    contents = await file.read()
-    return {
-        "filename": file.filename,
-        "content_type": file.content_type,
-        "content_length": len(contents),
-    }
+@router.post("/sendFile/")
+def upload(file: UploadFile = File(...)):
+    try:
+        contents = file.file.read()
+        with open(file.filename, "wb") as f:
+            f.write(contents)
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
+
+    return {"message": f"Successfully uploaded {file.filename}"}

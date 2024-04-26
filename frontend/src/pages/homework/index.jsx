@@ -224,7 +224,7 @@ export default function CreateHomeWork() {
                 gap: "2%",
                 height: "auto",
                 maxHeight: "10rem",
-
+                width: "100%",
                 overflowY: "auto",
               }}
             >

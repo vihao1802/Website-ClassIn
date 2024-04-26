@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, Modal, Link, Box, Avatar, TextField } from "@mui/material";
+import { Modal, Link, Box, Avatar, TextField } from "@mui/material";
+import { Button } from "@mui/joy";
 import { ModalClose, Sheet } from "@mui/joy";
 import { Search, YouTube } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -156,13 +157,14 @@ export default function AddAttachmentButton({
             />
             <Button
               variant="outlined"
+              color="success"
               sx={{
                 marginTop: "1rem",
-                backgroundColor: "#009265",
-                color: "white",
+
                 "&:hover": {
-                  color: " #009265",
+                  color: "white",
                   border: "1px solid  #009265",
+                  backgroundColor: "#009265",
                 },
               }}
               onClick={() => {
@@ -171,7 +173,9 @@ export default function AddAttachmentButton({
                   videoData.items[0].snippet.description,
                   videoData.items[0].snippet.thumbnails.default.url,
                 );
+                setOpen(false);
               }}
+              disabled={videoData.items[0].id === ""}
             >
               ADD
             </Button>

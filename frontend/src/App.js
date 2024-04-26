@@ -37,7 +37,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/createhomework" element={<CreateHomeWork />} />
-          <Route path="/dohomework" element={<DoHomework />} />
+          <Route path="/dohomework/:homeworkId" element={<DoHomework />} />
           <Route
             path="/tests/:testId/common"
             element={<TestExcerciseDetail />}
