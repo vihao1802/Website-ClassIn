@@ -1,13 +1,12 @@
 {
-  "type": "service_account",
-  "project_id": "xenon-timer-421207",
-  "private_key_id": "1a3a4abd3d38380186ffc2ff92ea9b64d6dae94e",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCd8nNtzc5BIgDq\nJEmqMOf9IV4bO0GepWZiTEFnB7KKhmkIfVlBrr8GUOtY/yNsr/zEB+Kk1jd939vo\nvJZM96IpRqzpSqvIa1ajCn8qHzsIIXrqkPK2Ef3mIrf7YBPysFZRsLmjS2D8QkIr\nBW8YZq64EhrAa0euMJoTAdAeSkpU/uoXu0IpCJHZzSf82FPvIT1PuhaQrhD7AO9j\nEasyIRlU498wOzGktfuyeqHHGV+aG53FwPhgCz4FyyyAsih6svYckyfOLc/MHmTM\nA0b0ruSuEfOpJcFK+J4PkLtGGxmESAMC2hWm71NwF1FBCoZGE8GtyAewi45vQ1VZ\nlbbiC7LFAgMBAAECggEACfS1Z+94F8zv59JfvlWU2fTXfLnwefKNEJcj7D2k+Gxe\nhIV6MdS0/83r99ElR32UXjrtA1zpZIrOzs3MX4+gbh+hWJc3WsvBS0enGl2bl/ic\nSdrXIbjimzYHCNZWi46n8kBEg1GGDICUsSeHiC84xiuF+ikI/Kbdn2MW3kHqi47o\nkfLzpPXgDepuBnKXnO0U3o7yRFh0aL2z08kUHsJQKLoIM83JhXUWCOe6Nf+8hfX2\n8jnUMOgAq61OoGWYkMZxOT+OYTySsETPwVp1qEPLQfBYBmGwfQEsXSPusu9K3tI7\nwnxny02TOWi0bXt0dBbF5X23QU1S7YLNNRltEPX8RQKBgQDMneJt7Mdc2YF4p6JU\nC6zKASfwx51Fa2PaoHjH8i3ZRxltgJym2wW73fWqocOWgTGBF1IjweXYJva6a1ih\nt+hlEY/KC8aJ/4PNtJEq0/nr5OOKNnNDbEs6Yi53E+k2Pyo/2ZUayT1pc1Ybj24z\nyqys1LceHed9TgWLIoMvZcjAUwKBgQDFnFULBc/8b2DxxdXBc722Ub4oTuCJDfbn\nLn5exFqvGjwqDu43TGiUuvC5kGxfVR6bVlMqdpjQK20++eIMt9Jv2JU0r5E7Nktj\n9KrADoWIM7u08fC31Mhyl7zgjkiUvxFVDpymmq6YzpdT7H1nJX9f8JOvkT3dBd4A\nQm+JYeu9hwKBgDfFZP0/R4u4QUDouCceU4dvzzoivmw4fCwQBzvAd9y8M2MUZh5Y\nnnR5aEeM9emk5yBfgeT7KbHD1QY00iCqJu69XardkMz2Vy+PYu4AfyNb7OU0ODCN\naOfN8QpF5BAEIXjrzmdRqKqAZFz4uDnnqS8mf4726azOwlYNHyKhJJm/AoGAXUSQ\nDwfLRsX656IMZaYPIIIsUjIIYCerJSoYkvnyIzsqsl8hqA/0PF6PR8YWoFg4ffCc\niCo5recRROwD+SS5ufhrU9aZoWza4G6WONehxstECP84MkvH3+4mQ4ZkU3Bq6c5f\nuXLAfXbkjcPM3GYiXFHcIr1WiX8/bLfulNUWwvkCgYAiQlfYE0BZo2i7QKdy2AId\nXjabPrM5kvSIcR3jhJqYzt5kIVzth6W/9V/oBxj7p7hllsGkChND+8vZOp4pdHzn\nWi6ViUz+rVNYcqb3iYIshVU5hJpohuHZ1iHd0AITXLmrGEsDtVEc0AHJqah4qC3l\nRquU/2M2M45NiniPXMD3Og==\n-----END PRIVATE KEY-----\n",
-  "client_email": "classin-upload-file@xenon-timer-421207.iam.gserviceaccount.com",
-  "client_id": "109133295250732848729",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/classin-upload-file%40xenon-timer-421207.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
+  "type": "",
+  "project_id": "",
+  "private_key_id": "",
+  "private_key": "",
+  "client_id": "",
+  "auth_uri": "",
+  "token_uri": "",
+  "auth_provider_x509_cert_url": "",
+  "client_x509_cert_url": "",
+  "universe_domain": ""
 }
