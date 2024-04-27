@@ -124,6 +124,10 @@ const ListPeopleFound = ({ userData, userId }) => {
                   <AvatarName name={item.hoTen} />
                 </ListItemAvatar>
                 <ListItemText
+                  sx={{
+                    overflowWrap: "break-word",
+                    maxWidth: "280px",
+                  }}
                   primary={item.hoTen}
                   secondary={
                     <Fragment>

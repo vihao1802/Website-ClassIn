@@ -746,6 +746,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
             InputProps={{
               maxRows: 10,
               multiline: true,
+              maxLength: 1000,
             }}
             onChange={handleTextFieldChange}
             onKeyDown={async (event) => {
