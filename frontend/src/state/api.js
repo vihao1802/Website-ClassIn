@@ -94,7 +94,6 @@ export const api = createApi({
     "UnregisteredUsers"
     "Todo",
     "MessageClass" */
-    ,
   ],
   endpoints: (build) => ({
     // GET METHODS
@@ -331,6 +330,22 @@ export const api = createApi({
       }),
       invalidatesTags: ["ListFriends"],
     }),
+    updateUserInfo: build.mutation({
+      query: ({ acc_id, data }) => ({
+        url: `tai-khoan/${acc_id}/update-info`,
+        method: "PUT",
+        body: data,
+      }),
+      providesTags: ["User"],
+    }),
+    updatePassword: build.mutation({
+      query: ({ acc_id, data }) => ({
+        url: `tai-khoan/${acc_id}/update-password`,
+        method: "PUT",
+        body: data,
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
@@ -370,4 +385,6 @@ export const {
   usePostHomeworkMutation,
   usePostHomeworkWorkMutation,
   usePostHomeworkFileWorkMutation,
+  useUpdateUserInfoMutation,
+  useUpdatePasswordMutation,
 } = api;
