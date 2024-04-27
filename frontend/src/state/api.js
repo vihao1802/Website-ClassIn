@@ -176,8 +176,85 @@ export const api = createApi({
       query: (uid) => `tai-khoan/${uid}/get-all-user-with-status-friend`,
       providesTags: ["ListFriends"],
     }),
-
+    getFileFromDrive: build.query({
+      query: (fileId) => `file/${fileId}`,
+    }),
+    getHomeWorkByHomeworkId: build.query({
+      query: (homeworkId) => `bai-tap/${homeworkId}`,
+      providesTags: ["HomeWorkByHomeworkId"],
+    }),
+    getFileHomeworkByHomeworkId: build.query({
+      query: (homeworkId) => `fileBaiTap/${homeworkId}`,
+      providesTags: ["FileHomeWorkByHomeworkId"],
+    }),
+    getUnitByClassId: build.query({
+      query: (cid) => ({
+        url: `/chuong/lopHoc/${cid}`,
+        method: "GET",
+        credentials: "include",
+      }),
+      providesTags: ["UnitByClass"],
+    }),
     // POST METHODS
+    postHomework: build.mutation({
+      query: ({
+        machuong,
+        tieuDe,
+        noidungbaitap,
+        noidungdapan,
+        thoigianbatdau,
+        thoigianketthuc,
+        congkhaidapan,
+        nopbu,
+      }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `bai-tap/${machuong}`,
+        method: "POST",
+        body: {
+          tieuDe: tieuDe,
+          noiDungBaiTap: noidungbaitap,
+          noiDungDapAn: noidungdapan,
+          thoiGianBatDau: thoigianbatdau,
+          thoiGianKetThuc: thoigianketthuc,
+          congKhaiDapAn: congkhaidapan,
+          nopBu: nopbu,
+        },
+      }),
+      // invalidatesTags: ["Todo"],
+    }),
+    postHomeworkWork: build.mutation({
+      query: ({ ma_baiTap, ma_taiKhoan, nopTre }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `bai-tap/${ma_baiTap}/tai-khoan/${ma_taiKhoan}`,
+        method: "POST",
+        body: {
+          noiDung: "",
+          ma_taiKhoan: ma_taiKhoan,
+          ma_baiTap: ma_baiTap,
+          nhanXet: "",
+          diem: -1,
+          nopTre: nopTre,
+        },
+      }),
+      // invalidatesTags: ["Todo"],
+    }),
+    postHomeworkFileWork: build.mutation({
+      query: ({ ma_baiTap, ma_taiKhoan, file }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `fileBaiTap/${ma_baiTap}/taiKhoan/${ma_taiKhoan}`,
+        method: "POST",
+        body: {
+          ma_file: file,
+        },
+      }),
+      // invalidatesTags: ["Todo"],
+    }),
     postUserResigeter: build.mutation({
       query: (data) => ({
         url: "thamGiaLopHoc",
@@ -302,6 +379,12 @@ export const {
   useGetAllJoinClassQuery,
   useUpdateStatusFriendMutation,
   useGetAllUserWithStatusQuery,
+  useGetHomeWorkByHomeworkIdQuery,
+  useGetFileHomeworkByHomeworkIdQuery,
+  useGetUnitByClassIdQuery,
+  usePostHomeworkMutation,
+  usePostHomeworkWorkMutation,
+  usePostHomeworkFileWorkMutation,
   useUpdateUserInfoMutation,
   useUpdatePasswordMutation,
 } = api;
