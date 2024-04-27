@@ -629,7 +629,9 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
             InputProps={{
               maxRows: 10,
               multiline: true,
-              maxLength: 1000,
+            }}
+            inputProps={{
+              maxLength: 1000, // Add this line
             }}
             onChange={handleTextFieldChange}
             onKeyDown={async (event) => {

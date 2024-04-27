@@ -126,7 +126,7 @@ class BanBe(Base):
 class TinNhanBanBe(Base):
     __tablename__ = "tinNhanBanBe"
 
-    noiDung = Column(String(300))
+    noiDung = Column(String(1000))
     thoiGianGui = Column(DateTime, default=datetime.now)
     daXoa = Column(Integer, default=0)
 
