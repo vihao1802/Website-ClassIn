@@ -11,7 +11,6 @@ function getUserId_Cookie() {
     return jwtDecode(cookie).usr_id;
   } else {
     // redirect to login page
-    window.location.href = "/signin";
     return null;
   }
 }

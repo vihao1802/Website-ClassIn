@@ -67,7 +67,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
       if (maNhomChat.current !== classItem.ma_nhomChat) {
         // setMaNhomChat(messageData[0]?.ma_nhomChat);
         maNhomChat.current = classItem.ma_nhomChat;
-        console.log("maNhomChat: " + maNhomChat.current);
+        //console.log("maNhomChat: " + maNhomChat.current);
       }
     }
   }, [messageData, maNhomChat, classItem]);

@@ -1,6 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Box, Button, Paper, Typography, Divider } from "@mui/material";
+import React, { useState, useEffect, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  Paper,
+  Typography,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 import { RadioGroup, Radio, radioClasses, Sheet, Link } from "@mui/joy";
 import Countdown from "components/CountDown";
 import dayjs from "dayjs";
@@ -12,15 +23,22 @@ import {
   useGetTestDetailsQuery,
   useGetWorkDetailsByTestIdQuery,
   useGetWorkInfoByWorkIdQuery,
+  useGetTestOrderByTestIdQuery,
+  usePostCreateStudentWorkMutation,
+  usePostCreateStudentWorkDetailMutation,
 } from "state/api";
+import { getUserId_Cookie } from "utils/handleCookies";
 
 const DoTestForm = ({ mode }) => {
-  const [isChoose, setIsChoose] = useState([]);
-
   // do
   const { testId } = useParams();
+  const navigate = useNavigate();
 
-  const [questionsIndex, setQuestionsIndex] = useState([]);
+  const [questionsSorted, setQuestionsSorted] = useState([]);
+  const [isChoose, setIsChoose] = useState([]);
+  const startTime = useMemo(() => dayjs().format("YYYY-MM-DD HH:mm:ss"), []);
+  const [shuffle, setShuffle] = useState(false);
+  const [testOrderArray, setTestOrderArray] = useState([]);
 
   const { data: testItem, isLoading: isTestLoading } =
     useGetTestByTestIdQuery(testId);
@@ -28,34 +46,122 @@ const DoTestForm = ({ mode }) => {
   const { data: testDetails, isLoading: isTestDetailsLoading } =
     useGetTestDetailsQuery(testId);
 
+  const { data: testOrder, isLoading: isTestOrderLoading } =
+    useGetTestOrderByTestIdQuery(testId);
+
+  useEffect(() => {
+    if (!isTestLoading && testItem && mode !== "work") {
+      if (testItem.tronCauHoi === 1) setShuffle(true);
+      else setShuffle(false);
+    }
+  }, [testItem, isTestLoading]);
+
+  useEffect(() => {
+    if (!isTestOrderLoading && testOrder && mode !== "work") {
+      setTestOrderArray(testOrder);
+    }
+  }, [testOrder, isTestOrderLoading]);
+
   useEffect(() => {
     if (!isTestDetailsLoading && testDetails && mode !== "work") {
-      const newQuestionsIndex = Array.from(
-        { length: testDetails.length },
-        (_, index) => index,
-      );
-      const newIsChoose = Array(testDetails.length).fill(false);
-      setQuestionsIndex(newQuestionsIndex);
+      const tempArray = [...testDetails];
+      let newQuestionsSorted;
+      if (shuffle) {
+        newQuestionsSorted = tempArray.sort(() => Math.random() - 0.5);
+      } else {
+        newQuestionsSorted = tempArray.sort((a, b) => {
+          const orderA = testOrderArray.find(
+            (item) => item.ma_cauHoi === a.cauHoi.ma_cauHoi,
+          )?.thuTu;
+          const orderB = testOrderArray.find(
+            (item) => item.ma_cauHoi === b.cauHoi.ma_cauHoi,
+          )?.thuTu;
+          return orderA - orderB;
+        });
+      }
+      const newIsChoose = newQuestionsSorted.map((item) => {
+        return { qid: item.cauHoi.ma_cauHoi, aid: null, state: false };
+      });
+      setQuestionsSorted(newQuestionsSorted);
       setIsChoose(newIsChoose);
     }
-  }, [testDetails, isTestDetailsLoading]);
+  }, [
+    testDetails,
+    isTestDetailsLoading,
+    testOrder,
+    isTestOrderLoading,
+    testItem,
+    isTestLoading,
+  ]);
+
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [createStudentWork] = usePostCreateStudentWorkMutation();
+  const [createStudentWorkDetail] = usePostCreateStudentWorkDetailMutation();
+
+  const handleSubmit = async () => {
+    const correctAnswers = questionsSorted.filter((item, index) => {
+      return item.cauTraLoi.find(
+        (answer) =>
+          answer.laCauTraLoiDung === 1 &&
+          answer.ma_cauTraLoi === isChoose[index].aid,
+      );
+    }).length;
+    const score = ((correctAnswers / questionsSorted.length) * 10).toFixed(2);
+    const data = {
+      uid: getUserId_Cookie(),
+      tid: testId,
+      submitTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      startTime: startTime,
+      score: score,
+      isLate: 0,
+      correctAnswers: correctAnswers,
+    };
+    const response = await createStudentWork(data).unwrap();
+    console.log(response);
+    for (let i = 0; i < questionsSorted.length; i++) {
+      const detailData = {
+        wid: response.ma_baiLamKiemTra,
+        qid: questionsSorted[i].cauHoi.ma_cauHoi,
+        aid: isChoose[i].aid,
+        order: i + 1,
+      };
+      await createStudentWorkDetail(detailData).unwrap();
+    }
+    navigate(-1);
+  };
 
   //work
   const { workId } = useParams();
   const { data: workItem, isLoading: isWorkItemLoading } =
-    useGetWorkDetailsByTestIdQuery(workId);
+    useGetWorkDetailsByTestIdQuery(workId, { skip: mode === "do" });
 
   const [numberofQuestions, setNumberofQuestions] = useState(0);
   useEffect(() => {
-    if (!isWorkItemLoading && workItem && mode === "work") {
-      const newQuestionsIndex = workItem.map((item) => item.thuTu - 1);
-      setQuestionsIndex(newQuestionsIndex);
-      setNumberofQuestions(newQuestionsIndex.length);
+    if (
+      !isWorkItemLoading &&
+      workItem &&
+      mode === "work" &&
+      testDetails &&
+      !isTestDetailsLoading
+    ) {
+      console.log(testDetails);
+      const tempArray = [...testDetails];
+      const newQuestionsSorted = tempArray.sort((a, b) => {
+        const orderA = workItem.find(
+          (item) => item.ma_cauHoi === a.cauHoi.ma_cauHoi,
+        ).thuTu;
+        const orderB = workItem.find(
+          (item) => item.ma_cauHoi === b.cauHoi.ma_cauHoi,
+        ).thuTu;
+        return orderA - orderB;
+      });
+      setQuestionsSorted(newQuestionsSorted);
+      setNumberofQuestions(newQuestionsSorted.length);
     }
-  }, [workItem, isWorkItemLoading]);
+  }, [workItem, isWorkItemLoading, testDetails, isTestDetailsLoading]);
 
   const { data: workInfo, isLoading: isWorkInfoLoading } =
-    useGetWorkInfoByWorkIdQuery(workId);
+    useGetWorkInfoByWorkIdQuery(workId, { skip: mode === "do" });
   return (
     <Box sx={{ display: "flex", flexDirection: "row", padding: "20px" }}>
       {testItem || !isTestLoading ? (
@@ -122,11 +228,11 @@ const DoTestForm = ({ mode }) => {
             {(testDetails || !isTestDetailsLoading) &&
             (workItem || !isWorkItemLoading) ? (
               <Box m="auto" width="80%">
-                {questionsIndex.map((item, index) => {
+                {questionsSorted.map((item, index) => {
                   return (
                     <Paper
                       id={index}
-                      key={testDetails[item]?.cauHoi.ma_cauHoi + index}
+                      key={item?.cauHoi.ma_cauHoi + index}
                       sx={{
                         marginTop: "10px",
                         display: "flex",
@@ -138,7 +244,7 @@ const DoTestForm = ({ mode }) => {
                     >
                       <Box>
                         <Typography variant="h6" fontWeight="bold">
-                          {index + 1}. {testDetails[item]?.cauHoi.noiDung}
+                          {index + 1}. {item?.cauHoi.noiDung}
                         </Typography>
                         <Box
                           sx={{
@@ -149,7 +255,7 @@ const DoTestForm = ({ mode }) => {
                             marginTop: "10px",
                           }}
                         >
-                          {testDetails[item].cauTraLoi.map((answer, index) => {
+                          {item.cauTraLoi.map((answer, index) => {
                             const arr = ["A", "B", "C", "D"];
 
                             return (
@@ -211,72 +317,75 @@ const DoTestForm = ({ mode }) => {
                               marginBottom: "unset",
                             }}
                           >
-                            {testDetails[item].cauTraLoi.map(
-                              (anwser, anwserIndex) => {
-                                const char = ["A", "B", "C", "D"];
-                                return (
-                                  <Sheet
-                                    key={char[anwserIndex]}
-                                    onChange={() => {
-                                      if (mode === "do") {
-                                        const newIsChoose = [...isChoose];
-                                        newIsChoose[item] = true;
-                                        setIsChoose(newIsChoose);
-                                      }
-                                    }}
-                                    sx={{
-                                      position: "relative",
-                                      width: 40,
-                                      height: 40,
-                                      flexShrink: 0,
-                                      borderRadius: "50%",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      "--joy-focus-outlineOffset": "4px",
-                                      "--joy-palette-focusVisible": (theme) =>
-                                        theme.vars.palette.neutral
-                                          .outlinedBorder,
-                                      [`& .${radioClasses.checked}`]: {
-                                        [`& .${radioClasses.label}`]: {
-                                          fontWeight: "lg",
-                                          color: "white",
-                                        },
-                                        [`& .${radioClasses.action}`]: {
-                                          backgroundColor:
-                                            mode !== "do"
-                                              ? anwser.laCauTraLoiDung === 1
-                                                ? theme.main_theme
-                                                : "red"
-                                              : theme.main_theme,
-                                        },
+                            {item.cauTraLoi.map((anwser, anwserIndex) => {
+                              const char = ["A", "B", "C", "D"];
+                              return (
+                                <Sheet
+                                  key={char[anwserIndex]}
+                                  onChange={() => {
+                                    if (mode === "do") {
+                                      const newIsChoose = [...isChoose];
+                                      newIsChoose[index].state = true;
+                                      newIsChoose[index].aid =
+                                        anwser.ma_cauTraLoi;
+                                      setIsChoose(newIsChoose);
+                                    }
+                                  }}
+                                  sx={{
+                                    position: "relative",
+                                    width: 40,
+                                    height: 40,
+                                    flexShrink: 0,
+                                    borderRadius: "50%",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    "--joy-focus-outlineOffset": "4px",
+                                    "--joy-palette-focusVisible": (theme) =>
+                                      theme.vars.palette.neutral.outlinedBorder,
+                                    [`& .${radioClasses.checked}`]: {
+                                      [`& .${radioClasses.label}`]: {
+                                        fontWeight: "lg",
+                                        color: "white",
                                       },
-                                      [`& .${radioClasses.action}.${radioClasses.focusVisible}`]:
-                                        {
-                                          outlineWidth: "2px",
-                                        },
-                                    }}
-                                  >
-                                    <Radio
-                                      color="success"
-                                      size="small"
-                                      overlay
-                                      disableIcon
-                                      value={char[anwserIndex]}
-                                      label={char[anwserIndex]}
-                                      checked={
-                                        mode === "work" &&
-                                        anwser.ma_cauTraLoi ===
-                                          workItem[item].ma_dapAnChon
-                                      }
-                                      {...(mode === "do" && {
-                                        checked: undefined,
-                                      })}
-                                    />
-                                  </Sheet>
-                                );
-                              },
-                            )}
+                                      [`& .${radioClasses.action}`]: {
+                                        backgroundColor:
+                                          mode !== "do"
+                                            ? anwser.laCauTraLoiDung === 1
+                                              ? theme.main_theme
+                                              : "red"
+                                            : theme.main_theme,
+                                      },
+                                    },
+                                    [`& .${radioClasses.action}.${radioClasses.focusVisible}`]:
+                                      {
+                                        outlineWidth: "2px",
+                                      },
+                                  }}
+                                >
+                                  <Radio
+                                    color="success"
+                                    size="small"
+                                    overlay
+                                    disableIcon
+                                    value={char[anwserIndex]}
+                                    label={char[anwserIndex]}
+                                    checked={
+                                      mode === "work" &&
+                                      anwser.ma_cauTraLoi ===
+                                        workItem.find(
+                                          (witem) =>
+                                            witem.ma_cauHoi ===
+                                            item.cauHoi.ma_cauHoi,
+                                        ).ma_dapAnChon
+                                    }
+                                    {...(mode === "do" && {
+                                      checked: undefined,
+                                    })}
+                                  />
+                                </Sheet>
+                              );
+                            })}
                           </RadioGroup>
                         </Box>
                       )}
@@ -296,7 +405,13 @@ const DoTestForm = ({ mode }) => {
                 {mode === "do" ? (
                   <>
                     <Box p="10px">
-                      <Countdown timeInMinute={testItem?.thoiGianLamBai} />
+                      {questionsSorted.length > 0 && (
+                        <Countdown
+                          timeInMinute={testItem?.thoiGianLamBai}
+                          // timeInMinute={1}
+                          onComplete={handleSubmit}
+                        />
+                      )}
                       <Button
                         variant="contained"
                         sx={{
@@ -305,6 +420,7 @@ const DoTestForm = ({ mode }) => {
                           width: "100%",
                           marginTop: "10px",
                         }}
+                        onClick={() => setOpenConfirmDialog(true)}
                       >
                         Submit
                       </Button>
@@ -319,7 +435,7 @@ const DoTestForm = ({ mode }) => {
                           gap: 1,
                         }}
                       >
-                        {testDetails.map((item, index) => {
+                        {questionsSorted.map((item, index) => {
                           return (
                             <Link
                               href={"#" + index}
@@ -328,7 +444,7 @@ const DoTestForm = ({ mode }) => {
                             >
                               <Button
                                 sx={
-                                  isChoose[index]
+                                  isChoose[index].state
                                     ? {
                                         height: "35px",
                                         minWidth: "35px",
@@ -358,6 +474,41 @@ const DoTestForm = ({ mode }) => {
                             </Link>
                           );
                         })}
+                        <Dialog
+                          open={openConfirmDialog}
+                          onClose={() => setOpenConfirmDialog(false)}
+                        >
+                          <DialogTitle>{"Confirm Submmit"}</DialogTitle>
+                          <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                              {isChoose.filter((item) => item.state === false)
+                                .length > 0 && (
+                                <>
+                                  You still have unanswered questions! <br />
+                                </>
+                              )}
+                              Please check your test carefully before
+                              submitting!
+                              <br />
+                              Are you sure you want to submit?
+                            </DialogContentText>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button
+                              onClick={() => setOpenConfirmDialog(false)}
+                              color="success"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={handleSubmit}
+                              autoFocus
+                              color="success"
+                            >
+                              Submmit
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
                       </Box>
                     ) : (
                       <Loading />

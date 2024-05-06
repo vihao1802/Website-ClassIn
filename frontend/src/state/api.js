@@ -1,75 +1,6 @@
 import { PostAdd } from "@mui/icons-material";
+import { getUnit } from "@mui/material/styles/cssUtils";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-/* export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
-  reducerPath: "classinApi",
-  tagTypes: [
-    "User",
-    "Products",
-    "Customers",
-    "Transactions",
-    "Geography",
-    "Sales",
-    "Admins",
-    "Performance",
-    "Dashboard",
-  ],
-  endpoints: (build) => ({
-    getUser: build.query({
-      query: (id) => `general/user/${id}`,
-      providesTags: ["User"],
-    }),
-    getProducts: build.query({
-      query: () => "client/products",
-      providesTags: ["Products"],
-    }),
-    getCustomers: build.query({
-      query: () => "client/customers",
-      providesTags: ["Customers"],
-    }),
-    getTransactions: build.query({
-      query: ({ page, pageSize, sort, search }) => ({
-        url: "client/transactions",
-        method: "GET",
-        params: { page, pageSize, sort, search },
-      }),
-      providesTags: ["Transactions"],
-    }),
-    getGeography: build.query({
-      query: () => "client/geography",
-      providesTags: ["Geography"],
-    }),
-    getSales: build.query({
-      query: () => "sales/sales",
-      providesTags: ["Sales"],
-    }),
-    getAdmins: build.query({
-      query: () => "management/admin",
-      providesTags: ["Admins"],
-    }),
-    getUserPerformance: build.query({
-      query: (id) => `management/performance/${id}`,
-      providesTags: ["Performance"],
-    }),
-    getDashboard: build.query({
-      query: () => "general/dashboard",
-      provideTags: ["Dashboard"],
-    }),
-  }),
-});
-
-export const {
-  useGetUserQuery,
-  useGetProductsQuery,
-  useGetCustomersQuery,
-  useGetTransactionsQuery,
-  useGetGeographyQuery,
-  useGetSalesQuery,
-  useGetAdminsQuery,
-  useGetUserPerformanceQuery,
-  useGetDashboardQuery,
-} = api; */
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -85,16 +16,15 @@ export const api = createApi({
     "classDetails",
     "UnitAcitvities",
     "StudentsByClassId",
-    "TestByTestId",
-    "TestDetails",
+    "Tests",
     "ClassByInstructorId",
-    "UserSubmissionsDetails",
     "WorkDetailsByTestId",
     "WorkInfoByWorkId",
     "UnregisteredUsers",
     "UserResigeter",
     "Todo",
     "MessageClass",
+    "Exercises",
   ],
   endpoints: (build) => ({
     // GET METHODS
@@ -143,11 +73,11 @@ export const api = createApi({
     }),
     getTestByTestId: build.query({
       query: (tid) => `deKiemTra/${tid}`,
-      providesTags: ["TestByTestId"],
+      providesTags: ["Tests"],
     }),
     getTestDetails: build.query({
       query: (tid) => `deKiemTra/${tid}/chiTiet`,
-      providesTags: ["TestDetails"],
+      providesTags: ["Tests"],
     }),
     getQuestionsDetails: build.query({
       query: (uid) => `cauHoi/taiKhoan/${uid}/chiTiet`,
@@ -163,7 +93,7 @@ export const api = createApi({
     }),
     getUserSubmissionsDetails: build.query({
       query: (tid) => `deKiemTra/${tid}/getSubmissionDetails`,
-      providesTags: ["UserSubmissionsDetails"],
+      providesTags: ["Tests"],
     }),
     getWorkDetailsByTestId: build.query({
       query: (wid) => `chiTietBaiLamKiemTra/baiLamKiemTra/${wid}`,
@@ -185,25 +115,6 @@ export const api = createApi({
       query: (uid) => `tai-khoan/${uid}/get-all-user-with-status-friend`,
       providesTags: ["ListFriends"],
     }),
-
-    // POST METHODS
-    postUserResigeter: build.mutation({
-      query: (data) => ({
-        url: "thamGiaLopHoc",
-        method: "POST",
-        body: data,
-      }),
-      providesTags: ["postUserResigeter"],
-    }),
-
-    // DELETE METHODS
-    deleteUserFromClass: build.mutation({
-      query: (data) => ({
-        url: `thamGiaLopHoc/${data.ma_lopHoc}/${data.ma_taiKhoan}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["StudentsByClassId"],
-    }),
     getTodo: build.query({
       query: ({ acc_id, selectedClass, selectedCategory }) =>
         `tai-khoan/${acc_id}/bai-tap/de-kiem-tra/filter?selectedClass=${selectedClass}&selectedCategory=${selectedCategory}`,
@@ -217,6 +128,26 @@ export const api = createApi({
     getUnitsCommonByClassId: build.query({
       query: (cid) => `chuong/lopHoc/${cid}`,
       providesTags: ["Units"],
+    }),
+    getUnitsByClassId: build.query({
+      query: (cid) => `chuong/lopHoc/${cid}`,
+      providesTags: ["Units"],
+    }),
+    getTestsByUnitId: build.query({
+      query: (uid) => `deKiemTra/chuong/${uid}`,
+      providesTags: ["Units"],
+    }),
+    getTestOrderByTestId: build.query({
+      query: (tid) => `chiTietBaiKiemTra/deKiemTra/${tid}`,
+      providesTags: ["Tests"],
+    }),
+    getExercisesByExerciseId: build.query({
+      query: (eid) => `bai-tap/${eid}/info`,
+      providesTags: ["Exercises"],
+    }),
+    getUserSubmissionsExerciseDetails: build.query({
+      query: (eid) => `bai-tap/${eid}/getSubmissionDetails`,
+      providesTags: ["Exercises"],
     }),
 
     // POST METHODS
@@ -270,6 +201,63 @@ export const api = createApi({
         body: { noiDung: data.noiDung, laCauTraLoiDung: data.laCauTraLoiDung },
       }),
       invalidatesTags: ["Questions"],
+    }),
+    postCreateTest: build.mutation({
+      query: (data) => ({
+        url: `deKiemTra/${data.uid}`,
+        method: "POST",
+        body: {
+          tieuDe: data.testTitle,
+          thoiGianBatDau: data.startTime,
+          thoiGianKetThuc: data.endTime,
+          thoiGianLamBai: data.duration,
+          xemDapAn: data.showAnswer,
+          tronCauHoi: data.shuffleQuestion,
+          hinhPhat: 0,
+        },
+      }),
+      invalidatesTags: ["Tests"],
+    }),
+    postCreatTestDetail: build.mutation({
+      query: (data) => ({
+        url: `chiTietBaiKiemTra`,
+        method: "POST",
+        body: {
+          ma_cauHoi: data.qid,
+          ma_deKiemTra: data.tid,
+          thuTu: data.order,
+        },
+      }),
+      invalidatesTags: ["Tests"],
+    }),
+    postCreateStudentWork: build.mutation({
+      query: (data) => ({
+        url: `baiLamKiemTra`,
+        method: "POST",
+        body: {
+          ma_taiKhoan: data.uid,
+          ma_deKiemTra: data.tid,
+          thoiGianNopBai: data.submitTime,
+          thoiGianBatDauLam: data.startTime,
+          diem: data.score,
+          nopTre: data.isLate,
+          soCauDung: data.correctAnswers,
+        },
+      }),
+      invalidatesTags: ["Tests"],
+    }),
+    postCreateStudentWorkDetail: build.mutation({
+      query: (data) => ({
+        url: `chiTietBaiLamKiemTra`,
+        method: "POST",
+        body: {
+          ma_cauHoi: data.qid,
+          ma_baiLamKiemTra: data.wid,
+          ma_dapAnChon: data.aid,
+          thuTu: data.order,
+        },
+      }),
+      invalidatesTags: ["Tests"],
     }),
 
     // DELETE METHODS
@@ -395,4 +383,14 @@ export const {
   useGetAllJoinClassQuery,
   useUpdateStatusFriendMutation,
   useGetAllUserWithStatusQuery,
+  useGetUnitsByClassIdQuery,
+  useGetTestsByUnitIdQuery,
+  usePostCreateTestMutation,
+  usePostCreatTestDetailMutation,
+  useGetTestOrderByTestIdQuery,
+  usePostCreateStudentWorkMutation,
+  usePostCreateStudentWorkDetailMutation,
+  usePostUploadFileQuestionMutation,
+  useGetExercisesByExerciseIdQuery,
+  useGetUserSubmissionsExerciseDetailsQuery,
 } = api;

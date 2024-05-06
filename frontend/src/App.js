@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CssBaseline } from "@mui/material";
 import Layout from "pages/layout";
 import Home from "pages/home";
@@ -15,7 +15,10 @@ import TestExcerciseDetail from "pages/tests/TestExcerciseDetail";
 import Profile from "pages/profile";
 import ClassDetail from "pages/classDetail";
 import CreateHomeWork from "pages/homework";
+import { getUserId_Cookie } from "utils/handleCookies";
 function App() {
+  const isAuth = Boolean(getUserId_Cookie());
+
   return (
     <div className="app">
       <BrowserRouter>
@@ -37,13 +40,20 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/createhomework" element={<CreateHomeWork />} />
           <Route
+            path="/exercises/:exerciseId/common"
+            element={<TestExcerciseDetail mode="exercise" />}
+          />
+          <Route
             path="/tests/:testId/common"
-            element={<TestExcerciseDetail />}
+            element={<TestExcerciseDetail mode="test" />}
           />
           <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/classDetail/:classId" element={<ClassDetail />} />
           <Route element={<Layout />}>
-            <Route path="/classin" element={<Classin />} />
+            <Route
+              path="/classin"
+              element={isAuth ? <Classin /> : <Navigate to="/" />}
+            />
             <Route path="/todo" element={<Todo />} />
             <Route path="chats" element={<Chats />} />
             <Route path="/questions" element={<Questions />} />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -33,9 +33,12 @@ const ModalAddUnit = ({ open, handleClose, classId, unit, mode, refetch }) => {
 
   const [editUnit, dataEdit] = usePutEditUnitMutation();
 
+  useEffect(() => {
+    if (mode === "edit") forMikEdit.setValues({ name: unit.name });
+  }, []);
   const forMikEdit = useFormik({
     initialValues: {
-      name: mode === "edit" && unit.name,
+      name: "",
     },
     validationSchema: schema,
     onSubmit: (values) => {

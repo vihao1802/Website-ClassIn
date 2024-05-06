@@ -4,8 +4,7 @@ import Countdown, { zeroPad } from "react-countdown";
 import { Typography } from "@mui/material";
 import FlexBetween from "./FlexBetween";
 import { AccessAlarmsRounded } from "@mui/icons-material";
-import theme from "../theme";
-const CountdownComponent = ({ timeInMinute }) => {
+const CountdownComponent = ({ timeInMinute, onComplete }) => {
   return useMemo(() => {
     return (
       <Countdown
@@ -32,6 +31,7 @@ const CountdownComponent = ({ timeInMinute }) => {
           );
         }}
         zeroPadTime={2}
+        onComplete={onComplete}
       />
     );
   }, []);

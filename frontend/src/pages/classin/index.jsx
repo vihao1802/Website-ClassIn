@@ -16,10 +16,10 @@ import {
 } from "@mui/material";
 import {
   Add,
-  LocalLibraryRounded,
+  LocalLibraryOutlined,
   ExpandLessRounded,
   ExpandMoreRounded,
-  SchoolRounded,
+  SchoolOutlined,
 } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
@@ -97,7 +97,7 @@ const Classin = () => {
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
-    console.log(classInfo);
+    // console.log(classInfo);
     if (classInfo && classInfo.length > 0) setActiveClass(classInfo[0]);
     else if (classInfo && classInfo.length === 0) setActiveClass([]);
   }, [classInfo, isClassInfoLoading]);
@@ -215,10 +215,24 @@ const Classin = () => {
           {/* Teaching */}
           <ListItemButton
             onClick={handleClickTeaching}
-            sx={{ marginTop: "10px" }}
+            sx={
+              openTeaching
+                ? {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                    backgroundColor: "#e7e7e7",
+                    border: "1px solid #009265",
+                  }
+                : {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                  }
+            }
           >
             <ListItemIcon>
-              <LocalLibraryRounded />
+              <LocalLibraryOutlined />
             </ListItemIcon>
             <ListItemText primary="Teaching" />
             {openTeaching ? <ExpandLessRounded /> : <ExpandMoreRounded />}
@@ -280,12 +294,26 @@ const Classin = () => {
           {/* Registered */}
           <ListItemButton
             onClick={handleClickRegistered}
-            sx={{ marginTop: "10px" }}
+            sx={
+              openRegistered
+                ? {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                    backgroundColor: "#e7e7e7",
+                    border: "1px solid #009265",
+                  }
+                : {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                  }
+            }
           >
             <ListItemIcon>
-              <SchoolRounded />
+              <SchoolOutlined />
             </ListItemIcon>
-            <ListItemText primary="Registered" />
+            <ListItemText primary="Enrolled" />
             {openRegistered ? <ExpandLessRounded /> : <ExpandMoreRounded />}
           </ListItemButton>
           <Collapse in={openRegistered} timeout="auto" unmountOnExit>

@@ -99,7 +99,7 @@ async def read(ma_lopHoc: str, db: Session = Depends(database.get_db)):
         .all()
     )
     if not db_object:
-        raise HTTPException(status_code=400, detail="ma_lopHoc not found")
+        return []
     return db_object
 
 

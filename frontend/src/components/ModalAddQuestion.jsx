@@ -9,8 +9,22 @@ import {
   Box,
   TextField,
   Button,
+  Link,
 } from "@mui/material";
-import { CloseRounded, CheckCircleRounded } from "@mui/icons-material";
+import {
+  CloseRounded,
+  CheckCircleRounded,
+  CloudUploadRounded,
+  DownloadRounded,
+  EditOutlined,
+  DeleteOutlined,
+} from "@mui/icons-material";
+import Dropzone from "react-dropzone";
+import FlexBetween from "components/FlexBetween";
+import AlertComponent from "components/AlertComponent";
+import templateUrl from "assets/maucauhoi.txt";
+import { DOMParser } from "@xmldom/xmldom";
+import PizZip from "pizzip";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {
@@ -30,6 +44,11 @@ const schema = yup.object({
 });
 
 const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "success",
+    message: "",
+  });
   const [value, setValue] = useState("1");
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
@@ -59,6 +78,11 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
           laCauTraLoiDung: selectedAnwser === i ? 1 : 0,
         });
       }
+      setAlert({
+        open: true,
+        severity: "success",
+        message: "Thêm câu hỏi thành công!",
+      });
       handleClose();
     },
   });
@@ -103,12 +127,18 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
           });
         }
       }
-
+      setAlert({
+        open: true,
+        severity: "success",
+        message: "Cập nhật câu hỏi thành công!",
+      });
       handleClose();
     },
   });
   const { data: questionsAnswers, isLoading: isQuestionsAnswersLoading } =
-    useGetQuestionsAnswersQuery(questionId);
+    useGetQuestionsAnswersQuery(questionId, {
+      skip: !questionId,
+    });
   useEffect(() => {
     if (questionsAnswers && !isQuestionsAnswersLoading)
       forMikEdit.setValues({
@@ -129,6 +159,129 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
       );
     }
   }, [isQuestionsAnswersLoading, questionsAnswers]);
+
+  const [file, setFile] = useState(null);
+
+  const handleUpload = () => {
+    var reader = new FileReader();
+    var content = "";
+    reader.onload = function (e) {
+      if (file.path.includes(".docx")) {
+        const zip = new PizZip(e.target.result);
+        const doc = new DOMParser().parseFromString(
+          zip.files["word/document.xml"].asText(),
+          "application/xml",
+        );
+        const paragraphs = doc.getElementsByTagName("w:p");
+        let docContent = "";
+        for (let i = 0; i < paragraphs.length; i++) {
+          const texts = paragraphs[i].getElementsByTagName("w:t");
+          for (let j = 0; j < texts.length; j++) {
+            docContent += texts[j].textContent;
+          }
+          docContent += "\n"; // Thêm dấu xuống dòng sau mỗi đoạn
+        }
+        content = docContent;
+      } else if (file.path.includes(".txt")) {
+        const txtContent = e.target.result;
+        content = txtContent;
+      }
+      if (!content.includes("Question:")) {
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "File không hợp lệ.",
+        });
+        return;
+      }
+
+      const questions = content.split("Question:").slice(1);
+      if (questions.length === 0) {
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "Không tìm thấy câu hỏi trong file.",
+        });
+        return;
+      }
+
+      const quizQuestions = questions.map((question, index) => {
+        const lines = question.trim().split("\n");
+        const questionText = lines[0].trim();
+        if (!questionText) {
+          setAlert({
+            open: true,
+            severity: "error",
+            message: `Câu hỏi số ${index + 1} không có nội dung.`,
+          });
+          return;
+        }
+
+        const options = lines.slice(1).map((option) => {
+          if (!option.trim()) {
+            setAlert({
+              open: true,
+              severity: "error",
+              message: `Câu hỏi số ${index + 1} có một đáp án trống.`,
+            });
+            return;
+          }
+          return {
+            text: option.replace("[*]", "").trim(),
+            isCorrect: option.includes("[*]"),
+          };
+        });
+
+        const correctOptions = options.filter((option) => option.isCorrect);
+        if (correctOptions.length === 0) {
+          setAlert({
+            open: true,
+            severity: "error",
+            message: `Câu hỏi số ${index + 1} không có đáp án đúng.`,
+          });
+          return;
+        }
+
+        return {
+          questionText,
+          options,
+        };
+      });
+      quizQuestions.forEach(async (quizQuestion) => {
+        if (quizQuestion) {
+          const response = await addQuestion({
+            ma_taiKhoan: userId,
+            noiDung: quizQuestion.questionText,
+          });
+          const questionId = response.data.ma_cauHoi;
+          quizQuestion.options.forEach(async (option) => {
+            await addAnswers({
+              ma_cauHoi: questionId,
+              noiDung: option.text,
+              laCauTraLoiDung: option.isCorrect ? 1 : 0,
+            });
+          });
+        }
+      });
+      setAlert({
+        open: true,
+        severity: "success",
+        message: "Thêm câu hỏi thành công!",
+      });
+      handleClose();
+    };
+    if (file.path.includes(".docx")) reader.readAsArrayBuffer(file);
+    else if (file.path.includes(".txt")) reader.readAsText(file);
+  };
+
+  const handleDownloadTemplate = () => {
+    const link = document.createElement("a");
+    link.href = templateUrl;
+    link.download = "maucauhoi.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <Modal
@@ -230,9 +383,14 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
                   : forMikEdit.touched.title && forMikEdit.errors.title
               }
             />
-            <Typography variant="h6" color="#009265" mt="5px">
-              List of answers:
-            </Typography>
+            <FlexBetween>
+              <Typography variant="h6" color="#009265">
+                List of answers:
+              </Typography>
+              <Typography variant="h8" color="#666666">
+                Click on the option letter to set it as the correct answer
+              </Typography>
+            </FlexBetween>
             <RadioGroup
               aria-label="platform"
               defaultValue="Website"
@@ -353,8 +511,116 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
               padding: "0 20px",
               height: "100%",
             }}
-          ></TabPanel>
+          >
+            <Dropzone
+              accept={{
+                "application/msword": [".docx"],
+                "text/plain": [".txt"],
+              }}
+              multiple={false}
+              onDrop={(acceptedFiles) => {
+                setFile(acceptedFiles[0]);
+              }}
+            >
+              {({ getRootProps, getInputProps }) => (
+                <FlexBetween width="100%">
+                  <Box
+                    {...getRootProps()}
+                    sx={{
+                      margin: "20px",
+                      border: "2px dashed #009265",
+                      borderRadius: "10px",
+                      height: "350px",
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      color: "#009265",
+                    }}
+                  >
+                    <input {...getInputProps()} />
+                    {!file ? (
+                      <>
+                        <CloudUploadRounded sx={{ fontSize: "100px" }} />
+                        <Typography variant="h5">
+                          Drag and Drop to Upload File
+                        </Typography>
+                        <Typography variant="h5">Or</Typography>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            backgroundColor: "#009265",
+                            "&:hover": { backgroundColor: "#007850" },
+                          }}
+                        >
+                          Browse File
+                        </Button>
+                        <Typography>
+                          Only *.txt and *.doc file will be accepted
+                        </Typography>
+                      </>
+                    ) : (
+                      <FlexBetween>
+                        <Typography
+                          variant="h6"
+                          fontWeight="bold"
+                          color="#009265"
+                        >
+                          {file.name}
+                        </Typography>
+                        <EditOutlined
+                          sx={{ color: "#009265", cursor: "pointer" }}
+                        />
+                      </FlexBetween>
+                    )}
+                  </Box>
+                  {file && (
+                    <IconButton onClick={() => setFile(null)}>
+                      <DeleteOutlined sx={{ color: "#009265" }} />
+                    </IconButton>
+                  )}
+                </FlexBetween>
+              )}
+            </Dropzone>
+            <Box display="flex" flexDirection="column" p="0 20px">
+              <Typography variant="h8" color="#666666" fontWeight="bold">
+                *Please upload your questions file adhering to our provided
+                template.
+              </Typography>
+              <br />
+              <Link
+                sx={{ cursor: "pointer", color: "#666666" }}
+                onClick={handleDownloadTemplate}
+              >
+                <DownloadRounded />
+                Download Template
+              </Link>
+            </Box>
+
+            <Box>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#009265",
+                  "&:hover": { backgroundColor: "#007850" },
+                  position: "absolute",
+                  bottom: "20px",
+                  right: "20px",
+                }}
+                onClick={handleUpload}
+              >
+                Upload
+              </Button>
+            </Box>
+          </TabPanel>
         </TabContext>
+        <AlertComponent
+          open={alert.open}
+          severity={alert.severity}
+          message={alert.message}
+          onClose={() => setAlert({ ...alert, open: false })}
+        />
       </Box>
     </Modal>
   );

@@ -2,7 +2,16 @@ import database
 import models
 import schemas
 from email_validator import EmailNotValidError, validate_email
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    FastAPI,
+    File,
+    HTTPException,
+    Response,
+    UploadFile,
+    status,
+)
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 
