@@ -9,79 +9,60 @@ import {
 } from "@mui/x-data-grid";
 import FlexBetween from "components/FlexBetween";
 import Header from "components/Header";
-import AddQuestionForm from "../../components/ModalAddQuestion";
-import { useGetQuestionsQuery } from "state/api";
-
-const columns = [
-  { field: "ma_cauHoi", headerName: "ID", width: 150, editable: false },
-  {
-    field: "noiDung",
-    headerName: "Title",
-    width: 700,
-    editable: false,
-    sortable: false,
-  },
-  {
-    field: "action",
-    headerName: "Action",
-    width: 100,
-    sortable: false,
-    type: "actions",
-    getActions: () => {
-      return [
-        <GridActionsCellItem
-          icon={<EditRounded sx={{ color: "#1976D2" }} />}
-          label="Edit"
-          className="textPrimary"
-          color="inherit"
-        />,
-        <GridActionsCellItem
-          icon={<DeleteRounded sx={{ color: "red" }} />}
-          label="Delete"
-          color="inherit"
-        />,
-      ];
-    },
-  },
-];
-
-const rows = [
-  {
-    id: 1,
-    title:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore illum excepturi iure aspernatur doloremque itaque odio ratione et animi, quibusdam quaerat accusantium. Tempora exercitationem veritatis corporis est nesciunt esse modi?",
-  },
-  { id: 2, title: "Câu hỏi 2" },
-  { id: 3, title: "Câu hỏi 3" },
-  { id: 4, title: "Câu hỏi 4" },
-  { id: 5, title: "Câu hỏi 5" },
-  { id: 6, title: "Câu hỏi 6" },
-  { id: 7, title: "Câu hỏi 7" },
-  { id: 8, title: "Câu hỏi 8" },
-  { id: 9, title: "Câu hỏi 9" },
-  { id: 10, title: "Câu hỏi 10" },
-  { id: 11, title: "Câu hỏi 11" },
-  { id: 12, title: "Câu hỏi 12" },
-  { id: 13, title: "Câu hỏi 13" },
-  { id: 14, title: "Câu hỏi 14" },
-  { id: 15, title: "Câu hỏi 15" },
-  { id: 16, title: "Câu hỏi 16" },
-  { id: 17, title: "Câu hỏi 17" },
-  { id: 18, title: "Câu hỏi 18" },
-  { id: 19, title: "Câu hỏi 19" },
-  { id: 20, title: "Câu hỏi 20" },
-  { id: 21, title: "Câu hỏi 21" },
-  { id: 22, title: "Câu hỏi 22" },
-  { id: 23, title: "Câu hỏi 23" },
-];
+import AddQuestionForm from "components/ModalAddQuestion";
+import { useGetQuestionsQuery, useDeleteQuestionMutation } from "state/api";
 
 const Questions = () => {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const { data, isLoading } = useGetQuestionsQuery(
-    "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9",
-  );
+  const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  const [openAdd, setOpenAdd] = useState(false);
+  const handleOpenAdd = () => setOpenAdd(true);
+  const handleCloseAdd = () => setOpenAdd(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+  const { data, isLoading } = useGetQuestionsQuery(userId);
+
+  const [deleteQuestion] = useDeleteQuestionMutation();
+  const [selectedRow, setSelectedRow] = useState(null);
+  const columns = [
+    {
+      field: "noiDung",
+      headerName: "Title",
+      width: 800,
+      editable: false,
+      sortable: false,
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 150,
+      sortable: false,
+      type: "actions",
+      getActions: (item) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditRounded sx={{ color: "#1976D2" }} />}
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+            onClick={() => {
+              setSelectedRow(item.row);
+              handleOpenEdit();
+            }}
+          />,
+          <GridActionsCellItem
+            icon={<DeleteRounded sx={{ color: "red" }} />}
+            label="Delete"
+            color="inherit"
+            onClick={() => {
+              deleteQuestion(item.row.ma_cauHoi);
+            }}
+          />,
+        ];
+      },
+    },
+  ];
+
   return (
     <Box sx={{ margin: "0 50px", padding: "30px" }}>
       <Header title="QUESTIONS" subtitle="List of questions" />
@@ -135,7 +116,7 @@ const Questions = () => {
                       <Button
                         color="primary"
                         startIcon={<AddRounded />}
-                        onClick={handleOpen}
+                        onClick={handleOpenAdd}
                       >
                         Add new question
                       </Button>
@@ -152,7 +133,19 @@ const Questions = () => {
           </Box>
         </Paper>
       </Box>
-      <AddQuestionForm open={open} handleClose={handleClose} />
+      <AddQuestionForm
+        open={openAdd}
+        handleClose={handleCloseAdd}
+        mode="add"
+        userId={userId}
+      />
+      <AddQuestionForm
+        open={openEdit}
+        handleClose={handleCloseEdit}
+        mode="edit"
+        userId={userId}
+        questionId={selectedRow?.ma_cauHoi}
+      />
     </Box>
   );
 };

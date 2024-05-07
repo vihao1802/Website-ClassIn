@@ -77,3 +77,90 @@ async def get_bai_tap_by_id(
         raise HTTPException(status_code=404, detail="ma_bai_tap not found")
 
     return db_object
+
+
+@router.get(
+    "/{ma_baiTap}/info",
+    status_code=status.HTTP_200_OK,
+)
+async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
+    query = (
+        db.query(models.BaiTap, models.Chuong, models.LopHoc, models.TaiKhoan)
+        .join(models.Chuong, models.Chuong.ma_chuong == models.BaiTap.ma_chuong)
+        .join(models.LopHoc, models.LopHoc.ma_lopHoc == models.Chuong.ma_lopHoc)
+        .join(
+            models.TaiKhoan,
+            models.TaiKhoan.ma_taiKhoan == models.LopHoc.ma_giangVien,
+        )
+        .filter(models.BaiTap.ma_baiTap == ma_baiTap)
+    )
+    if query is None:
+        raise HTTPException(status_code=400, detail="BaiTap not found")
+
+    for baitap, chuong, lop, giangvien in query:
+        baitap.tenChuong = chuong.ten
+        baitap.tenLop = lop.ten
+        baitap.tenGV = giangvien.hoTen
+        return baitap
+
+
+@router.get(
+    "/{ma_baiTap}/getSubmissionDetails",
+    status_code=status.HTTP_200_OK,
+)
+async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
+    query_submit = (
+        db.query(models.BaiLamBaiTap, models.TaiKhoan)
+        .join(
+            models.TaiKhoan,
+            models.BaiLamBaiTap.ma_taiKhoan == models.TaiKhoan.ma_taiKhoan,
+        )
+        .filter(models.BaiLamBaiTap.ma_baiTap == ma_baiTap)
+        .all()
+    )
+
+    submit_id = [i.ma_taiKhoan for i, j in query_submit]
+
+    user_submit = []
+    for baiLamBaiTap, taiKhoan in query_submit:
+        user_submit.append(
+            {
+                "ma_baiLamBaiTap": baiLamBaiTap.ma_baiLamBaiTap,
+                "diem": baiLamBaiTap.diem,
+                "nopTre": baiLamBaiTap.nopTre,
+                "ma_taiKhoan": taiKhoan.ma_taiKhoan,
+                "hoTen": taiKhoan.hoTen,
+                "email": taiKhoan.email,
+            }
+        )
+
+    class_id = (
+        db.query(models.LopHoc)
+        .join(models.Chuong, models.LopHoc.ma_lopHoc == models.Chuong.ma_lopHoc)
+        .join(
+            models.BaiTap,
+            models.Chuong.ma_chuong == models.BaiTap.ma_chuong,
+        )
+        .filter(models.BaiTap.ma_baiTap == ma_baiTap)
+        .first()
+        .ma_lopHoc
+    )
+
+    query_unsubmit = (
+        db.query(models.TaiKhoan)
+        .join(
+            models.ThamGiaLopHoc,
+            models.TaiKhoan.ma_taiKhoan == models.ThamGiaLopHoc.ma_taiKhoan,
+        )
+        .filter(models.ThamGiaLopHoc.ma_lopHoc == class_id)
+        .all()
+    )
+
+    user_unsubmit = [
+        i for i in query_unsubmit if i.ma_taiKhoan not in submit_id
+    ]
+
+    return {
+        "users_submit": user_submit,
+        "users_unsubmit": user_unsubmit,
+    }
