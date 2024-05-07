@@ -74,20 +74,6 @@ async def read(ma_baiLamKiemTra: str, db: Session = Depends(database.get_db)):
         .filter(models.BaiLamKiemTra.ma_baiLamKiemTra == ma_baiLamKiemTra)
         .all()
     )
-    print(
-        "{0}:{1}".format(
-            (
-                blkt_query[0][0].thoiGianNopBai
-                - blkt_query[0][0].thoiGianBatDauLam
-            ).seconds
-            // 60,
-            (
-                blkt_query[0][0].thoiGianNopBai
-                - blkt_query[0][0].thoiGianBatDauLam
-            ).seconds
-            % 60,
-        )
-    )
     return {
         "ma_baiLamKiemTra": blkt_query[0][0].ma_baiLamKiemTra,
         "ma_deKiemTra": blkt_query[0][0].ma_deKiemTra,

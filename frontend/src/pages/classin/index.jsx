@@ -97,7 +97,6 @@ const Classin = () => {
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
-    // console.log(classInfo);
     if (classInfo && classInfo.length > 0) setActiveClass(classInfo[0]);
     else if (classInfo && classInfo.length === 0) setActiveClass([]);
   }, [classInfo, isClassInfoLoading]);

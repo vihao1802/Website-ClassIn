@@ -31,7 +31,7 @@ const Siginform = () => {
   const COOKIES_EXPIRED_TIME = 60 * 60 * 24 * 7; // 30 days
   const navigate = useNavigate();
   const [SigningIn, setSigningIn] = React.useState(false);
-
+  const [message, setMessage] = React.useState("");
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -50,17 +50,27 @@ const Siginform = () => {
           password: values.password,
         }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status === 400) {
+            setMessage("Invalid email or password");
+            return Promise.reject("Invalid email or password");
+          } else if (response.status === 200) {
+            return response.json();
+          } else {
+            setMessage("Server error");
+            return Promise.reject("Invalid email or password");
+          }
+        })
         .then((data) => {
           setSigningIn(false);
           if (data.access_token) {
             document.cookie = `user_token=${data.access_token}; expires=${COOKIES_EXPIRED_TIME}; path=/`;
-            navigate(`/classin`);
+            navigate(`/home`);
           }
         })
         .catch((err) => {
           setSigningIn(false);
-          console.log("Error", err);
+          // setMessage("Server error");
         });
     },
   });
@@ -98,6 +108,17 @@ const Siginform = () => {
                   fontWeight="bold"
                 >
                   Sign In
+                </Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    backgroundColor: "#f8d7da",
+                    color: "#721c24",
+                    textAlign: "center",
+                    lineHeight: "2.5rem",
+                  }}
+                >
+                  {message}
                 </Typography>
                 <TextField
                   fullWidth
@@ -141,7 +162,16 @@ const Siginform = () => {
                   }}
                   disabled={SigningIn}
                 >
-                  {SigningIn ? <CircularProgress size={24} /> : "Sign In"}
+                  {SigningIn ? (
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        color: "white",
+                      }}
+                    />
+                  ) : (
+                    "Sign In"
+                  )}
                 </Button>
                 <Typography
                   variant="body2"

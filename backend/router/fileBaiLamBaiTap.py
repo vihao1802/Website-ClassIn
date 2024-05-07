@@ -2,7 +2,16 @@ import database
 import models
 import schemas
 from email_validator import EmailNotValidError, validate_email
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    FastAPI,
+    File,
+    HTTPException,
+    Response,
+    UploadFile,
+    status,
+)
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 
@@ -64,3 +73,17 @@ async def read(ma_baiLamBaiTap: str, db: Session = Depends(database.get_db)):
     )
 
     return db_object
+
+
+@router.post("/sendFile/")
+def upload(file: UploadFile = File(...)):
+    try:
+        contents = file.file.read()
+        with open(file.filename, "wb") as f:
+            f.write(contents)
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
+
+    return {"message": f"Successfully uploaded {file.filename}"}

@@ -15,10 +15,11 @@ import TestExcerciseDetail from "pages/tests/TestExcerciseDetail";
 import Profile from "pages/profile";
 import ClassDetail from "pages/classDetail";
 import CreateHomeWork from "pages/homework";
+import DoHomework from "pages/do_homework";
 import { getUserId_Cookie } from "utils/handleCookies";
+
 function App() {
   const isAuth = Boolean(getUserId_Cookie());
-
   return (
     <div className="app">
       <BrowserRouter>
@@ -39,6 +40,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/createhomework" element={<CreateHomeWork />} />
+          <Route path="/dohomework/:homeworkId" element={<DoHomework />} />
           <Route
             path="/exercises/:exerciseId/common"
             element={<TestExcerciseDetail mode="exercise" />}

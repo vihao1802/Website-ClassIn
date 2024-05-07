@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Link, Button, Box, Avatar } from "@mui/material";
+import { Link, Button, Box, Avatar, Typography } from "@mui/material";
 import { Modal, Sheet, ModalClose } from "@mui/joy";
 import { v4 as uuidv4 } from "uuid";
 
@@ -8,6 +8,7 @@ export default function AddFileUploadButton({
   Icon,
   iconSize,
   setListAttachment,
+  text = "",
 }) {
   const [open, setOpen] = useState(false);
   const onDrop = useCallback((acceptedFile) => {
@@ -20,6 +21,7 @@ export default function AddFileUploadButton({
           Title: acceptedFile[0].name,
           Subtitle: "." + acceptedFile[0].name.split(".")[1],
           Thumbnail: URL.createObjectURL(acceptedFile[0]),
+          file: acceptedFile[0],
         },
       ];
     });
@@ -47,11 +49,14 @@ export default function AddFileUploadButton({
           setOpen(true);
         }}
       >
-        <Icon
-          sx={{
-            fontSize: iconSize,
-          }}
-        />
+        {Icon ? (
+          <Icon
+            sx={{
+              fontSize: iconSize,
+            }}
+          />
+        ) : null}
+        <Typography>{text}</Typography>
       </Link>
       <Modal
         aria-labelledby="close-modal-file-upload"

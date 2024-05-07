@@ -39,6 +39,17 @@ class TaiKhoanUpdate(TaiKhoanBase):
     ma_nhomQuyen: UUID
 
 
+class TaiKhoanUpdateInfo(BaseModel):
+    hoTen: str = Field(examples=["hello"])
+    email: str = Field(examples=["hello@gmail.com"])
+    dienThoai: str = Field(examples=["0912345678"])
+
+
+class TaiKhoanUpdatePassword(BaseModel):
+    currentPassword: str
+    newPassword: str
+
+
 # Represents instances retrieved from the database, interaction with SQLAlchemy ORM objects.
 class TaiKhoan(TaiKhoanBase):
     ma_taiKhoan: UUID

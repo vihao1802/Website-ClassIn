@@ -630,6 +630,9 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
               maxRows: 10,
               multiline: true,
             }}
+            inputProps={{
+              maxLength: 1000, // Add this line
+            }}
             onChange={handleTextFieldChange}
             onKeyDown={async (event) => {
               const messageText = event.target.value.trim();

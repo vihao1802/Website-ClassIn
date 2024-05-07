@@ -14,10 +14,6 @@ import * as yup from "yup";
 import { DeleteOutlined } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import profileImage from "assets/profile.jpg";
-import {
-  usePostUserResigeterMutation,
-  usePostCreateClassMutation,
-} from "state/api";
 
 const schemaJoin = yup.object({
   code: yup.string().required("Code is required"),
@@ -44,45 +40,25 @@ const schemaCreate = yup.object({
 });
 
 const ModalHandleClass = (props) => {
-  const [addUsersRegister, data] = usePostUserResigeterMutation();
   const forMikJoin = useFormik({
     initialValues: {
       code: "",
     },
     validationSchema: schemaJoin,
     onSubmit: (values) => {
-      addUsersRegister({
-        ma_lopHoc: values.code,
-        ma_taiKhoan: props.userId,
-      });
-      props.refetchClassInfo();
-      props.handleClose();
+      alert("Code: " + values.code);
+      props.handleClass();
     },
   });
-  const [createClass, dataCreate] = usePostCreateClassMutation();
   const forMikCreate = useFormik({
     initialValues: {
       name: "",
       avatar: null,
     },
     validationSchema: schemaCreate,
-    onSubmit: async (values) => {
-      if (!values.avatar) {
-        forMikCreate.setFieldError("avatar", "An image is required");
-        return;
-      }
-      if (values.name.length <= 0) {
-        forMikCreate.setFieldError("name", "Name is required");
-        return;
-      }
-      const response = await createClass({
-        ma_taiKhoan: props.userId,
-        ten: values.name,
-        moTa: "",
-        anhDaiDien: "",
-      });
-      props.refetchClassInfo();
-      props.handleClose();
+    onSubmit: (values) => {
+      alert("Name: " + values.name + "\nAvatar: " + values.avatar.name);
+      props.handleClass();
     },
   });
   const { errors } = forMikCreate;
