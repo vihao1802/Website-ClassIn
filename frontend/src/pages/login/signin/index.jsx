@@ -65,7 +65,8 @@ const Siginform = () => {
           setSigningIn(false);
           if (data.access_token) {
             document.cookie = `user_token=${data.access_token}; expires=${COOKIES_EXPIRED_TIME}; path=/`;
-            navigate(`/home`);
+            window.location.reload();
+            navigate(`/classin`);
           }
         })
         .catch((err) => {
