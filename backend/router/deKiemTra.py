@@ -142,11 +142,19 @@ async def read(ma_deKiemTra: str, db: Session = Depends(database.get_db)):
                 "ma_baiLamKiemTra": baiLamKiemTra.ma_baiLamKiemTra,
                 "khoangThoiGianLamBai": str(baiLamKiemTra.thoiGianBatDauLam)
                 + " - "
-                + str(baiLamKiemTra.thoiGianNop.time()),
-                "thoiGianLamBai": (
-                    baiLamKiemTra.thoiGianNop - baiLamKiemTra.thoiGianBatDauLam
-                ).total_seconds()
-                / 60,
+                + str(baiLamKiemTra.thoiGianNopBai.time()),
+                "thoiGianLamBai": "{0}:{1}".format(
+                    (
+                        baiLamKiemTra.thoiGianNopBai
+                        - baiLamKiemTra.thoiGianBatDauLam
+                    ).seconds
+                    // 60,
+                    (
+                        baiLamKiemTra.thoiGianNopBai
+                        - baiLamKiemTra.thoiGianBatDauLam
+                    ).seconds
+                    % 60,
+                ),
                 "diem": baiLamKiemTra.diem,
                 "nopTre": baiLamKiemTra.nopTre,
                 "soCauDung": baiLamKiemTra.soCauDung,

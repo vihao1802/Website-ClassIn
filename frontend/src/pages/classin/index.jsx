@@ -16,10 +16,10 @@ import {
 } from "@mui/material";
 import {
   Add,
-  LocalLibraryRounded,
+  LocalLibraryOutlined,
   ExpandLessRounded,
   ExpandMoreRounded,
-  SchoolRounded,
+  SchoolOutlined,
 } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
@@ -76,8 +76,11 @@ const Classin = () => {
   //const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
   //const [clientId, setClientId] = useState(null);
 
-  const { data: classInfo, isLoading: isClassInfoLoading } =
-    useGetClassQuery(userId);
+  const {
+    data: classInfo,
+    isLoading: isClassInfoLoading,
+    refetch: refetchClassInfo,
+  } = useGetClassQuery(userId);
 
   /*   useEffect(() => {
     if (userList && userList.length > 0 && !clientId) {
@@ -87,14 +90,13 @@ const Classin = () => {
       );
       const randomClientId =
         nonDuplicateIds[Math.floor(Math.random() * nonDuplicateIds.length)];
-      console.log(randomClientId);
+      //console.log(randomClientId);
       setClientId(randomClientId);
     }
   }, [userList, clientId]); */
 
   const [activeClass, setActiveClass] = useState(null);
   useEffect(() => {
-    console.log(classInfo);
     if (classInfo && classInfo.length > 0) setActiveClass(classInfo[0]);
     else if (classInfo && classInfo.length === 0) setActiveClass([]);
   }, [classInfo, isClassInfoLoading]);
@@ -172,31 +174,26 @@ const Classin = () => {
               }}
             >
               <MenuItem onClick={handleOpenModalJoin}>Join class</MenuItem>
+              <ModalHandleClass
+                open={isOpenModalJoin}
+                handleClose={handleCLoseModalJoin}
+                handleClass={handleJoin}
+                title={"Join class"}
+                userId={userId}
+                refetchClassInfo={refetchClassInfo}
+              />
               <MenuItem onClick={handleOpenModalCreate}>Create class</MenuItem>
+              <ModalHandleClass
+                open={isOpenModalCreate}
+                handleClose={handleCLoseModalCreate}
+                handleClass={handleCreate}
+                title={"Create class"}
+                userId={userId}
+                refetchClassInfo={refetchClassInfo}
+              />
             </Menu>
-            <ModalHandleClass
-              open={isOpenModalJoin}
-              handleClose={handleCLoseModalJoin}
-              handleClass={handleJoin}
-              title={"Join class"}
-            />
-            <ModalHandleClass
-              open={isOpenModalCreate}
-              handleClose={handleCLoseModalCreate}
-              handleClass={handleCreate}
-              title={"Create class"}
-            />
           </FlexBetween>
         </FlexBetween>
-        <TextField
-          fullWidth
-          id="search"
-          label="Search"
-          variant="outlined"
-          size="small"
-          color="success"
-          sx={{ marginTop: "10px" }}
-        />
         <Box
           sx={{
             height: "100%",
@@ -217,10 +214,24 @@ const Classin = () => {
           {/* Teaching */}
           <ListItemButton
             onClick={handleClickTeaching}
-            sx={{ marginTop: "10px" }}
+            sx={
+              openTeaching
+                ? {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                    backgroundColor: "#e7e7e7",
+                    border: "1px solid #009265",
+                  }
+                : {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                  }
+            }
           >
             <ListItemIcon>
-              <LocalLibraryRounded />
+              <LocalLibraryOutlined />
             </ListItemIcon>
             <ListItemText primary="Teaching" />
             {openTeaching ? <ExpandLessRounded /> : <ExpandMoreRounded />}
@@ -282,12 +293,26 @@ const Classin = () => {
           {/* Registered */}
           <ListItemButton
             onClick={handleClickRegistered}
-            sx={{ marginTop: "10px" }}
+            sx={
+              openRegistered
+                ? {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                    backgroundColor: "#e7e7e7",
+                    border: "1px solid #009265",
+                  }
+                : {
+                    marginTop: "10px",
+                    borderBottomRightRadius: "30px",
+                    borderTopRightRadius: "30px",
+                  }
+            }
           >
             <ListItemIcon>
-              <SchoolRounded />
+              <SchoolOutlined />
             </ListItemIcon>
-            <ListItemText primary="Registered" />
+            <ListItemText primary="Enrolled" />
             {openRegistered ? <ExpandLessRounded /> : <ExpandMoreRounded />}
           </ListItemButton>
           <Collapse in={openRegistered} timeout="auto" unmountOnExit>

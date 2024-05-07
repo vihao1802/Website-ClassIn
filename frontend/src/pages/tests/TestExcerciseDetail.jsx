@@ -25,6 +25,7 @@ import {
   SentimentDissatisfiedRounded,
   VisibilityOffRounded,
   VisibilityRounded,
+  EditRounded,
 } from "@mui/icons-material";
 import {
   DataGrid,
@@ -41,16 +42,18 @@ import { useNavigate } from "react-router-dom";
 import {
   useGetTestByTestIdQuery,
   useGetUserSubmissionsDetailsQuery,
+  useGetExercisesByExerciseIdQuery,
+  useGetUserSubmissionsExerciseDetailsQuery,
 } from "state/api";
 import Loading from "components/Loading";
 import dayjs from "dayjs";
 import AvatarName from "components/AvatarName";
 
-const TestExcerciseDetail = () => {
+const TestExcerciseDetail = ({ mode }) => {
   const navigate = useNavigate();
   const { testId } = useParams();
-
-  const submittedcolumns = [
+  const { exerciseId } = useParams();
+  const submittedcolumns_Test = [
     {
       field: "hoTen",
       headerName: "Student Name",
@@ -126,6 +129,96 @@ const TestExcerciseDetail = () => {
       },
     },
   ];
+  const submittedcolumns_Exercise = [
+    {
+      field: "hoTen",
+      headerName: "Student Name",
+      width: 250,
+      editable: false,
+      sortable: false,
+      renderCell: (item) => {
+        return (
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            {/* <Box
+            component="img"
+            alt="profile"
+            src={profileImage}
+            height="32px"
+            width="32px"
+            borderRadius="50%"
+            sx={{ objectFit: "cover" }}
+          /> */}
+            <AvatarName name={item.value} />
+            <Typography
+              sx={{
+                fontSize: "16px",
+                color: "black",
+                marginLeft: "10px",
+                padding: "10px 0",
+              }}
+            >
+              {item.value}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 300,
+      editable: false,
+      sortable: false,
+    },
+    {
+      field: "nopTre",
+      headerName: "Status",
+      width: 150,
+      editable: false,
+      sortable: false,
+      renderCell: (item) => {
+        return (
+          <Chip
+            variant="outlined"
+            color={item.value === 1 ? "error" : "success"}
+            label={item.value === 1 ? "Late" : "On time"}
+            size="small"
+          />
+        );
+      },
+    },
+    {
+      field: "diem",
+      headerName: "Score",
+      width: 150,
+      editable: false,
+      sortable: false,
+      renderCell: (item) => {
+        return item.value === -1 ? "Not graded" : item.value;
+      },
+    },
+
+    {
+      field: "review",
+      headerName: "Review",
+      width: 100,
+      sortable: false,
+      type: "actions",
+      getActions: (item) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditRounded color="primary" />}
+            label="Review"
+            className="textPrimary"
+            color="inherit"
+            onClick={() => {
+              // navigate(`/tests/${testId}/work/${item.row.ma_baiLamKiemTra}`);
+            }}
+          />,
+        ];
+      },
+    },
+  ];
 
   const unsubmittedcolumns = [
     {
@@ -170,16 +263,33 @@ const TestExcerciseDetail = () => {
   };
 
   const { data: testItemData, isLoading: isTestItemLoading } =
-    useGetTestByTestIdQuery(testId);
+    useGetTestByTestIdQuery(testId, { skip: mode === "exercise" });
 
   const {
     data: userSubmissionDetail,
     isLoading: isUserSubmissionDetailLoading,
-  } = useGetUserSubmissionsDetailsQuery(testId);
+  } = useGetUserSubmissionsDetailsQuery(testId, {
+    skip: mode === "exercise",
+  });
+
+  const { data: exerciseItemData, isLoading: isExerciseItemLoading } =
+    useGetExercisesByExerciseIdQuery(exerciseId, { skip: mode === "test" });
+
+  const {
+    data: userSubmissionExerciseDetail,
+    isLoading: isUserSubmissionExerciseDetailLoading,
+  } = useGetUserSubmissionsExerciseDetailsQuery(exerciseId, {
+    skip: mode === "test",
+  });
+
+  if (isTestItemLoading || isExerciseItemLoading) return <Loading />;
 
   return (
     <Box>
-      <HomeNavbar IsNotHomePage={true} title="Detail" />
+      <HomeNavbar
+        IsNotHomePage={true}
+        title={mode === "test" ? "Test Detail" : "Exercise Detail"}
+      />
       <Box
         sx={{
           display: "flex",
@@ -205,7 +315,7 @@ const TestExcerciseDetail = () => {
           >
             <FlexBetween>
               <Typography variant="h6" color="#009265" fontWeight="bold">
-                Test Detail
+                {mode === "test" ? "Test Detail" : "Exercise Detail"}
               </Typography>
               <Chip
                 variant="primary"
@@ -214,62 +324,72 @@ const TestExcerciseDetail = () => {
                 size="small"
               />
             </FlexBetween>
-            {testItemData || !isTestItemLoading ? (
-              <Box mb="10px">
-                <FlexBetween mt="5px">
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <AbcRounded color="#009265" sx={{ color: "#009265" }} />
-                    <Typography
-                      variant="body1"
-                      ml="10px"
-                      color="#666666"
-                      fontWeight="bold"
-                    >
-                      <em>Test Name:</em>
-                    </Typography>
-                  </Box>
-                  <Typography fontWeight="bold">
-                    {testItemData.tieuDe}
+            <Box mb="10px">
+              <FlexBetween mt="5px">
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <AbcRounded color="#009265" sx={{ color: "#009265" }} />
+                  <Typography
+                    variant="body1"
+                    ml="10px"
+                    color="#666666"
+                    fontWeight="bold"
+                  >
+                    <em>{mode === "test" ? "Test Name:" : "Exercise Name:"}</em>
                   </Typography>
-                </FlexBetween>
-                <FlexBetween mt="5px">
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <CalendarTodayRounded sx={{ color: "#009265" }} />
-                    <Typography
-                      variant="body1"
-                      ml="10px"
-                      color="#666666"
-                      fontWeight="bold"
-                    >
-                      <em>Create At:</em>
-                    </Typography>
-                  </Box>
-                  <Typography fontWeight="bold">
-                    {dayjs(testItemData.thoiGianTao).format("HH:mm DD/MM/YYYY")}
+                </Box>
+                <Typography fontWeight="bold">
+                  {mode === "test"
+                    ? testItemData.tieuDe
+                    : exerciseItemData.tieuDe}
+                </Typography>
+              </FlexBetween>
+              <FlexBetween mt="5px">
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <CalendarTodayRounded sx={{ color: "#009265" }} />
+                  <Typography
+                    variant="body1"
+                    ml="10px"
+                    color="#666666"
+                    fontWeight="bold"
+                  >
+                    <em>Create At:</em>
                   </Typography>
-                </FlexBetween>
-                <FlexBetween mt="5px">
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <DateRangeRounded sx={{ color: "#009265" }} />
-                    <Typography
-                      variant="body1"
-                      ml="10px"
-                      color="#666666"
-                      fontWeight="bold"
-                    >
-                      <em>Test Date:</em>
-                    </Typography>
-                  </Box>
-                  <Typography fontWeight="bold">
-                    {dayjs(testItemData.thoiGianBatDau).format(
-                      "HH:mm DD/MM/YY",
-                    ) +
-                      " - " +
-                      dayjs(testItemData.hanChotNopBai).format(
-                        "HH:mm DD/MM/YY",
-                      )}
+                </Box>
+                <Typography fontWeight="bold">
+                  {dayjs(
+                    mode === "test"
+                      ? testItemData.thoiGianTao
+                      : exerciseItemData.thoiGianTao,
+                  ).format("HH:mm DD/MM/YYYY")}
+                </Typography>
+              </FlexBetween>
+              <FlexBetween mt="5px">
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <DateRangeRounded sx={{ color: "#009265" }} />
+                  <Typography
+                    variant="body1"
+                    ml="10px"
+                    color="#666666"
+                    fontWeight="bold"
+                  >
+                    <em>Deadline:</em>
                   </Typography>
-                </FlexBetween>
+                </Box>
+                <Typography fontWeight="bold">
+                  {dayjs(
+                    mode === "test"
+                      ? testItemData.thoiGianBatDau
+                      : exerciseItemData.thoiGianBatDau,
+                  ).format("HH:mm DD/MM/YY") +
+                    " - " +
+                    dayjs(
+                      mode === "test"
+                        ? testItemData.hanChotNopBai
+                        : exerciseItemData.thoiGianKetThuc,
+                    ).format("HH:mm DD/MM/YY")}
+                </Typography>
+              </FlexBetween>
+              {mode === "test" && (
                 <FlexBetween mt="5px">
                   <Box sx={{ display: "flex", flexDirection: "row" }}>
                     <AccessAlarmRounded sx={{ color: "#009265" }} />
@@ -286,58 +406,62 @@ const TestExcerciseDetail = () => {
                     {testItemData.thoiGianLamBai + " min"}
                   </Typography>
                 </FlexBetween>
-                <FlexBetween mt="5px">
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <SchoolRounded sx={{ color: "#009265" }} />
-                    <Typography
-                      variant="body1"
-                      ml="10px"
-                      color="#666666"
-                      fontWeight="bold"
-                    >
-                      <em>Class:</em>
-                    </Typography>
-                  </Box>
-                  <Typography fontWeight="bold">
-                    {testItemData.tenLop}
+              )}
+              <FlexBetween mt="5px">
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <SchoolRounded sx={{ color: "#009265" }} />
+                  <Typography
+                    variant="body1"
+                    ml="10px"
+                    color="#666666"
+                    fontWeight="bold"
+                  >
+                    <em>Class:</em>
                   </Typography>
-                </FlexBetween>
-                <FlexBetween mt="5px">
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <ArticleRounded sx={{ color: "#009265" }} />
-                    <Typography
-                      variant="body1"
-                      ml="10px"
-                      color="#666666"
-                      fontWeight="bold"
-                    >
-                      <em>Unit:</em>
-                    </Typography>
-                  </Box>
-                  <Typography fontWeight="bold">
-                    {testItemData.tenChuong}
+                </Box>
+                <Typography fontWeight="bold">
+                  {mode === "test"
+                    ? testItemData.tenLop
+                    : exerciseItemData.tenLop}
+                </Typography>
+              </FlexBetween>
+              <FlexBetween mt="5px">
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <ArticleRounded sx={{ color: "#009265" }} />
+                  <Typography
+                    variant="body1"
+                    ml="10px"
+                    color="#666666"
+                    fontWeight="bold"
+                  >
+                    <em>Unit:</em>
                   </Typography>
-                </FlexBetween>
-                <FlexBetween mt="5px">
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <LocalLibraryRounded sx={{ color: "#009265" }} />
-                    <Typography
-                      variant="body1"
-                      ml="10px"
-                      color="#666666"
-                      fontWeight="bold"
-                    >
-                      <em>Instructor:</em>
-                    </Typography>
-                  </Box>
-                  <Typography fontWeight="bold">
-                    {testItemData.tenGV}
+                </Box>
+                <Typography fontWeight="bold">
+                  {mode === "test"
+                    ? testItemData.tenChuong
+                    : exerciseItemData.tenChuong}
+                </Typography>
+              </FlexBetween>
+              <FlexBetween mt="5px">
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <LocalLibraryRounded sx={{ color: "#009265" }} />
+                  <Typography
+                    variant="body1"
+                    ml="10px"
+                    color="#666666"
+                    fontWeight="bold"
+                  >
+                    <em>Instructor:</em>
                   </Typography>
-                </FlexBetween>
-              </Box>
-            ) : (
-              <Loading />
-            )}
+                </Box>
+                <Typography fontWeight="bold">
+                  {mode === "test"
+                    ? testItemData.tenGV
+                    : exerciseItemData.tenGV}
+                </Typography>
+              </FlexBetween>
+            </Box>
 
             <Divider color="#666666" />
             <Button
@@ -349,7 +473,7 @@ const TestExcerciseDetail = () => {
                 marginTop: "10px",
               }}
               onClick={() => {
-                navigate(`/tests/${testId}/detail`);
+                if (mode === "test") navigate(`/tests/${testId}/detail`);
               }}
             >
               See Details
@@ -421,8 +545,16 @@ const TestExcerciseDetail = () => {
                   }}
                 >
                   <DataGrid
-                    loading={isUserSubmissionDetailLoading}
-                    rows={userSubmissionDetail?.users_unsubmit || []}
+                    loading={
+                      mode === "test"
+                        ? isUserSubmissionDetailLoading
+                        : isUserSubmissionExerciseDetailLoading
+                    }
+                    rows={
+                      mode === "test"
+                        ? userSubmissionDetail?.users_unsubmit || []
+                        : userSubmissionExerciseDetail?.users_unsubmit || []
+                    }
                     getRowId={(row) => row.ma_taiKhoan}
                     columns={unsubmittedcolumns}
                     initialState={{
@@ -468,10 +600,26 @@ const TestExcerciseDetail = () => {
                   }}
                 >
                   <DataGrid
-                    loading={isUserSubmissionDetailLoading}
-                    rows={userSubmissionDetail?.users_submit || []}
-                    getRowId={(row) => row.ma_baiLamKiemTra}
-                    columns={submittedcolumns}
+                    loading={
+                      mode === "test"
+                        ? isUserSubmissionDetailLoading
+                        : isUserSubmissionExerciseDetailLoading
+                    }
+                    rows={
+                      mode === "test"
+                        ? userSubmissionDetail?.users_submit || []
+                        : userSubmissionExerciseDetail?.users_submit || []
+                    }
+                    getRowId={
+                      mode === "test"
+                        ? (row) => row.ma_baiLamKiemTra
+                        : (row) => row.ma_baiLamBaiTap
+                    }
+                    columns={
+                      mode === "test"
+                        ? submittedcolumns_Test
+                        : submittedcolumns_Exercise
+                    }
                     initialState={{
                       pagination: { paginationModel: { pageSize: 5 } },
                     }}

@@ -277,7 +277,7 @@ class BaiLamBaiTapBase(BaseModel):
     ma_taiKhoan: UUID
     ma_baiTap: UUID
     nhanXet: str
-    diem: int
+    diem: float
     nopTre: int
 
 
@@ -387,7 +387,7 @@ class BaiLamKiemTraBase(BaseModel):
     ma_deKiemTra: UUID
     thoiGianNopBai: datetime
     thoiGianBatDauLam: datetime
-    diem: int
+    diem: float
     nopTre: int
     soCauDung: int
 

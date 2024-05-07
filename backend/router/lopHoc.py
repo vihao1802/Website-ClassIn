@@ -12,7 +12,6 @@ router = APIRouter(prefix="/lopHoc", tags=["lopHoc"])
 @router.post(
     "/{ma_giangVien}",
     status_code=status.HTTP_201_CREATED,
-    response_model=schemas.LopHoc,
 )
 async def create(
     schema_object: schemas.LopHocCreate,

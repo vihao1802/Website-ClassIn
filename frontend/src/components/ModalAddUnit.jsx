@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -9,16 +9,48 @@ import {
 } from "@mui/material";
 import { CloseRounded, ContentCopyRounded } from "@mui/icons-material";
 import FlexBetween from "./FlexBetween";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { usePostAddUnitMutation, usePutEditUnitMutation } from "state/api";
 
-const ShowClassCode = ({ open, handleClose }) => {
-  const [copy, setCopy] = useState(false);
+const schema = yup.object({
+  name: yup.string().required("Title is required"),
+});
+
+const ModalAddUnit = ({ open, handleClose, classId, unit, mode, refetch }) => {
+  const [addUnit, dataAdd] = usePostAddUnitMutation();
+  const forMikAdd = useFormik({
+    initialValues: {
+      name: "",
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      addUnit({ ma_lopHoc: classId, ten: values.name });
+      refetch();
+      handleClose();
+    },
+  });
+
+  const [editUnit, dataEdit] = usePutEditUnitMutation();
+
+  useEffect(() => {
+    if (mode === "edit") forMikEdit.setValues({ name: unit.name });
+  }, []);
+  const forMikEdit = useFormik({
+    initialValues: {
+      name: "",
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      editUnit({ ma_chuong: unit.id, ten: values.name });
+      refetch();
+      handleClose();
+    },
+  });
+
   return (
     <>
-      <Modal
-        open={open}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+      <Modal open={open}>
         <Box
           sx={{
             position: "absolute",
@@ -39,7 +71,7 @@ const ShowClassCode = ({ open, handleClose }) => {
           >
             <FlexBetween>
               <Typography variant="h6" color="#009265">
-                Add Unit
+                {mode === "add" ? "Add Unit" : "Edit Unit"}
               </Typography>
               <IconButton
                 sx={{
@@ -62,7 +94,32 @@ const ShowClassCode = ({ open, handleClose }) => {
               <Typography variant="h7" color="#009265" fontWeight="bold">
                 Unit Title
               </Typography>
-              <TextField color="success" size="small" fullWidth />
+              <TextField
+                color="success"
+                size="small"
+                name="name"
+                value={
+                  mode === "add"
+                    ? forMikAdd.values.name
+                    : forMikEdit.values.name
+                }
+                onChange={
+                  mode === "add"
+                    ? forMikAdd.handleChange
+                    : forMikEdit.handleChange
+                }
+                error={
+                  mode === "add"
+                    ? forMikAdd.touched.name && Boolean(forMikAdd.errors.name)
+                    : forMikEdit.touched.name && Boolean(forMikEdit.errors.name)
+                }
+                helperText={
+                  mode === "add"
+                    ? forMikAdd.touched.name && forMikAdd.errors.name
+                    : forMikEdit.touched.name && forMikEdit.errors.name
+                }
+                fullWidth
+              />
             </Box>
             <Box
               sx={{
@@ -78,8 +135,13 @@ const ShowClassCode = ({ open, handleClose }) => {
                   backgroundColor: "#009265",
                   "&:hover": { backgroundColor: "#007850" },
                 }}
+                onClick={() =>
+                  mode === "add"
+                    ? forMikAdd.submitForm()
+                    : forMikEdit.submitForm()
+                }
               >
-                Add
+                {mode === "add" ? "Add" : "Update"}
               </Button>
             </Box>
           </Box>
@@ -89,4 +151,4 @@ const ShowClassCode = ({ open, handleClose }) => {
   );
 };
 
-export default ShowClassCode;
+export default ModalAddUnit;

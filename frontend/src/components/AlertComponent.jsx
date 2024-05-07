@@ -23,7 +23,7 @@ const AlertComponent = ({ severity, message, onClose, open }) => {
           zIndex: 10,
           width: "50%",
           left: "25%",
-          top: "10%",
+          top: "5%",
         }}
       >
         {message}

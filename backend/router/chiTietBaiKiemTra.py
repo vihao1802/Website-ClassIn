@@ -17,18 +17,8 @@ async def create(
     db: Session = Depends(database.get_db),
 ):
     thuTu = schema_object.thuTu
-    ma_dapAnChon = str(schema_object.ma_dapAnChon)
     ma_deKiemTra = str(schema_object.ma_deKiemTra)
     ma_cauHoi = str(schema_object.ma_cauHoi)
-
-    # check ma_dapAnChon exists
-    db_object_check = (
-        db.query(models.CauTraLoi)
-        .filter(models.CauTraLoi.ma_cauTraLoi == ma_dapAnChon)
-        .first()
-    )
-    if db_object_check is None:
-        raise HTTPException(status_code=400, detail="ma_dapAnChon not found")
 
     # check ma_deKiemTra
     db_object_check = (
@@ -50,7 +40,6 @@ async def create(
 
     db_object = models.ChiTietBaiKiemTra(**schema_object.dict())
     db_object.thuTu = thuTu
-    db_object.ma_dapAnChon = ma_dapAnChon
     db_object.ma_cauHoi = ma_cauHoi
     db_object.ma_deKiemTra = ma_deKiemTra
 
