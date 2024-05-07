@@ -3,15 +3,7 @@ import load_env_global
 import models
 import uvicorn
 from database import engine
-from fastapi import (
-    APIRouter,
-    Depends,
-    FastAPI,
-    File,
-    HTTPException,
-    Request,
-    UploadFile,
-)
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from router import (
     auth,

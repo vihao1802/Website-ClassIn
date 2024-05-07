@@ -18,8 +18,15 @@ import {
   Paper,
   Radio,
   RadioGroup,
+  Menu,
+  MenuItem,
 } from "@mui/material";
-import { MoreHorizOutlined, CloseRounded } from "@mui/icons-material";
+import {
+  MoreHorizOutlined,
+  CloseRounded,
+  EditRounded,
+  DeleteRounded,
+} from "@mui/icons-material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -31,163 +38,23 @@ import Loading from "components/Loading";
 import {
   useGetQuestionsDetailsQuery,
   useGetClassByInstructorIdQuery,
+  useDeleteQuestionMutation,
+  useGetUnitsByClassIdQuery,
+  usePostCreateTestMutation,
+  usePostCreatTestDetailMutation,
+  usePostAddUnitMutation,
 } from "state/api";
+import { getUserId_Cookie } from "utils/handleCookies";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import AlertComponent from "components/AlertComponent";
 
-/* const questionItems = [
-  {
-    id: "1",
-    title: "What does HTML stand for?",
-    answer: [
-      { id: 1, title: "Hyper Text Markup Language", isCorrect: true },
-      { id: 2, title: "Hyperlinks and Text Markup Language", isCorrect: false },
-      { id: 3, title: "Home Tool Markup Language", isCorrect: false },
-      { id: 4, title: "Hyper Tool Markup Language", isCorrect: false },
-    ],
-  },
-  {
-    id: "2",
-    title: "What does CSS stand for?",
-    answer: [
-      { id: 1, title: "Cascading Style Sheets", isCorrect: true },
-      { id: 2, title: "Computer Style Sheets", isCorrect: false },
-      { id: 3, title: "Creative Style Sheets", isCorrect: false },
-      { id: 4, title: "Colorful Style Sheets", isCorrect: false },
-    ],
-  },
-  {
-    id: "3",
-    title: "What does HTTP stand for?",
-    answer: [
-      { id: 1, title: "Hypertext Transfer Protocol", isCorrect: true },
-      { id: 2, title: "Hypertext Transmission Protocol", isCorrect: false },
-      { id: 3, title: "Hypertext Transfer Process", isCorrect: false },
-      { id: 4, title: "Hypertext Test Protocol", isCorrect: false },
-    ],
-  },
-  {
-    id: "4",
-    title: "Which programming language is known as the 'language of the web'?",
-    answer: [
-      { id: 1, title: "JavaScript", isCorrect: true },
-      { id: 2, title: "Java", isCorrect: false },
-      { id: 3, title: "Python", isCorrect: false },
-      { id: 4, title: "C++", isCorrect: false },
-    ],
-  },
-  {
-    id: "5",
-    title:
-      "What is the primary purpose of a database management system (DBMS)?",
-    answer: [
-      {
-        id: 1,
-        title: "To store, manipulate, and retrieve data",
-        isCorrect: true,
-      },
-      { id: 2, title: "To design user interfaces", isCorrect: false },
-      { id: 3, title: "To develop algorithms", isCorrect: false },
-      { id: 4, title: "To create graphical content", isCorrect: false },
-    ],
-  },
-  {
-    id: "6",
-    title: "What is the purpose of a firewall in network security?",
-    answer: [
-      {
-        id: 1,
-        title: "To protect against unauthorized access",
-        isCorrect: true,
-      },
-      { id: 2, title: "To enhance internet speed", isCorrect: false },
-      { id: 3, title: "To monitor software licenses", isCorrect: false },
-      { id: 4, title: "To optimize data storage", isCorrect: false },
-    ],
-  },
-  {
-    id: "7",
-    title: "What is the function of an operating system?",
-    answer: [
-      {
-        id: 1,
-        title: "To manage hardware and software resources",
-        isCorrect: true,
-      },
-      { id: 2, title: "To design web interfaces", isCorrect: false },
-      { id: 3, title: "To analyze data trends", isCorrect: false },
-      { id: 4, title: "To create multimedia content", isCorrect: false },
-    ],
-  },
-  {
-    id: "8",
-    title: "What is the purpose of version control software like Git?",
-    answer: [
-      {
-        id: 1,
-        title: "To track changes in code and collaborate with others",
-        isCorrect: true,
-      },
-      { id: 2, title: "To encrypt sensitive data", isCorrect: false },
-      { id: 3, title: "To manage server configurations", isCorrect: false },
-      { id: 4, title: "To automate software testing", isCorrect: false },
-    ],
-  },
-  {
-    id: "9",
-    title: "What is cloud computing?",
-    answer: [
-      {
-        id: 1,
-        title: "Delivery of computing services over the internet",
-        isCorrect: true,
-      },
-      { id: 2, title: "A method of local data storage", isCorrect: false },
-      { id: 3, title: "A type of network cable", isCorrect: false },
-      { id: 4, title: "A programming language", isCorrect: false },
-    ],
-  },
-  {
-    id: "10",
-    title: "What is the purpose of HTML5?",
-    answer: [
-      {
-        id: 1,
-        title: "To structure and present content on the web",
-        isCorrect: true,
-      },
-      { id: 2, title: "To execute server-side code", isCorrect: false },
-      { id: 3, title: "To query databases", isCorrect: false },
-      { id: 4, title: "To secure network connections", isCorrect: false },
-    ],
-  },
-]; */
-
-/* const classItems = [
-  { id: "1", label: "Công nghệ phần mềm" },
-  { id: "2", label: "Hệ thống thông tin" },
-  { id: "3", label: "Khoa học máy tính" },
-  { id: "4", label: "Mạng và truyền thông" },
-  { id: "5", label: "An toàn thông tin" },
-  { id: "6", label: "Trí tuệ nhân tạo" },
-  { id: "7", label: "Đồ họa và game" },
-  { id: "8", label: "Kỹ thuật phần mềm" },
-  { id: "9", label: "Hệ thống thông tin quản lý" },
-  { id: "10", label: "Khoa học dữ liệu" },
-]; */
-
-const unitItems = [
-  { id: "1", label: "Unit 1" },
-  { id: "2", label: "Unit 2" },
-  { id: "3", label: "Unit 3" },
-  { id: "4", label: "Unit 4" },
-  { id: "5", label: "Unit 5" },
-  { id: "6", label: "Unit 6" },
-  { id: "7", label: "Unit 7" },
-  { id: "8", label: "Unit 8" },
-  { id: "9", label: "Unit 9" },
-  { id: "10", label: "Unit 10" },
-];
+const schema = yup.object({
+  title: yup.string().required("Title is required"),
+});
 
 const AddTestForm = () => {
+  const userId = getUserId_Cookie();
   // checkboxlist
   const [checkedQuestion, setCheckedQuestion] = useState([]);
   const handleToggle = (value) => () => {
@@ -201,6 +68,14 @@ const AddTestForm = () => {
     }
     setCheckedQuestion(newChecked);
   };
+
+  //question menu
+  const [anchorElQuestionMenu, setAnchorElQuestionMenu] = useState(null);
+  const isOpenQuestionMenu = Boolean(anchorElQuestionMenu);
+  const handleClickQuestionMenu = (event) =>
+    setAnchorElQuestionMenu(event.currentTarget);
+  const handleCloseQuestionMenu = () => setAnchorElQuestionMenu(null);
+  const [deleteQuestion] = useDeleteQuestionMutation();
 
   // drag and drop
   const onDragEnd = (result) => {
@@ -228,39 +103,149 @@ const AddTestForm = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  //modal edit question
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+  const [selectedQid, setSelectedQid] = useState("");
+
   const { data: questionDetailsData, isLoading: isQuestionDetailsLoading } =
-    useGetQuestionsDetailsQuery("1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9");
-
-  const [edit, setEdit] = useState([]);
-
-  useEffect(() => {
-    if (!isQuestionDetailsLoading && questionDetailsData) {
-      const initialEditState = questionDetailsData.map((item) => ({
-        ma_cauHoi: item.cauHoi.ma_cauHoi,
-        isEdit: false,
-      }));
-      setEdit(initialEditState);
-    }
-  }, [isQuestionDetailsLoading, questionDetailsData]);
+    useGetQuestionsDetailsQuery(userId);
 
   // autocomplete
-  const { data: classByInstuctorIdData, isLoading: isClassByInstuctorIdData } =
-    useGetClassByInstructorIdQuery("1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9");
+  const {
+    data: classByInstuctorIdData,
+    isLoading: isClassByInstuctorIdDataLoading,
+  } = useGetClassByInstructorIdQuery(userId);
 
   const [classItems, setClassItems] = useState([]);
-  const [valueClass, setValueClass] = useState(null);
+  const [currentValueClass, setCurrentValueClass] = useState(null);
   useEffect(() => {
-    if (!isClassByInstuctorIdData && classByInstuctorIdData) {
+    if (!isClassByInstuctorIdDataLoading && classByInstuctorIdData) {
       const initialClassItems = classByInstuctorIdData.map((item) => ({
         id: item.ma_lopHoc,
         label: item.ten,
       }));
       setClassItems(initialClassItems);
-      setValueClass(initialClassItems[0]);
+      setCurrentValueClass(initialClassItems[0]);
     }
-  }, [isClassByInstuctorIdData, classByInstuctorIdData]);
+  }, [isClassByInstuctorIdDataLoading, classByInstuctorIdData]);
 
-  const [valueUnit, setValueUnit] = useState(unitItems[0]);
+  const { data: unitsByClassIdData, isLoading: isUnitsByClassIdDataLoading } =
+    useGetUnitsByClassIdQuery(currentValueClass?.id, {
+      skip: !currentValueClass,
+    });
+  const [isNewUnit, setIsNewUnit] = useState(false);
+  const [unitItems, setUnitItems] = useState([]);
+  const [currentValueUnit, setCurrentValueUnit] = useState(null);
+  useEffect(() => {
+    if (!isUnitsByClassIdDataLoading && unitsByClassIdData) {
+      const initialUnitItems =
+        unitsByClassIdData.length === 0
+          ? [{ id: null, label: "Default Unit" }]
+          : unitsByClassIdData.map((item) => ({
+              id: item.ma_chuong,
+              label: item.ten,
+            }));
+      if (unitsByClassIdData.length === 0) setIsNewUnit(true);
+      else setIsNewUnit(false);
+      setUnitItems(initialUnitItems);
+      setCurrentValueUnit(initialUnitItems[0]);
+    }
+  }, [isUnitsByClassIdDataLoading, unitsByClassIdData]);
+
+  // formik create test
+  const [startTime, setStartTime] = useState(dayjs());
+  const [endTime, setEndTime] = useState(startTime.add(15, "minute"));
+  const [duration, setDuration] = useState(5);
+  const [showAnswer, setShowAnswer] = useState(true);
+  const [shuffleQuestion, setShuffleQuestion] = useState(true);
+
+  const [createTest] = usePostCreateTestMutation();
+  const [creatTestDetail] = usePostCreatTestDetailMutation();
+  const [createUnit] = usePostAddUnitMutation();
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+  });
+  const forMikCreate = useFormik({
+    initialValues: {
+      title: "",
+    },
+    validationSchema: schema,
+    onSubmit: async (values) => {
+      if (checkedQuestion.length === 0) {
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "Please select at least one question",
+        });
+        return;
+      }
+      if (startTime.diff(dayjs(), "minute") < 0) {
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "Start time must be greater than current time",
+        });
+        return;
+      }
+      if (endTime.diff(startTime, "minute") < 15) {
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "End time must be greater than start time 15 minutes",
+        });
+        return;
+      }
+      if (endTime.diff(dayjs(), "minute") < 0) {
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "End time must be greater than current time",
+        });
+        return;
+      }
+
+      if (endTime.diff(startTime, "minute") < duration) {
+        setAlert({
+          open: true,
+          severity: "error",
+          message:
+            "Duration must be less than the difference between start time and end time",
+        });
+        return;
+      }
+      let currentUnitId = currentValueUnit.id;
+      if (isNewUnit) {
+        const response = await createUnit({
+          ten: currentValueUnit.label,
+          ma_lopHoc: currentValueClass.id,
+        });
+        currentUnitId = response.data.ma_chuong;
+      }
+      const data = {
+        uid: currentUnitId,
+        testTitle: values.title,
+        startTime: startTime.format("YYYY-MM-DD HH:mm:ss"),
+        endTime: endTime.format("YYYY-MM-DD HH:mm:ss"),
+        duration: duration,
+        showAnswer: showAnswer ? 1 : 0,
+        shuffleQuestion: shuffleQuestion ? 1 : 0,
+      };
+      const response = await createTest(data);
+      const testId = response.data.ma_deKiemTra;
+      const testDetailList = checkedQuestion.map((question, index) => ({
+        qid: question.cauHoi.ma_cauHoi,
+        tid: testId,
+        order: index + 1,
+      }));
+      for (const testDetail of testDetailList) {
+        await creatTestDetail(testDetail);
+      }
+    },
+  });
 
   return (
     <Box height="100%">
@@ -321,7 +306,7 @@ const AddTestForm = () => {
                 New Question
               </Typography>
             </Button>
-            <AddQuestionForm open={open} handleClose={handleClose} />
+            <AddQuestionForm mode="add" open={open} handleClose={handleClose} />
           </FlexBetween>
           <TextField
             fullWidth
@@ -350,50 +335,86 @@ const AddTestForm = () => {
                 },
               }}
             >
-              {questionDetailsData.map((item, index) => {
-                const labelId = `checkbox-list-label-${item.cauHoi}`;
+              {questionDetailsData
+                .filter((question) => question.cauHoi.daXoa === 0)
+                .map((item, index) => {
+                  const labelId = `checkbox-list-label-${item.cauHoi}`;
 
-                return (
-                  <ListItem
-                    key={item.cauHoi.ma_cauHoi + index}
-                    secondaryAction={
-                      <IconButton edge="end" aria-label="comments">
-                        <MoreHorizOutlined />
-                      </IconButton>
-                    }
-                    disablePadding
-                  >
-                    <ListItemButton
-                      role={undefined}
-                      onClick={handleToggle(item)}
-                      dense
+                  return (
+                    <ListItem
+                      key={item.cauHoi.ma_cauHoi + index}
+                      secondaryAction={
+                        <IconButton
+                          edge="end"
+                          aria-label="comments"
+                          onClick={(event) => {
+                            handleClickQuestionMenu(event);
+                            setSelectedQid(item.cauHoi.ma_cauHoi);
+                          }}
+                        >
+                          <MoreHorizOutlined />
+                        </IconButton>
+                      }
+                      disablePadding
                     >
-                      <ListItemIcon sx={{ minWidth: "unset" }}>
-                        <Checkbox
-                          edge="start"
-                          checked={checkedQuestion.indexOf(item) !== -1}
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{ "aria-labelledby": labelId }}
-                          color="success"
+                      <ListItemButton
+                        role={undefined}
+                        onClick={handleToggle(item)}
+                        dense
+                      >
+                        <ListItemIcon sx={{ minWidth: "unset" }}>
+                          <Checkbox
+                            edge="start"
+                            checked={checkedQuestion.indexOf(item) !== -1}
+                            tabIndex={-1}
+                            disableRipple
+                            inputProps={{ "aria-labelledby": labelId }}
+                            color="success"
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          id={labelId}
+                          primary={item.cauHoi.noiDung}
+                          sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                          primaryTypographyProps={{
+                            style: {
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            },
+                          }}
                         />
-                      </ListItemIcon>
-                      <ListItemText
-                        id={labelId}
-                        primary={item.cauHoi.noiDung}
-                        sx={{ paddingLeft: "10px", maxWidth: "195px" }}
-                        primaryTypographyProps={{
-                          style: {
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          },
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                );
-              })}
+                      </ListItemButton>
+                    </ListItem>
+                  );
+                })}
+              <Menu
+                anchorEl={anchorElQuestionMenu}
+                open={isOpenQuestionMenu}
+                onClose={handleCloseQuestionMenu}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+              >
+                <MenuItem onClick={(handleCloseQuestionMenu, handleOpenEdit)}>
+                  <FlexBetween>
+                    <EditRounded color="primary" />
+                    <Typography color="primary">Edit</Typography>
+                  </FlexBetween>
+                </MenuItem>
+                <MenuItem
+                  onClick={(event) => {
+                    handleCloseQuestionMenu(event);
+                    deleteQuestion(selectedQid);
+                  }}
+                >
+                  <FlexBetween>
+                    <DeleteRounded color="error" />
+                    <Typography color="error">Delete</Typography>
+                  </FlexBetween>
+                </MenuItem>
+              </Menu>
             </List>
           ) : (
             <Loading />
@@ -443,6 +464,16 @@ const AddTestForm = () => {
                 size="small"
                 fullWidth
                 color="success"
+                name="title"
+                value={forMikCreate.values.title}
+                onChange={forMikCreate.handleChange}
+                error={
+                  forMikCreate.touched.title &&
+                  Boolean(forMikCreate.errors.title)
+                }
+                helperText={
+                  forMikCreate.touched.title && forMikCreate.errors.title
+                }
               />
             </Box>
           </Box>
@@ -465,77 +496,28 @@ const AddTestForm = () => {
                             ref={provided.innerRef}
                             sx={{ padding: "10px", marginTop: "10px" }}
                           >
-                            {edit?.find(
-                              (element) =>
-                                element.ma_cauHoi === item.cauHoi.ma_cauHoi,
-                            )?.isEdit ? (
-                              <FlexBetween>
-                                <TextField
-                                  variant="outlined"
-                                  size="small"
-                                  fullWidth
-                                  color="success"
-                                  defaultValue={item.cauHoi.noiDung}
-                                />
-
-                                <Button
-                                  sx={{ color: "#009265" }}
-                                  onClick={() => {
-                                    const newEdit = edit.map((element) => {
-                                      if (
-                                        element.ma_cauHoi ===
-                                        item.cauHoi.ma_cauHoi
-                                      ) {
-                                        return { ...element, isEdit: false };
-                                      }
-                                      return element;
-                                    });
-                                    setEdit(newEdit);
-                                  }}
-                                >
-                                  Update
-                                </Button>
-                              </FlexBetween>
-                            ) : (
-                              <FlexBetween>
-                                <Typography>
-                                  {parseInt(index + 1) + ". "}
-                                  <Typography variant="h7" fontWeight="bold">
-                                    {item.cauHoi.noiDung}
-                                  </Typography>
+                            <FlexBetween>
+                              <Typography>
+                                {parseInt(index + 1) + ". "}
+                                <Typography variant="h7" fontWeight="bold">
+                                  {item.cauHoi.noiDung}
                                 </Typography>
-                                <Box
-                                  sx={{ display: "flex", flexDirection: "row" }}
+                              </Typography>
+                              <Box
+                                sx={{ display: "flex", flexDirection: "row" }}
+                                key={item.cauHoi.ma_cauHoi}
+                              >
+                                <IconButton
+                                  sx={{
+                                    color: "red",
+                                    width: "40px",
+                                  }}
+                                  onClick={handleToggle(item)}
                                 >
-                                  <Button
-                                    sx={{ color: "#009265" }}
-                                    onClick={() => {
-                                      const newEdit = edit.map((element) => {
-                                        if (
-                                          element.ma_cauHoi ===
-                                          item.cauHoi.ma_cauHoi
-                                        ) {
-                                          return { ...element, isEdit: true };
-                                        }
-                                        return element;
-                                      });
-                                      setEdit(newEdit);
-                                    }}
-                                  >
-                                    Edit
-                                  </Button>
-                                  <IconButton
-                                    sx={{
-                                      color: "red",
-                                      width: "40px",
-                                    }}
-                                    onClick={handleToggle(item)}
-                                  >
-                                    <CloseRounded />
-                                  </IconButton>
-                                </Box>
-                              </FlexBetween>
-                            )}
+                                  <CloseRounded />
+                                </IconButton>
+                              </Box>
+                            </FlexBetween>
                             <RadioGroup
                               defaultValue={
                                 item.cauTraLoi?.find(
@@ -545,54 +527,21 @@ const AddTestForm = () => {
                             >
                               {item.cauTraLoi?.map((answer, answerIndex) => (
                                 <>
-                                  {edit?.find(
-                                    (element) =>
-                                      element.ma_cauHoi ===
-                                      item.cauHoi.ma_cauHoi,
-                                  )?.isEdit ? (
-                                    <Box
-                                      key={answer.ma_cauTraLoi.toString()}
-                                      sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <FormControlLabel
-                                        value={answer.ma_cauTraLoi.toString()}
-                                        control={
-                                          <Radio
-                                            color="success"
-                                            sx={{ marginLeft: "10px" }}
-                                          />
-                                        }
-                                      />
-                                      <TextField
-                                        variant="outlined"
-                                        size="small"
-                                        fullWidth
-                                        color="success"
-                                        defaultValue={answer.noiDung}
-                                      />
-                                    </Box>
-                                  ) : (
-                                    <Box
-                                      key={answer.ma_cauTraLoi.toString()}
-                                      sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <Radio
-                                        color="success"
-                                        checked={answer.laCauTraLoiDung === 1}
-                                      />
-                                      <Typography>{answer.noiDung}</Typography>
-                                    </Box>
-                                  )}
+                                  <Box
+                                    key={answer.ma_cauTraLoi.toString()}
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Radio
+                                      color="success"
+                                      checked={answer.laCauTraLoiDung === 1}
+                                    />
+                                    <Typography>{answer.noiDung}</Typography>
+                                  </Box>
                                 </>
                               ))}
                             </RadioGroup>
@@ -625,11 +574,14 @@ const AddTestForm = () => {
             Information
           </Typography>
           <Autocomplete
-            value={valueClass}
+            value={currentValueClass}
             onChange={(event, newValue) => {
-              setValueClass(newValue);
+              setCurrentValueClass(newValue);
             }}
             disablePortal
+            isOptionEqualToValue={(option, value) => {
+              return option.id === value.id;
+            }}
             id="combo-box-demo"
             options={classItems}
             sx={{ width: 280, marginTop: "10px" }}
@@ -643,9 +595,12 @@ const AddTestForm = () => {
             )}
           />
           <Autocomplete
-            value={valueUnit}
+            value={currentValueUnit || null}
             onChange={(event, newValue) => {
-              setValueUnit(newValue);
+              setCurrentValueUnit(newValue);
+            }}
+            isOptionEqualToValue={(option, value) => {
+              return option.id === value.id;
             }}
             disablePortal
             id="combo-box-demo"
@@ -663,15 +618,21 @@ const AddTestForm = () => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               label="Start Time"
-              defaultValue={dayjs("2022-04-17T15:30")}
+              defaultValue={startTime}
+              onChange={(newValue) => setStartTime(newValue)}
               slotProps={{ textField: { size: "small", color: "success" } }}
               sx={{ marginTop: "20px", width: 280 }}
+              minDateTime={dayjs()}
             />
             <DateTimePicker
               label="End Time"
-              defaultValue={dayjs("2022-04-17T15:30")}
+              defaultValue={endTime}
+              onChange={(newValue) => {
+                setEndTime(newValue);
+              }}
               slotProps={{ textField: { size: "small", color: "success" } }}
               sx={{ marginTop: "20px", width: 280 }}
+              minDateTime={startTime.add(15, "minute")}
             />
           </LocalizationProvider>
           <TextField
@@ -682,18 +643,37 @@ const AddTestForm = () => {
             color="success"
             sx={{ marginTop: "20px" }}
             type="number"
-            defaultValue={15}
+            defaultValue={5}
+            onChange={(e) => setDuration(e.target.value)}
+            InputProps={{
+              inputProps: {
+                min: 5,
+                max: 1440,
+              },
+            }}
           />
           <Typography color="#009265" variant="h6" fontWeight="bold" mt="10px">
             Features
           </Typography>
           <FormGroup>
             <FormControlLabel
-              control={<Switch defaultChecked color="success" />}
+              control={
+                <Switch
+                  defaultChecked
+                  color="success"
+                  onClick={() => setShowAnswer(!showAnswer)}
+                />
+              }
               label="Public Answer"
             />
             <FormControlLabel
-              control={<Switch defaultChecked color="success" />}
+              control={
+                <Switch
+                  defaultChecked
+                  color="success"
+                  onClick={() => setShuffleQuestion(!shuffleQuestion)}
+                />
+              }
               label="Random Question"
             />
           </FormGroup>
@@ -711,12 +691,26 @@ const AddTestForm = () => {
                 "&:hover": { backgroundColor: "#007850" },
                 width: "100%",
               }}
+              onClick={forMikCreate.submitForm}
             >
-              Add Test
+              Create
             </Button>
           </Box>
         </Box>
       </Box>
+      <AddQuestionForm
+        open={openEdit}
+        handleClose={handleCloseEdit}
+        mode="edit"
+        userId={userId}
+        questionId={selectedQid}
+      />
+      <AlertComponent
+        open={alert.open}
+        severity={alert.severity}
+        message={alert.message}
+        onClose={() => setAlert({ ...alert, open: false })}
+      />
     </Box>
   );
 };
