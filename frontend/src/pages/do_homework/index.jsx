@@ -67,7 +67,7 @@ export default function DoHomework() {
       // console.log("File uploaded successfully:", data);
       const formData = new FormData();
       formData.append("file", listAttachment[0].file);
-      const response = await fetch("http://localhost:8000/sendFile", {
+      const response = await fetch("http://192.168.1.103:8000/sendFile", {
         method: "POST",
         body: formData,
         credentials: "include",

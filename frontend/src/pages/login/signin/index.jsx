@@ -40,7 +40,7 @@ const Siginform = () => {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       setSigningIn(true);
-      fetch("http://localhost:8000/auth/login", {
+      fetch("http://192.168.1.103:8000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -64,6 +64,7 @@ const Siginform = () => {
         .then((data) => {
           setSigningIn(false);
           if (data.access_token) {
+            console.log("hello");
             document.cookie = `user_token=${data.access_token}; expires=${COOKIES_EXPIRED_TIME}; path=/`;
             window.location.reload();
             navigate(`/classin`);

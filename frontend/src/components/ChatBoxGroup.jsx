@@ -181,7 +181,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   useEffect(() => {
     // Connect to WebSocket
     if (clientId && maNhomChat) {
-      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}`;
+      const url = `${process.env.REACT_APP_WEBSOCKET_URL}/tai-khoan/${clientId}`;
       const ws = new WebSocket(url);
       console.log("connecting to " + url);
 

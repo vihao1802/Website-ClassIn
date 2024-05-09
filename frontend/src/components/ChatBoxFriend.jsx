@@ -179,7 +179,7 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
   useEffect(() => {
     // Connect to WebSocket
     if (clientId) {
-      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}/nhan-tin-ban-be`;
+      const url = `${process.env.REACT_APP_WEBSOCKET_URL}/tai-khoan/${clientId}/nhan-tin-ban-be`;
       const ws = new WebSocket(url);
       console.log("connecting to " + url);
 
