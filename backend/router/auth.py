@@ -3,8 +3,7 @@ import smtplib
 from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Annotated
-from typing import Optional
+from typing import Annotated, Optional
 
 import bcrypt
 import database
