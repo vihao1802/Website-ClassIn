@@ -21,13 +21,19 @@ const schemaChangePassword = yup.object({
   currentPassword: yup
     .string()
     .trim("No leading or trailing whitespace allowed")
-    .matches(/^[^\s].*[^\s]$/, "No leading or trailing whitespace allowed")
+    .matches(
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{1,}$/,
+      "Have at least one Uppercase and one special character and one number",
+    )
     .min(8, "Password should be of minimum 8 characters length")
     .required("Current Password is required"),
   newPassword: yup
     .string()
     .trim("No leading or trailing whitespace allowed")
-    .matches(/^[^\s].*[^\s]$/, "No leading or trailing whitespace allowed")
+    .matches(
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{1,}$/,
+      "Have at least one Uppercase and one special character and one number",
+    )
     .min(8, "Password Verify should be of minimum 8 characters length")
     .required("New Password is required"),
 });

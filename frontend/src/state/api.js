@@ -183,16 +183,31 @@ export const api = createApi({
       query: (uid) => `tai-khoan/${uid}/get-all-user-with-status-friend`,
       providesTags: ["ListFriends"],
     }),
-    getFileFromDrive: build.query({
-      query: (fileId) => `file/${fileId}`,
-    }),
+
     getHomeWorkByHomeworkId: build.query({
       query: (homeworkId) => `bai-tap/${homeworkId}`,
       providesTags: ["HomeWorkByHomeworkId"],
     }),
+    getWorkByUserIdAndHomeworkId: build.query({
+      query: ({ userId, homeworkId }) =>
+        `bai-lam-bai-tap/tai-khoan/${userId}/bai-tap/${homeworkId}`,
+      providesTags: ["WorkByUserIdAndHomeworkId"],
+    }),
     getFileHomeworkByHomeworkId: build.query({
       query: (homeworkId) => `fileBaiTap/${homeworkId}`,
       providesTags: ["FileHomeWorkByHomeworkId"],
+    }),
+    getFileHomeworkWorkByWorkId: build.query({
+      query: (workId) => {
+        // Check if workId is undefined or null
+        if (!workId) {
+          // Return an empty object or any other structure that signifies no data
+          return new Promise((resolve) => resolve({ data: [] }));
+        }
+        // Proceed with the normal API call if workId is valid
+        return `fileBaiLamBaiTap/${workId}`;
+      },
+      providesTags: ["FileHomeWorkWorkByWorkId"],
     }),
     getUnitsCommonByClassId: build.query({
       query: (cid) => `chuong/lopHoc/${cid}`,
@@ -227,40 +242,70 @@ export const api = createApi({
       providesTags: ["Units"],
     }),
     // POST METHODS
+    postForgotPassword: build.mutation({
+      query: (recoverEmail) => ({
+        url: `auth/forgot-password`,
+        method: "POST",
+        body: {
+          user_email: recoverEmail,
+        },
+      }),
+    }),
+
+    postAccessToken: build.mutation({
+      query: () => ({
+        url: `/googleapi/access-token`,
+        method: "POST",
+      }),
+      providesTags: ["accessToken"],
+    }),
     postHomework: build.mutation({
       query: ({
         machuong,
         tieuDe,
-        noidungbaitap,
-        noidungdapan,
-        thoigianbatdau,
-        thoigianketthuc,
-        congkhaidapan,
-        nopbu,
+        noiDungBaiTap,
+        noiDungDapAn,
+        thoiGianBatDau,
+        thoiGianKetThuc,
+        congKhaiDapAn,
+        nopBu,
       }) => ({
-        headers: {
-          "Content-Type": "application/json",
-        },
         url: `bai-tap/${machuong}`,
         method: "POST",
         body: {
           tieuDe: tieuDe,
-          noiDungBaiTap: noidungbaitap,
-          noiDungDapAn: noidungdapan,
-          thoiGianBatDau: thoigianbatdau,
-          thoiGianKetThuc: thoigianketthuc,
-          congKhaiDapAn: congkhaidapan,
-          nopBu: nopbu,
+          noiDungBaiTap: noiDungBaiTap,
+          noiDungDapAn: noiDungDapAn,
+          thoiGianBatDau: thoiGianBatDau,
+          thoiGianKetThuc: thoiGianKetThuc,
+          congKhaiDapAn: congKhaiDapAn,
+          nopBu: nopBu,
         },
       }),
-      // invalidatesTags: ["Todo"],
+      invalidatesTags: ["postHomework"],
+    }),
+    postHomeworkFile: build.mutation({
+      query: ({ tenFile, laFileDapAn, isYoutubeLink, ma_file, ma_baiTap }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `/fileBaiTap/${ma_baiTap}`,
+        method: "POST",
+        body: {
+          ma_file: ma_file,
+          tenFile: tenFile,
+          laFileDapAn: laFileDapAn,
+          isYoutubeLink: isYoutubeLink,
+        },
+      }),
+      invalidatesTags: ["HomeworkFile"],
     }),
     postHomeworkWork: build.mutation({
       query: ({ ma_baiTap, ma_taiKhoan, nopTre }) => ({
         headers: {
           "Content-Type": "application/json",
         },
-        url: `bai-tap/${ma_baiTap}/tai-khoan/${ma_taiKhoan}`,
+        url: `/bai-lam-bai-tap/`,
         method: "POST",
         body: {
           noiDung: "",
@@ -273,18 +318,18 @@ export const api = createApi({
       }),
       // invalidatesTags: ["Todo"],
     }),
-    postHomeworkFileWork: build.mutation({
-      query: ({ ma_baiTap, ma_taiKhoan, file }) => ({
+    postHomeworkWorkFile: build.mutation({
+      query: ({ ma_baiLamBaiTap, maFile, tenFile }) => ({
         headers: {
           "Content-Type": "application/json",
         },
-        url: `fileBaiTap/${ma_baiTap}/taiKhoan/${ma_taiKhoan}`,
+        url: `/fileBaiLamBaiTap/${ma_baiLamBaiTap}`,
         method: "POST",
         body: {
-          ma_file: file,
+          ma_file: maFile,
+          tenFile: tenFile,
         },
       }),
-      // invalidatesTags: ["Todo"],
     }),
     postUserResigeter: build.mutation({
       query: (data) => ({
@@ -392,6 +437,34 @@ export const api = createApi({
         method: "DELETE",
       }),
       invalidatesTags: ["StudentsByClassId", "Class", "UnregisteredUsers"],
+    }),
+    deleteHomework: build.mutation({
+      query: ({ ma_baitap }) => ({
+        url: `bai-tap/${ma_baitap}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["DeleteHomework"],
+    }),
+    deleteHomeworkFile: build.mutation({
+      query: ({ ma_baitap }) => ({
+        url: `fileBaiTap/${ma_baitap}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["DeleteHomeworkFile"],
+    }),
+    deleteHomeworkWorkFile: build.mutation({
+      query: ({ ma_baiLamBaiTap }) => ({
+        url: `fileBaiLamBaiTap/${ma_baiLamBaiTap}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["DeleteHomeworkWorkFile"],
+    }),
+    deleteHomeworkWork: build.mutation({
+      query: ({ ma_baiLamBaiTap }) => ({
+        url: `bai-lam-bai-tap/${ma_baiLamBaiTap}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["DeleteHomeworkWork"],
     }),
     getTodo: build.query({
       query: ({ acc_id, selectedClass, selectedCategory }) =>
@@ -538,7 +611,15 @@ export const {
   useGetUnitByClassIdQuery,
   usePostHomeworkMutation,
   usePostHomeworkWorkMutation,
-  usePostHomeworkFileWorkMutation,
+  usePostHomeworkWorkFileMutation,
+  useGetFileHomeworkWorkByWorkIdQuery,
+  useGetWorkByUserIdAndHomeworkIdQuery,
+  useDeleteHomeworkWorkFileMutation,
+  useDeleteHomeworkWorkMutation,
+  usePostAccessTokenMutation,
+  usePostHomeworkFileMutation,
+  useDeleteHomeworkFileMutation,
+  useDeleteHomeworkMutation,
   useUpdateUserInfoMutation,
   useUpdatePasswordMutation,
   usePostCreateClassMutation,
@@ -559,4 +640,5 @@ export const {
   usePostCreateStudentWorkDetailMutation,
   useGetExercisesByExerciseIdQuery,
   useGetUserSubmissionsExerciseDetailsQuery,
+  usePostForgotPasswordMutation,
 } = api;

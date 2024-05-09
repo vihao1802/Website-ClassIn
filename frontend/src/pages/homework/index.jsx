@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Modal,
   Typography,
@@ -16,6 +16,7 @@ import {
   Avatar,
   CircularProgress,
 } from "@mui/material";
+import { Input } from "@mui/joy";
 import {
   YouTube,
   FileUploadOutlined,
@@ -25,6 +26,7 @@ import {
   AddLink,
   Today,
 } from "@mui/icons-material";
+
 import HomeNavbar from "components/HomeNavbar";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -35,35 +37,49 @@ import AddAttachmentButton from "components/homework/AddAttachmentButton";
 import AddAnswerButton from "components/homework/AddAnswerButton";
 import AddFileUploadButton from "components/homework/AddFileUploadButton";
 import AddLinkButton from "components/homework/AddLinkButton";
-import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import * as yup from "yup";
-
+import { getUserId_Cookie } from "../../utils/handleCookies";
 import {
   useGetClassByInstructorIdQuery,
   useGetUnitByClassIdQuery,
   usePostHomeworkMutation,
+  usePostAccessTokenMutation,
+  usePostHomeworkFileMutation,
+  useDeleteHomeworkFileMutation,
+  useDeleteHomeworkMutation,
 } from "state/api";
+import { Navigate } from "react-router-dom";
 const PUBLIC_ANSWER_OPT = [
   { id: "1", label: "After student submited" },
   { id: "2", label: "After exam ended" },
   { id: "3", label: "Not public answer" },
 ];
 export default function CreateHomeWork() {
-  const [valueClass, setValueClass] = useState([]);
-  const [classItem, setClassItem] = useState({});
-  const [valueUnit, setValueUnit] = useState([]);
+  const [message, setMessage] = useState("");
+  const [dateMessage, setDateMessage] = useState("");
+  const [valueClass, setValueClass] = useState([{ id: "", label: "" }]);
+  const [classItem, setClassItem] = useState({ id: "", label: "" });
+  const [valueUnit, setValueUnit] = useState([{ id: "", label: "" }]);
+  const [currentUnitId, setCurrentUnitId] = useState("");
   const [valueAnswer, setValueAnswer] = useState(PUBLIC_ANSWER_OPT[0]);
   const [hasAnswer, setHasAnswer] = useState(false);
   const [postHomework, { isLoading: loadingPostHomework }] =
     usePostHomeworkMutation();
+  const [postHomeworkFile, { isLoading: loadingPostHomeworkFile }] =
+    usePostHomeworkFileMutation();
+  const [accessToken] = usePostAccessTokenMutation();
+
+  const [DeleteHomework] = useDeleteHomeworkMutation();
+  const [DeleteHomeworkFile] = useDeleteHomeworkFileMutation();
   const [listAttachment, setListAttachment] = useState([]);
   const [listAnswerAttachment, setListAnswerAttachment] = useState([]);
-  const [startTime, setStartTime] = useState(dayjs());
+  const [startTime, setStartTime] = useState(dayjs().add(1, "hours"));
   let endtime = startTime.add(5, "minute");
   const { data: ClassQuery, isLoading: isLoadingClassQuery } =
-    useGetClassByInstructorIdQuery("4f9911c9-692b-4bf1-8719-2e397ccac21f");
+    useGetClassByInstructorIdQuery(getUserId_Cookie());
   const { data: UnitQuery, isLoading: isLoadingUnitQuery } =
-    useGetUnitByClassIdQuery(classItem.id);
+    useGetUnitByClassIdQuery(classItem === null ? "" : classItem.id);
+
   useEffect(() => {
     if (!isLoadingClassQuery && ClassQuery) {
       const list = ClassQuery.map((item) => {
@@ -79,6 +95,10 @@ export default function CreateHomeWork() {
 
   useEffect(() => {
     if (!isLoadingUnitQuery && UnitQuery) {
+      if (UnitQuery.length === 0) {
+        setValueUnit([]);
+        return;
+      }
       const list = UnitQuery.map((item) => {
         return {
           id: item.ma_chuong,
@@ -86,39 +106,195 @@ export default function CreateHomeWork() {
         };
       });
       setValueUnit(list);
+      setCurrentUnitId(list[0]);
     }
-  }, [isLoadingUnitQuery, UnitQuery, classItem]);
+  }, [isLoadingUnitQuery, UnitQuery]);
 
   const validationSchema = yup.object({
     homework_title: yup.string().required("Title is required"),
     homework_content: yup.string().required("Content is required"),
     homework_answer: yup.string(),
-    class_select: yup.object().required("Class is required"),
-    unit_select: yup.object().required("Unit is required"),
-    public_answer_select: yup.object().required("Public answer is required"),
+    start_time: yup.date().min(new Date(), "Date cannot be in the pass"),
   });
+  const handleSubmit = async (values) => {
+    let homework_id = "";
+    try {
+      const res = await postHomework({
+        machuong: currentUnitId.id,
+        tieuDe: values.homework_title,
+        noiDungBaiTap: values.homework_content,
+        noiDungDapAn: values.homework_answer,
+        thoiGianBatDau: new Date().toISOString(),
+        thoiGianKetThuc: new Date().toISOString(),
+        congKhaiDapAn: 1,
+        nopBu: 1,
+      });
+      const access_token = await accessToken();
+      if (listAttachment.length !== 0) {
+        listAttachment.forEach(async (attachment) => {
+          if (attachment.file !== undefined) {
+            // upload file
+            const metadata = {
+              name: attachment.file.name,
+              mimeType: attachment.file.type,
+              parents: ["1jQm6xnCUOTAtKhM-S3pKqFHHRtprVF6j"],
+            };
+
+            const formData = new FormData();
+            formData.append(
+              "metadata",
+              new Blob([JSON.stringify(metadata)], {
+                type: "application/json",
+              }),
+            );
+            formData.append("file", attachment.file);
+            const response = await fetch(
+              "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+              {
+                method: "POST",
+                headers: new Headers({
+                  Authorization: "Bearer " + access_token.data.token,
+                }),
+                body: formData,
+              },
+            );
+            const data = await response.json();
+            if (data.error) {
+              throw new Error("Upload file failed! Please try again.");
+            } else {
+              try {
+                const responsePostFile = await postHomeworkFile({
+                  tenFile: data.name,
+                  laFileDapAn: 0,
+                  isYoutubeLink: 0,
+                  ma_file: data.id,
+                  ma_baiTap: res.data.ma_baiTap,
+                });
+                if (
+                  responsePostFile.data === undefined ||
+                  responsePostFile.data === null
+                ) {
+                  // console.log(responsePostFile);
+                  throw new Error("Upload file failed! Please try again.");
+                }
+              } catch (error) {
+                // console.log(error.message);
+              }
+            }
+          } else {
+            // upload youtube link
+            const responsePostLink = await postHomeworkFile({
+              tenFile: attachment.Title,
+              laFileDapAn: 0,
+              isYoutubeLink: 1,
+              ma_file: attachment.Vid_id,
+              ma_baiTap: res.data.ma_baiTap,
+            });
+            if (
+              responsePostLink.data === undefined ||
+              responsePostLink.data === null
+            ) {
+              throw new Error("Upload file failed! Please try again.");
+            }
+          }
+        });
+      }
+      if (listAnswerAttachment.length !== 0) {
+        console.log(listAnswerAttachment);
+        listAnswerAttachment.forEach(async (attachment) => {
+          if (attachment.file !== undefined) {
+            // upload file
+            const metadata = {
+              name: attachment.file.name,
+              mimeType: attachment.file.type,
+              parents: ["1jQm6xnCUOTAtKhM-S3pKqFHHRtprVF6j"],
+            };
+
+            const formData = new FormData();
+            formData.append(
+              "metadata",
+              new Blob([JSON.stringify(metadata)], {
+                type: "application/json",
+              }),
+            );
+            formData.append("file", attachment.file);
+            const response = await fetch(
+              "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+              {
+                method: "POST",
+                headers: new Headers({
+                  Authorization: "Bearer " + access_token.data.token,
+                }),
+                body: formData,
+              },
+            );
+            const data = await response.json();
+            if (data.error) {
+              throw new Error("Upload file failed! Please try again.");
+            } else {
+              try {
+                console.log({
+                  tenFile: data.name,
+                  laFileDapAn: 1,
+                  isYoutubeLink: 0,
+                  ma_file: data.id,
+                  ma_baiTap: res.data.ma_baiTap,
+                });
+                const responsePostFile = await postHomeworkFile({
+                  tenFile: data.name,
+                  laFileDapAn: 1,
+                  isYoutubeLink: 0,
+                  ma_file: data.id,
+                  ma_baiTap: res.data.ma_baiTap,
+                });
+                if (
+                  responsePostFile.data === undefined ||
+                  responsePostFile.data === null
+                ) {
+                  console.log(responsePostFile);
+                  throw new Error("Upload file failed! Please try again.");
+                }
+              } catch (error) {
+                console.log(error.message);
+              }
+            }
+          } else {
+            // upload youtube link
+            const responsePostLink = await postHomeworkFile({
+              tenFile: attachment.Title,
+              laFileDapAn: 1,
+              isYoutubeLink: 1,
+              ma_file: attachment.Vid_id,
+              ma_baiTap: res.data.ma_baiTap,
+            });
+            console.log(responsePostLink);
+            if (
+              responsePostLink.data === undefined ||
+              responsePostLink.data === null
+            ) {
+              throw new Error("Upload file failed! Please try again.");
+            }
+          }
+        });
+      }
+    } catch (err) {
+      setMessage(err.message);
+      if (homework_id !== "") {
+        console.log("xoa bai tap");
+        await DeleteHomeworkFile({ ma_baitap: homework_id });
+        await DeleteHomework({ ma_baitap: homework_id });
+      }
+    }
+  };
   const formik = useFormik({
     initialValues: {
       homework_title: "",
       homework_content: "",
       homework_answer: "",
-      class_select: "",
-      unit_select: "",
-      public_answer_select: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log("hello");
-      // postHomework({
-      //   machuong: classItem.id,
-      //   tieuDe: values.homework_title,
-      //   noidungbaitap: values.homework_content,
-      //   noidungdapan: values.homework_answer,
-      //   thoigianbatdau: startTime,
-      //   thoigianketthuc: endtime,
-      //   congkhaidapan: valueAnswer.id,
-      //   nopbu: true,
-      // });
+      handleSubmit(values);
     },
   });
   const handleAddAnswer = () => {
@@ -155,7 +331,11 @@ export default function CreateHomeWork() {
         height: "100%",
         maxHeight: "auto",
       }}
-      onSubmit={formik.handleSubmit}
+      onSubmit={(e) => {
+        e.preventDefault();
+        // handleSubmit(e);
+        formik.handleSubmit(e);
+      }}
     >
       <HomeNavbar IsNotHomePage={true} />
       <Box
@@ -189,15 +369,15 @@ export default function CreateHomeWork() {
               label="Homework Title"
               variant="filled"
               size="normal"
-              sx={{
-                width: "100%",
-              }}
               color="success"
               fullWidth
               error={
-                formik.touched.homework_title &&
-                Boolean(formik.errors.homework_title)
+                formik.touched.homework_title
+                  ? formik.errors.homework_title
+                  : undefined
               }
+              helperText={formik.errors.homework_title}
+              onChange={formik.handleChange}
             />
             <TextField
               id="homework-content"
@@ -206,16 +386,16 @@ export default function CreateHomeWork() {
               variant="filled"
               size="normal"
               color="success"
-              sx={{
-                width: "100%",
-              }}
               fullWidth
               multiline
               rows={8}
               error={
-                formik.touched.homework_content &&
-                Boolean(formik.errors.homework_content)
+                formik.touched.homework_content
+                  ? formik.errors.homework_content
+                  : undefined
               }
+              helperText={formik.errors.homework_content}
+              onChange={formik.handleChange}
             />
             <Box
               sx={{
@@ -313,6 +493,7 @@ export default function CreateHomeWork() {
                 fullWidth
                 multiline
                 rows={8}
+                onChange={formik.handleChange}
               />
               <Box
                 sx={{
@@ -397,16 +578,15 @@ export default function CreateHomeWork() {
           <Autocomplete
             id="class-select"
             name="class_select"
-            value={classItem.label}
+            inputValue={classItem.label}
             disablePortal
+            disableClearable
             getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
             onChange={(event, newValue) => {
               setClassItem(newValue);
             }}
             options={valueClass}
-            error={
-              formik.touched.class_select && Boolean(formik.errors.class_select)
-            }
             sx={{ width: 280, marginTop: "10px" }}
             renderInput={(params) => (
               <TextField
@@ -418,15 +598,16 @@ export default function CreateHomeWork() {
             )}
           />
           <Autocomplete
-            value={valueUnit[0]}
+            inputValue={valueUnit[0].label}
             id="unit-select"
             name="unit_select"
             disablePortal
-            error={
-              formik.touched.unit_select && Boolean(formik.errors.unit_select)
-            }
+            disableClearable
+            onChange={(event, newValue) => {
+              setCurrentUnitId(newValue);
+            }}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
             getOptionLabel={(option) => option.label}
-            inputValue={classItem.label}
             options={valueUnit}
             sx={{ width: 280 }}
             renderInput={(params) => (
@@ -442,16 +623,14 @@ export default function CreateHomeWork() {
           <Autocomplete
             id="public-answer-select"
             name="public_answer_select"
-            error={
-              formik.touched.public_answer_select &&
-              Boolean(formik.errors.public_answer_select)
-            }
-            value={PUBLIC_ANSWER_OPT[0]}
+            value={valueAnswer.label}
             onChange={(event, newValue) => {
               setValueAnswer(newValue);
             }}
-            disablePortal
+            isOptionEqualToValue={(option, value) => option.id === value.id}
             options={PUBLIC_ANSWER_OPT}
+            disablePortal
+            disableClearable
             sx={{ width: 280 }}
             renderInput={(params) => (
               <TextField
@@ -464,23 +643,44 @@ export default function CreateHomeWork() {
           />
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoItem label="Start at">
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <DateTimePicker
+                label="Start at"
                 id="start-time"
-                name="start-time"
+                name="start_time"
                 disablePast
                 defaultValue={startTime}
-                onChange={(value) => setStartTime(value)}
+                onChange={(value) => {
+                  if (value < dayjs()) {
+                    setDateMessage("Start time must be in the future");
+                  } else {
+                    setDateMessage("");
+                    setStartTime(value);
+                  }
+                }}
               />
-            </DemoItem>
-            <DemoItem label="End">
-              <DateTimePicker
-                id="end-time"
-                name="end_time"
-                value={endtime}
-                minTime={endtime}
-              />
-            </DemoItem>
+              <Typography
+                sx={{
+                  color: "red",
+                  fontSize: "0.75rem",
+                }}
+              >
+                {dateMessage}
+              </Typography>
+            </Box>
+            <DateTimePicker
+              label="End at"
+              id="end-time"
+              name="end_time"
+              value={endtime}
+              minTime={endtime}
+            />
           </LocalizationProvider>
           <Typography color="#009265" variant="h6" fontWeight="bold" mt="10px">
             Features
@@ -497,9 +697,23 @@ export default function CreateHomeWork() {
             sx={{
               width: "100%",
               display: "flex",
+              flexDirection: "column",
               justifyContent: "right",
             }}
           >
+            <Typography
+              variant="subtitle2"
+              sx={{
+                backgroundColor: "#f8d7da",
+                color: "#721c24",
+                textAlign: "center",
+                lineHeight: "2.5rem",
+                marginBottom: "1rem",
+                borderRadius: "5px",
+              }}
+            >
+              {message}
+            </Typography>
             <Button
               variant="contained"
               sx={{
@@ -508,10 +722,12 @@ export default function CreateHomeWork() {
                 width: "100%",
                 alignSelf: "flex-end",
               }}
-              // disable={loadingPostHomework ? true : false}
+              type="submit"
+              disable={loadingPostHomework}
+              // onClick={(e) => formik.handleSubmit(e)}
             >
               {loadingPostHomework ? (
-                <CircularProgress color="success" />
+                <CircularProgress sx={{ color: "white" }} size="1.5rem" />
               ) : (
                 "Create homework"
               )}

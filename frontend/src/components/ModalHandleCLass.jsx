@@ -14,6 +14,13 @@ import * as yup from "yup";
 import { DeleteOutlined } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import profileImage from "assets/profile.jpg";
+import {
+  usePostCreateClassMutation,
+  usePostAccessTokenMutation,
+  usePostUserResigeterMutation,
+} from "state/api";
+import AlertComponent from "components/AlertComponent";
+import { getUserId_Cookie } from "../utils/handleCookies";
 
 const schemaJoin = yup.object({
   code: yup.string().required("Code is required"),
@@ -40,13 +47,38 @@ const schemaCreate = yup.object({
 });
 
 const ModalHandleClass = (props) => {
+  const [accessToken] = usePostAccessTokenMutation();
+  const [PostCreateClass, { isLoading: isLoadingCreateClass }] =
+    usePostCreateClassMutation();
+  const [PostJoinClass, { isLoading: isLoadingJoinClass }] =
+    usePostUserResigeterMutation();
   const forMikJoin = useFormik({
     initialValues: {
       code: "",
     },
     validationSchema: schemaJoin,
-    onSubmit: (values) => {
-      alert("Code: " + values.code);
+    onSubmit: async (values) => {
+      try {
+        const res = await PostJoinClass({
+          ma_lopHoc: values.code,
+          ma_taiKhoan: props.userId,
+        });
+        if (res.status !== 200 || res.status !== 201) {
+          throw new Error("Join class failed! Please try again later");
+        }
+        setShowAlert({
+          message: "Join class successfully!",
+          state: true,
+          severity: "success",
+        });
+        props.handleClose();
+      } catch (error) {
+        setShowAlert({
+          message: error.message,
+          state: true,
+          severity: "error",
+        });
+      }
       props.handleClass();
     },
   });
@@ -56,9 +88,59 @@ const ModalHandleClass = (props) => {
       avatar: null,
     },
     validationSchema: schemaCreate,
-    onSubmit: (values) => {
-      alert("Name: " + values.name + "\nAvatar: " + values.avatar.name);
-      props.handleClass();
+    onSubmit: async (values) => {
+      const access_token = await accessToken();
+      const metadata = {
+        name: values.avatar.name,
+        mimeType: values.avatar.type,
+        parents: ["1eWmMlYqQb071q18lpawSRvH__OFLuiGh"],
+      };
+      // Multpart POST body
+      const formData = new FormData();
+      formData.append(
+        "metadata",
+        new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+      );
+      formData.append("file", values.avatar);
+      try {
+        const response = await fetch(
+          "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+          {
+            method: "POST",
+            headers: new Headers({
+              Authorization: "Bearer " + access_token.data.token,
+            }),
+            body: formData,
+          },
+        );
+        const data = await response.json();
+        if (data.error) {
+          throw new Error("Fail when upload avatar! Please try again later");
+        }
+        try {
+          const res = await PostCreateClass({
+            ma_taiKhoan: props.userId,
+            ten: values.name,
+            moTa: "",
+            anhDaiDien: data.id,
+          });
+          setShowAlert({
+            message: "Create class successfully!",
+            state: true,
+            severity: "success",
+          });
+          props.handleClose();
+        } catch (error) {
+          throw new Error("Fail when create class! Please try again later");
+        }
+        props.handleClass();
+      } catch (error) {
+        setShowAlert({
+          message: error.message,
+          state: true,
+          severity: "error",
+        });
+      }
     },
   });
   const { errors } = forMikCreate;
@@ -84,7 +166,11 @@ const ModalHandleClass = (props) => {
   const handleDragOver = (event) => {
     event.preventDefault();
   };
-
+  const [showAlert, setShowAlert] = useState({
+    message: "",
+    state: false,
+    severity: "success",
+  });
   // Function to handle image drop
   const handleDrop = (event) => {
     event.preventDefault();
@@ -134,6 +220,12 @@ const ModalHandleClass = (props) => {
             p: 3,
           }}
         >
+          <AlertComponent
+            severity={showAlert.severity}
+            message={showAlert.message}
+            open={showAlert.state}
+            onClose={() => setShowAlert({ ...showAlert, state: false })}
+          />
           <Typography
             id="modal-modal-title"
             variant="h6"
@@ -405,8 +497,13 @@ const ModalHandleClass = (props) => {
                   forMikCreate.submitForm();
                 }
               }}
+              disabled={isLoadingCreateClass}
             >
-              {props.title === "Join class" ? "Join" : "Create"}
+              {props.title === "Join class"
+                ? "Join"
+                : isLoadingCreateClass
+                ? "Creating..."
+                : "Create"}
             </Button>
           </Box>
         </Box>

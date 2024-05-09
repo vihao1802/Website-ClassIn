@@ -419,15 +419,15 @@ INSERT INTO baiTap ("ma_baiTap", "ma_chuong", "tieuDe", "noiDungBaiTap", "noiDun
 ('436e8331-0330-40f4-84f2-fad1395358e7', 'b0d183fd-8f64-4591-908c-f7d3fa56e1fa', 'Tạo ứng dụng C# dự đoán thời tiết.', 'Bài tập về tạo ứng dụng C# dự đoán thời tiết.', '', '2023-11-17T14:10:50.663', '2024-11-17T14:10:50.663', 0, 0, '2023-11-28T15:30:22.383', 0);
   
 
-INSERT INTO fileBaiTap ("ma_baiTap", "laFileDapAn", "tenFile", "ma_file") VALUES
-('f6d860a0-d050-488d-8c11-1e363a1d952c', 0, 'Yêu cầu về đồ án C#.pdf', '1SZu9Fhq5bZVhvuIAqT6CjU0cfckz4BMo'),
-('92f47ecd-fb48-41fc-b26c-cdbf1be9a876', 0, 'JUnit5.pdf', '1vtvwb0rJt4vG1q6nGUMyItNaZelr2Lyl'),
-('5dab376b-91df-48f7-879e-dae62b242ce2', 0, 'Hộp đen.1.pdf', '1Q5saxCK-fltjc6g-Y3OiiIjvwdlhh4TS'),
-('18ea2b73-4fac-4c58-9d10-4445a19e3fde', 0, 'NUnit.pdf', '12sJus-VfmrxTS0iwDzxiszJZZVNsaRgJ'),
-('18ea2b73-4fac-4c58-9d10-4445a19e3fde', 1, 'NUnit.pdf', '1oIgdr_4WwOr8rXMBLLwGOx4a3_jA_6_M'),
-('366b71e2-d12d-4a57-9240-b7411b3b84bd', 0, 'JUnit5.pdf', '1pEDddkqKQRpypivjF3KvFllLPpAcb6q3'),
-('366b71e2-d12d-4a57-9240-b7411b3b84bd', 1, 'NUnit.pdf', '1uCVWbpo02dv78BYI3do_N5fBZYvjoaIu'),
-('0ca51aa4-925b-440c-93f5-e44a38e938ef', 0, 'NUnit.pdf', '1hDvfXJZ5lFQuM0XimgXPqT6AkdnNnE3p');
+INSERT INTO fileBaiTap ("ma_baiTap", "laFileDapAn", "tenFile", "ma_file","isYoutubeLink") VALUES
+('f6d860a0-d050-488d-8c11-1e363a1d952c', 0, 'Yêu cầu về đồ án C#.pdf', '1SZu9Fhq5bZVhvuIAqT6CjU0cfckz4BMo','0'),
+('92f47ecd-fb48-41fc-b26c-cdbf1be9a876', 0, 'JUnit5.pdf', '1vtvwb0rJt4vG1q6nGUMyItNaZelr2Lyl','0'),
+('5dab376b-91df-48f7-879e-dae62b242ce2', 0, 'Hộp đen.1.pdf', '1Q5saxCK-fltjc6g-Y3OiiIjvwdlhh4TS','0'),
+('18ea2b73-4fac-4c58-9d10-4445a19e3fde', 0, 'NUnit.pdf', '12sJus-VfmrxTS0iwDzxiszJZZVNsaRgJ','0'),
+('18ea2b73-4fac-4c58-9d10-4445a19e3fde', 1, 'NUnit.pdf', '1oIgdr_4WwOr8rXMBLLwGOx4a3_jA_6_M','0'),
+('366b71e2-d12d-4a57-9240-b7411b3b84bd', 0, 'JUnit5.pdf', '1pEDddkqKQRpypivjF3KvFllLPpAcb6q3','0'),
+('366b71e2-d12d-4a57-9240-b7411b3b84bd', 1, 'NUnit.pdf', '1uCVWbpo02dv78BYI3do_N5fBZYvjoaIu','0'),
+('0ca51aa4-925b-440c-93f5-e44a38e938ef', 0, 'NUnit.pdf', '1hDvfXJZ5lFQuM0XimgXPqT6AkdnNnE3p','0');
  
 
 INSERT INTO baiLamBaiTap ("ma_baiLamBaiTap", "ma_taiKhoan", "ma_baiTap", "noiDung", "thoiGianNopBai", "nhanXet", "diem", "nopTre") VALUES 
