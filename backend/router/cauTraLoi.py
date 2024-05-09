@@ -35,6 +35,22 @@ async def create(
     return db_object
 
 
+@router.put("/{ma_cauTraLoi}", status_code=status.HTTP_200_OK)
+async def update(
+    ma_cauTraLoi: str,
+    schema_object: schemas.CauTraLoiCreate,
+    db: Session = Depends(database.get_db),
+):
+    db_object = db.query(models.CauTraLoi).filter(
+        models.CauTraLoi.ma_cauTraLoi == ma_cauTraLoi
+    )
+    if db_object.first() is None:
+        raise HTTPException(status_code=400, detail="CauTraLoi not found")
+    db_object.update(schema_object.dict())
+    db.commit()
+    return db_object.first()
+
+
 @router.get(
     "/", response_model=list[schemas.CauTraLoi], status_code=status.HTTP_200_OK
 )

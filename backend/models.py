@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from database import Base
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 
@@ -126,7 +126,7 @@ class BanBe(Base):
 class TinNhanBanBe(Base):
     __tablename__ = "tinNhanBanBe"
 
-    noiDung = Column(String(300))
+    noiDung = Column(String(1000))
     thoiGianGui = Column(DateTime, default=datetime.now)
     daXoa = Column(Integer, default=0)
 
@@ -241,7 +241,7 @@ class BaiLamKiemTra(Base):
     ma_baiLamKiemTra = Column(String, primary_key=True, default=generate_uuid)
     thoiGianNopBai = Column(DateTime)
     thoiGianBatDauLam = Column(DateTime)
-    diem = Column(Integer)
+    diem = Column(Float)
     nopTre = Column(Integer)
     soCauDung = Column(Integer)
 

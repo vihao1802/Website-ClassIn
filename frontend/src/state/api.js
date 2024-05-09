@@ -81,20 +81,18 @@ export const api = createApi({
     "User",
     "Class",
     "Units",
-    /* "classDetails",
+    "classDetails",
     "UnitAcitvities",
     "StudentsByClassId",
-    "TestByTestId",
-    "TestDetails",
-    "QuestionDetails",
+    "Tests",
     "ClassByInstructorId",
-    "UserSubmissionsDetails",
     "WorkDetailsByTestId",
     "WorkInfoByWorkId",
-    "UnregisteredUsers"
+    "UnregisteredUsers",
+    "UserResigeter",
     "Todo",
-    "MessageClass" */
-    ,
+    "MessageClass",
+    "Exercises",
   ],
   endpoints: (build) => ({
     // GET METHODS
@@ -130,8 +128,12 @@ export const api = createApi({
       providesTags: ["Units"],
     }),
     getUnitActivities: build.query({
-      query: (cid) => `chuong/${cid}/hoatdong`,
-      providesTags: ["UnitActivities"],
+      query: ({ cid, search, act }) => ({
+        url: `chuong/${cid}/hoatdong`,
+        method: "GET",
+        params: { search, act },
+      }),
+      providesTags: ["Units"],
     }),
     getStudentsByClassId: build.query({
       query: (cid) => `lopHoc/${cid}/taiKhoan`,
@@ -139,15 +141,19 @@ export const api = createApi({
     }),
     getTestByTestId: build.query({
       query: (tid) => `deKiemTra/${tid}`,
-      providesTags: ["TestByTestId"],
+      providesTags: ["Tests"],
     }),
     getTestDetails: build.query({
       query: (tid) => `deKiemTra/${tid}/chiTiet`,
-      providesTags: ["TestDetails"],
+      providesTags: ["Tests"],
     }),
     getQuestionsDetails: build.query({
       query: (uid) => `cauHoi/taiKhoan/${uid}/chiTiet`,
-      providesTags: ["QuestionDetails"],
+      providesTags: ["Questions"],
+    }),
+    getQuestionsAnswers: build.query({
+      query: (qid) => `cauHoi/${qid}/chiTiet`,
+      providesTags: ["Questions"],
     }),
     getClassByInstructorId: build.query({
       query: (uid) => `lopHoc/taiKhoan/${uid}`,
@@ -155,7 +161,7 @@ export const api = createApi({
     }),
     getUserSubmissionsDetails: build.query({
       query: (tid) => `deKiemTra/${tid}/getSubmissionDetails`,
-      providesTags: ["UserSubmissionsDetails"],
+      providesTags: ["Tests"],
     }),
     getWorkDetailsByTestId: build.query({
       query: (wid) => `chiTietBaiLamKiemTra/baiLamKiemTra/${wid}`,
@@ -203,13 +209,37 @@ export const api = createApi({
       },
       providesTags: ["FileHomeWorkWorkByWorkId"],
     }),
+    getUnitsCommonByClassId: build.query({
+      query: (cid) => `chuong/lopHoc/${cid}`,
+      providesTags: ["Units"],
+    }),
     getUnitByClassId: build.query({
       query: (cid) => ({
         url: `/chuong/lopHoc/${cid}`,
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["UnitByClass"],
+      providesTags: ["Units"],
+    }),
+    getTestsByUnitId: build.query({
+      query: (uid) => `deKiemTra/chuong/${uid}`,
+      providesTags: ["Units"],
+    }),
+    getTestOrderByTestId: build.query({
+      query: (tid) => `chiTietBaiKiemTra/deKiemTra/${tid}`,
+      providesTags: ["Tests"],
+    }),
+    getExercisesByExerciseId: build.query({
+      query: (eid) => `bai-tap/${eid}/info`,
+      providesTags: ["Exercises"],
+    }),
+    getUserSubmissionsExerciseDetails: build.query({
+      query: (eid) => `bai-tap/${eid}/getSubmissionDetails`,
+      providesTags: ["Exercises"],
+    }),
+    getUnitsByClassId: build.query({
+      query: (cid) => `chuong/lopHoc/${cid}`,
+      providesTags: ["Units"],
     }),
     // POST METHODS
     postAccessToken: build.mutation({
@@ -297,7 +327,97 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
-      providesTags: ["postUserResigeter"],
+      invalidatesTags: ["StudentsByClassId", "Class", "UnregisteredUsers"],
+    }),
+
+    postCreateClass: build.mutation({
+      query: (data) => ({
+        url: `lopHoc/${data.ma_taiKhoan}`,
+        method: "POST",
+        body: { ten: data.ten, moTa: data.moTa, anhDaiDien: data.anhDaiDien },
+      }),
+      invalidatesTags: ["Class"],
+    }),
+    postAddUnit: build.mutation({
+      query: (data) => ({
+        url: `chuong/${data.ma_lopHoc}`,
+        method: "POST",
+        body: { ten: data.ten },
+      }),
+      invalidatesTags: ["Units"],
+    }),
+    postAddQuestion: build.mutation({
+      query: (data) => ({
+        url: `cauHoi/${data.ma_taiKhoan}`,
+        method: "POST",
+        body: { noiDung: data.noiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+    postAddAnswers: build.mutation({
+      query: (data) => ({
+        url: `cauTraLoi/${data.ma_cauHoi}`,
+        method: "POST",
+        body: { noiDung: data.noiDung, laCauTraLoiDung: data.laCauTraLoiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+    postCreateTest: build.mutation({
+      query: (data) => ({
+        url: `deKiemTra/${data.uid}`,
+        method: "POST",
+        body: {
+          tieuDe: data.testTitle,
+          thoiGianBatDau: data.startTime,
+          thoiGianKetThuc: data.endTime,
+          thoiGianLamBai: data.duration,
+          xemDapAn: data.showAnswer,
+          tronCauHoi: data.shuffleQuestion,
+          hinhPhat: 0,
+        },
+      }),
+      invalidatesTags: ["Tests"],
+    }),
+    postCreatTestDetail: build.mutation({
+      query: (data) => ({
+        url: `chiTietBaiKiemTra`,
+        method: "POST",
+        body: {
+          ma_cauHoi: data.qid,
+          ma_deKiemTra: data.tid,
+          thuTu: data.order,
+        },
+      }),
+      invalidatesTags: ["Tests"],
+    }),
+    postCreateStudentWork: build.mutation({
+      query: (data) => ({
+        url: `baiLamKiemTra`,
+        method: "POST",
+        body: {
+          ma_taiKhoan: data.uid,
+          ma_deKiemTra: data.tid,
+          thoiGianNopBai: data.submitTime,
+          thoiGianBatDauLam: data.startTime,
+          diem: data.score,
+          nopTre: data.isLate,
+          soCauDung: data.correctAnswers,
+        },
+      }),
+      invalidatesTags: ["Tests"],
+    }),
+    postCreateStudentWorkDetail: build.mutation({
+      query: (data) => ({
+        url: `chiTietBaiLamKiemTra`,
+        method: "POST",
+        body: {
+          ma_cauHoi: data.qid,
+          ma_baiLamKiemTra: data.wid,
+          ma_dapAnChon: data.aid,
+          thuTu: data.order,
+        },
+      }),
+      invalidatesTags: ["Tests"],
     }),
 
     // DELETE METHODS
@@ -306,7 +426,7 @@ export const api = createApi({
         url: `thamGiaLopHoc/${data.ma_lopHoc}/${data.ma_taiKhoan}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["StudentsByClassId"],
+      invalidatesTags: ["StudentsByClassId", "Class", "UnregisteredUsers"],
     }),
     deleteHomework: build.mutation({
       query: ({ ma_baitap }) => ({
@@ -394,6 +514,55 @@ export const api = createApi({
       }),
       invalidatesTags: ["ListFriends"],
     }),
+    updateUserInfo: build.mutation({
+      query: ({ acc_id, data }) => ({
+        url: `tai-khoan/${acc_id}/update-info`,
+        method: "PUT",
+        body: data,
+      }),
+      providesTags: ["User"],
+    }),
+    updatePassword: build.mutation({
+      query: ({ acc_id, data }) => ({
+        url: `tai-khoan/${acc_id}/update-password`,
+        method: "PUT",
+        body: data,
+      }),
+      providesTags: ["User"],
+    }),
+    putEditUnit: build.mutation({
+      query: (data) => ({
+        url: `chuong/${data.ma_chuong}`,
+        method: "PUT",
+        body: { ten: data.ten },
+      }),
+      invalidatesTags: ["Units"],
+    }),
+
+    putEditQuestion: build.mutation({
+      query: (data) => ({
+        url: `cauHoi/${data.ma_cauHoi}`,
+        method: "PUT",
+        body: { noiDung: data.noiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+
+    putEditAnswers: build.mutation({
+      query: (data) => ({
+        url: `cauTraLoi/${data.ma_cauTraLoi}`,
+        method: "PUT",
+        body: { noiDung: data.noiDung, laCauTraLoiDung: data.laCauTraLoiDung },
+      }),
+      invalidatesTags: ["Questions"],
+    }),
+    deleteQuestion: build.mutation({
+      query: (qid) => ({
+        url: `cauHoi/${qid}/delete`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Questions"],
+    }),
   }),
 });
 
@@ -441,4 +610,24 @@ export const {
   usePostHomeworkFileMutation,
   useDeleteHomeworkFileMutation,
   useDeleteHomeworkMutation,
+  useUpdateUserInfoMutation,
+  useUpdatePasswordMutation,
+  usePostCreateClassMutation,
+  usePostAddUnitMutation,
+  usePutEditUnitMutation,
+  usePostAddQuestionMutation,
+  usePostAddAnswersMutation,
+  useGetQuestionsAnswersQuery,
+  usePutEditQuestionMutation,
+  usePutEditAnswersMutation,
+  useDeleteQuestionMutation,
+  useGetUnitsByClassIdQuery,
+  useGetTestsByUnitIdQuery,
+  usePostCreateTestMutation,
+  usePostCreatTestDetailMutation,
+  useGetTestOrderByTestIdQuery,
+  usePostCreateStudentWorkMutation,
+  usePostCreateStudentWorkDetailMutation,
+  useGetExercisesByExerciseIdQuery,
+  useGetUserSubmissionsExerciseDetailsQuery,
 } = api;

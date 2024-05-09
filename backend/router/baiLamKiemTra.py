@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import database
 import models
 import schemas
@@ -77,10 +79,18 @@ async def read(ma_baiLamKiemTra: str, db: Session = Depends(database.get_db)):
         "ma_deKiemTra": blkt_query[0][0].ma_deKiemTra,
         "diem": blkt_query[0][0].diem,
         "hoTen": blkt_query[0][1],
-        "thoiGianLamBai": (
-            blkt_query[0][0].thoiGianNopBai - blkt_query[0][0].thoiGianBatDauLam
-        ).total_seconds()
-        / 60,
+        "thoiGianLamBai": "{0}:{1}".format(
+            (
+                blkt_query[0][0].thoiGianNopBai
+                - blkt_query[0][0].thoiGianBatDauLam
+            ).seconds
+            // 60,
+            (
+                blkt_query[0][0].thoiGianNopBai
+                - blkt_query[0][0].thoiGianBatDauLam
+            ).seconds
+            % 60,
+        ),
         "thoiGianNop": blkt_query[0][0].thoiGianNopBai,
         "thoiGianBatDauLam": blkt_query[0][0].thoiGianBatDauLam,
         "soCauDung": blkt_query[0][0].soCauDung,
