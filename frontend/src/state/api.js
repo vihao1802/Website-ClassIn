@@ -242,6 +242,16 @@ export const api = createApi({
       providesTags: ["Units"],
     }),
     // POST METHODS
+    postForgotPassword: build.mutation({
+      query: (recoverEmail) => ({
+        url: `auth/forgot-password`,
+        method: "POST",
+        body: {
+          user_email: recoverEmail,
+        },
+      }),
+    }),
+
     postAccessToken: build.mutation({
       query: () => ({
         url: `/googleapi/access-token`,
@@ -630,4 +640,5 @@ export const {
   usePostCreateStudentWorkDetailMutation,
   useGetExercisesByExerciseIdQuery,
   useGetUserSubmissionsExerciseDetailsQuery,
+  usePostForgotPasswordMutation,
 } = api;

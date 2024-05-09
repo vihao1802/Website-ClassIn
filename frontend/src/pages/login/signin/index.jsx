@@ -180,7 +180,7 @@ const Siginform = () => {
                   align="center"
                   style={{ marginTop: "20px" }}
                 >
-                  <Link href="#" color="#009265" underline="none">
+                  <Link href="/forgotpassword" color="#009265" underline="none">
                     Forgot Password
                   </Link>
                 </Typography>

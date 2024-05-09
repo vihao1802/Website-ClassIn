@@ -128,10 +128,9 @@ main_route.include_router(
 main_route.include_router(
     lopHoc.router, dependencies=[Depends(verify_token_middleware)]
 )
+main_route.include_router(auth.auth, prefix="/auth")
 main_route.include_router(webSocket.router)
-
 app.include_router(main_route, prefix="/api")
-app.include_router(auth.auth, prefix="/auth")
 
 
 @app.get("/")

@@ -162,13 +162,6 @@ export default function CreateHomeWork() {
             if (data.error) {
               throw new Error("Upload file failed! Please try again.");
             } else {
-              // console.log({
-              //   tenFile: data.name,
-              //   laFileDapAn: 0,
-              //   isYoutubeLink: 0,
-              //   ma_file: data.id,
-              //   ma_baiTap: res.data.ma_baiTap,
-              // });
               try {
                 const responsePostFile = await postHomeworkFile({
                   tenFile: data.name,
