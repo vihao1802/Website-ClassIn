@@ -29,12 +29,12 @@ export default function AddAttachmentButton({
 
     setVideoData(data);
   };
-  const handleAddLink = (title, subtitle, thumbnail) => {
+  const handleAddLink = (videoId, title, subtitle, thumbnail) => {
     setListAttachment((currentList) => {
       return [
         ...currentList,
         {
-          Vid_id: uuidv4(),
+          Vid_id: videoId,
           Title: title,
           Subtitle: subtitle,
           Thumbnail: thumbnail,
@@ -169,6 +169,7 @@ export default function AddAttachmentButton({
               }}
               onClick={() => {
                 handleAddLink(
+                  videoData.items[0].id,
                   videoData.items[0].snippet.title,
                   videoData.items[0].snippet.description,
                   videoData.items[0].snippet.thumbnails.default.url,

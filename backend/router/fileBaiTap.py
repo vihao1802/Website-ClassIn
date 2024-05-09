@@ -57,5 +57,21 @@ async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
         .filter(models.FileBaiTap.ma_baiTap == ma_baiTap)
         .all()
     )
-
     return db_object
+
+
+@router.delete("/{ma_baiTap}", status_code=status.HTTP_200_OK)
+async def delete_file_by_homework_id(
+    ma_baiTap: str, db: Session = Depends(database.get_db)
+):
+    db_object_list = (
+        db.query(models.FileBaiTap)
+        .filter(models.FileBaiTap.ma_baiTap == ma_baiTap)
+        .all()
+    )
+    if db_object_list is None:
+        raise HTTPException(status_code=400, detail="Ma bailambaitap not found")
+    for db_object in db_object_list:
+        db.delete(db_object)
+    db.commit()
+    return {"detail": "Delete successfully"}

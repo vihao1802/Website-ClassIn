@@ -28,6 +28,7 @@ from router import (
     fileBaiLamBaiTap,
     fileBaiTap,
     fileHocLieu,
+    google_auth,
     hocLieu,
     lopHoc,
     luuVetBaiLamKiemTra,
@@ -71,6 +72,9 @@ async def verify_token_middleware(request: Request):
 
 main_route.include_router(
     nhomQuyen.router, dependencies=[Depends(verify_token_middleware)]
+)
+main_route.include_router(
+    google_auth.router, dependencies=[Depends(verify_token_middleware)]
 )
 main_route.include_router(
     taiKhoan.router, dependencies=[Depends(verify_token_middleware)]
