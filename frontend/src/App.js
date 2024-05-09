@@ -11,13 +11,14 @@ import AddTestForm from "pages/tests/AddTestForm";
 import DoTestForm from "pages/tests/DoTestForm";
 import Signin from "pages/login/signin/index";
 import Signup from "pages/login/signup/index";
+import ForgotPasswordForm from "pages/login/forgotpassword";
 import TestExcerciseDetail from "pages/tests/TestExcerciseDetail";
 import Profile from "pages/profile";
 import ClassDetail from "pages/classDetail";
 import CreateHomeWork from "pages/homework";
 import DoHomework from "pages/do_homework";
+import VerifyPassword from "pages/login/verifypassword";
 import { getUserId_Cookie } from "utils/handleCookies";
-
 function App() {
   const isAuth = Boolean(getUserId_Cookie());
   console.log("isAuth: ", isAuth);
@@ -41,6 +42,16 @@ function App() {
           <Route
             path="/signup"
             element={!isAuth ? <Signup /> : <Navigate to="/classin" />}
+          />
+          <Route
+            path="/forgotpassword"
+            element={
+              !isAuth ? <ForgotPasswordForm /> : <Navigate to="/classin" />
+            }
+          />
+          <Route
+            path="/changepassword"
+            element={!isAuth ? <VerifyPassword /> : <Navigate to="/classin" />}
           />
           <Route
             path="/tests/add"

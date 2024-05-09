@@ -85,3 +85,36 @@ async def read(ma_taiKhoan: str, db: Session = Depends(database.get_db)):
     if not db_object:
         raise HTTPException(status_code=400, detail="TaiKhoan not found")
     return db_object
+
+
+@router.get(
+    "/tai-khoan/{ma_taiKhoan}/bai-tap/{ma_baiTap}",
+    response_model=list[schemas.BaiLamBaiTap],
+    status_code=status.HTTP_200_OK,
+)
+async def read(
+    ma_taiKhoan: str, ma_baiTap: str, db: Session = Depends(database.get_db)
+):
+    db_object = (
+        db.query(models.BaiLamBaiTap)
+        .filter(
+            models.BaiLamBaiTap.ma_taiKhoan == ma_taiKhoan
+            and models.BaiLamBaiTap.ma_baiTap == ma_baiTap
+        )
+        .all()
+    )
+    return db_object
+
+
+@router.delete("/{ma_baiLamBaiTap}", status_code=status.HTTP_200_OK)
+async def delete(ma_baiLamBaiTap: str, db: Session = Depends(database.get_db)):
+    db_object = (
+        db.query(models.BaiLamBaiTap)
+        .filter(models.BaiLamBaiTap.ma_baiLamBaiTap == ma_baiLamBaiTap)
+        .first()
+    )
+    if db_object is None:
+        raise HTTPException(status_code=404, detail="BaiLamBaiTap not found")
+    db.delete(db_object)
+    db.commit()
+    return Response(status_code=status.HTTP_200_OK)

@@ -155,10 +155,10 @@ class BaiTap(Base):
 class FileBaiTap(Base):
     __tablename__ = "fileBaiTap"
 
-    ma_file = Column(String, primary_key=True, default=generate_uuid)
+    ma_file = Column(String, primary_key=True)
     tenFile = Column(String(100))
     laFileDapAn = Column(Integer)
-
+    isYoutubeLink = Column(Integer, default=0)
     ma_baiTap = Column(String, ForeignKey("baiTap.ma_baiTap"), primary_key=True)
 
 

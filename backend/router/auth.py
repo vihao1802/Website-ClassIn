@@ -273,21 +273,23 @@ def sendEmail(payload):
             load_env_global.get_EMAIL(), payload["email"], message.as_string()
         )
     except smtplib.SMTPException:
-        print(smtplib.SMTPException)
+        for err in smtplib.SMTPException:
+            print(err)
         return False
 
 
-@auth.post("/forgetPassword", status_code=status.HTTP_200_OK)
+@auth.post("/forgot-password/", status_code=status.HTTP_200_OK)
 async def forget_password(
-    user_email: IuserData, db: Session = Depends(database.get_db)
+    schema_object: IuserData, db: Session = Depends(database.get_db)
 ):
-    if user_email.email == None or user_email.email == "":
+    print(schema_object.email)
+    if schema_object.email == None or schema_object.email == "":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Email is not valid"
         )
     db_object_check = (
         db.query(models.TaiKhoan)
-        .filter(models.TaiKhoan.email == user_email.email)
+        .filter(models.TaiKhoan.email == schema_object.email)
         .first()
     )
     if not db_object_check:
@@ -303,6 +305,8 @@ async def forget_password(
         }
         if sendEmail(payload) == False:
             raise HTTPException(status_code=500, detail="server error")
+        else:
+            return {"detail": "Email sent successfully", "status": 200}
     except smtplib.SMTPException:
         print(smtplib.SMTPException)
         raise HTTPException(
