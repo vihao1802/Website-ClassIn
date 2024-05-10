@@ -43,6 +43,7 @@ origins = [
     "http://192.168.1.103:3000",
     "http://192.168.235.220:8000",
     "http://192.168.224.1:3000",
+    "http://192.168.140.46:3000",
 ]
 app.add_middleware(
     CORSMiddleware,

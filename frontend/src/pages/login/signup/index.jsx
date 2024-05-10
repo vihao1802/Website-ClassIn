@@ -54,7 +54,7 @@ const Sigupform = () => {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       setSigningUp(true);
-      fetch("http://192.168.1.103:8000/api/auth/signup", {
+      fetch(`${process.env.REACT_APP_BASE_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
