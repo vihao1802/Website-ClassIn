@@ -64,6 +64,21 @@ async def update(
     return db_object
 
 
+@router.put("/{ma_chuong}/delete", status_code=status.HTTP_200_OK)
+async def delete(
+    ma_chuong: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = db.query(models.Chuong).filter(
+        models.Chuong.ma_chuong == ma_chuong
+    )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="Chuong not found")
+    db_object.update({"anChuong": 1})
+    db.commit()
+    return db_object
+
+
 @router.get(
     "/", response_model=list[schemas.Chuong], status_code=status.HTTP_200_OK
 )

@@ -40,6 +40,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         backgroundColor: "white",
         borderBottom: "1px solid #e7e7e7",
         boxShadow: "none",
+        zIndex: 20,
       }}
     >
       <Toolbar
