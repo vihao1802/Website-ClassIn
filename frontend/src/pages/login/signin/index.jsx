@@ -41,7 +41,7 @@ const Siginform = () => {
     onSubmit: (values) => {
       console.log("hello");
       setSigningIn(true);
-      fetch("http://localhost:8000/auth/login", {
+      fetch("http://localhost:8000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

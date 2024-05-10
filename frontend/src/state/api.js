@@ -540,6 +540,15 @@ export const api = createApi({
       }),
       providesTags: ["User"],
     }),
+    changePasswordWithLink: build.mutation({
+      query: ({ acc_id, data }) => ({
+        url: `auth/recover-password/${acc_id}`,
+        method: "POST",
+        body: data,
+      }),
+      // providesTags: ["User"],
+    }),
+
     putEditUnit: build.mutation({
       query: (data) => ({
         url: `chuong/${data.ma_chuong}`,
@@ -641,4 +650,5 @@ export const {
   useGetExercisesByExerciseIdQuery,
   useGetUserSubmissionsExerciseDetailsQuery,
   usePostForgotPasswordMutation,
+  useChangePasswordWithLinkMutation,
 } = api;

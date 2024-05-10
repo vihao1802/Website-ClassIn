@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import * as yup from "yup";
-import { useParams, useNavigate } from "react-router-dom";
-import { useUpdatePasswordMutation } from "state/api";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import {
+  useUpdatePasswordMutation,
+  useChangePasswordWithLinkMutation,
+} from "state/api";
 import { useFormik } from "formik";
 import { jwtDecode } from "jwt-decode";
 
@@ -20,20 +23,12 @@ import {
 import AlertComponent from "components/AlertComponent";
 import FlexBetween from "components/FlexBetween";
 const schemaChangePassword = yup.object({
-  currentPassword: yup
-    .string()
-    // .trim("No leading or trailing whitespace allowed")
-    // .matches(
-    //   /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{1,}$/,
-    //   "Have at least one Uppercase and one special character and one number",
-    // )
-    // .min(8, "Password should be of minimum 8 characters length")
-    .required("Current Password is required"),
+  currentPassword: yup.string().required("Current Password is required"),
   newPassword: yup
     .string()
     .trim("No leading or trailing whitespace allowed")
     .matches(
-      /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{1,}$/,
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*.])(?=.*[0-9]).{1,}$/,
       "Have at least one Uppercase and one special character and one number",
     )
     .min(8, "Password Verify should be of minimum 8 characters length")
@@ -47,7 +42,13 @@ const schemaChangePassword = yup.object({
     .required("Confirm Password is required"),
 });
 const VerifyPassword = () => {
-  const { token } = useParams();
+  let [searchParams, setSearchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const navigate = useNavigate();
+  if (!token) {
+    navigate("/signin");
+  }
+  const userId = jwtDecode(token).id;
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const handleClickShowCurrentPassword = () =>
     setShowCurrentPassword((show) => !show);
@@ -60,7 +61,7 @@ const VerifyPassword = () => {
     event.preventDefault();
   };
   const [updatePassword, { isLoading: loadingUpdatePassword }] =
-    useUpdatePasswordMutation();
+    useChangePasswordWithLinkMutation();
   const [showAlert, setShowAlert] = useState({
     message: "",
     state: false,
@@ -75,25 +76,28 @@ const VerifyPassword = () => {
     },
     validationSchema: schemaChangePassword,
     onSubmit: async (values) => {
-      console.log(jwtDecode(token).id);
-      const result = await updatePassword({
-        acc_id: jwtDecode(token).id,
-        data: {
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
-        },
-      });
-      if (result.error) {
-        setShowAlert({
-          message: result.error.data.detail,
-          state: true,
-          severity: "error",
+      try {
+        const result = await updatePassword({
+          acc_id: userId,
+          data: {
+            currentPassword: values.currentPassword,
+            newPassword: values.newPassword,
+          },
         });
-      } else {
         setShowAlert({
           message: "Change password successfully!",
           state: true,
           severity: "success",
+        });
+        if (result.error) {
+          throw new Error(result.error.data.detail);
+        }
+      } catch (err) {
+        console.log(err);
+        setShowAlert({
+          message: err.message,
+          state: true,
+          severity: "error",
         });
       }
     },
@@ -170,6 +174,7 @@ const VerifyPassword = () => {
                   value={formikChangePassword.values.currentPassword}
                   name="currentPassword"
                   color="success"
+                  disabled={loadingUpdatePassword}
                   error={
                     Boolean(formikChangePassword.touched.currentPassword) &&
                     Boolean(formikChangePassword.errors.currentPassword)
@@ -213,6 +218,7 @@ const VerifyPassword = () => {
                   value={formikChangePassword.values.newPassword}
                   name="newPassword"
                   color="success"
+                  disabled={loadingUpdatePassword}
                   error={
                     Boolean(formikChangePassword.touched.newPassword) &&
                     Boolean(formikChangePassword.errors.newPassword)
@@ -256,6 +262,7 @@ const VerifyPassword = () => {
                   value={formikChangePassword.values.cfmPassword}
                   name="cfmPassword"
                   color="success"
+                  disabled={loadingUpdatePassword}
                   error={
                     Boolean(formikChangePassword.touched.cfmPassword) &&
                     Boolean(formikChangePassword.errors.cfmPassword)
