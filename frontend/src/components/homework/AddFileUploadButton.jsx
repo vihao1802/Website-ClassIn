@@ -12,7 +12,6 @@ export default function AddFileUploadButton({
 }) {
   const [open, setOpen] = useState(false);
   const onDrop = useCallback((acceptedFile) => {
-    console.log(acceptedFile);
     setListAttachment((currentList) => {
       return [
         ...currentList,

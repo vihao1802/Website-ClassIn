@@ -54,7 +54,7 @@ const Sigupform = () => {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       setSigningUp(true);
-      fetch("http://localhost:8000/auth/signup", {
+      fetch("http://localhost:8000/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

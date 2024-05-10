@@ -29,6 +29,10 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { data: userData, isLoading: userDataLoading } =
     useGetUserQuery(userId);
 
+  const handleLogout = () => {
+    document.cookie =
+      "user_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  };
   return (
     <AppBar
       sx={{
@@ -130,7 +134,13 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                   <Typography ml="5px">Your Account</Typography>
                 </FlexBetween>
               </MenuItem>
-              <MenuItem onClick={handleClose}>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  handleLogout();
+                  navigate("/signin");
+                }}
+              >
                 <FlexBetween color="red">
                   <Logout />
                   <Typography ml="5px">Log Out</Typography>

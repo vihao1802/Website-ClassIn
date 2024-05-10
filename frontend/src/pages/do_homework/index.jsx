@@ -4,22 +4,52 @@ import {
   useGetHomeWorkByHomeworkIdQuery,
   useGetFileHomeworkByHomeworkIdQuery,
 } from "state/api";
-import { Typography, Box, Button } from "@mui/material";
+import { Typography, Box, Button, CircularProgress } from "@mui/material";
 import { Add, AttachFile, InsertLink } from "@mui/icons-material";
-import { MenuItem, Menu, Dropdown, MenuButton } from "@mui/joy";
+import { MenuItem, Menu } from "@mui/joy";
 import { useState } from "react";
 import AttachmentLink from "components/homework/AttachmentLink";
 import DohomeworkFile from "components/homework/DohomeworkFile";
 import DohomeworkLink from "components/homework/DohomeworkLink";
 import { useParams } from "react-router-dom";
-import { ggOauthKey } from "config/googleApiConfig";
+import {
+  usePostHomeworkWorkMutation,
+  usePostHomeworkWorkFileMutation,
+  useGetWorkByUserIdAndHomeworkIdQuery,
+  useGetFileHomeworkWorkByWorkIdQuery,
+  useDeleteHomeworkWorkFileMutation,
+  useDeleteHomeworkWorkMutation,
+  usePostAccessTokenMutation,
+} from "state/api";
 
+import { deleteFileFromDrive } from "utils/google_ulti";
+import { getUserId_Cookie } from "../../utils/handleCookies";
 export default function DoHomework() {
   const { homeworkId } = useParams();
+  const userId = getUserId_Cookie();
   const { data: HomeworkQuery, isLoading: isLoadingHomeworkQuery } =
     useGetHomeWorkByHomeworkIdQuery(homeworkId);
   const { data: FileQuery, isLoading: isLoadingFileQuery } =
     useGetFileHomeworkByHomeworkIdQuery(homeworkId);
+  const { data: WorkQuery, isLoading: isLoadingWorkQuery } =
+    useGetWorkByUserIdAndHomeworkIdQuery({
+      userId: userId,
+      homeworkId: homeworkId,
+    });
+  const {
+    data: FileHomeworkWorkQuery,
+    isLoading: isLoadingFileHomeworkWork,
+    refetch: refetchFileHomeworkWork,
+  } = useGetFileHomeworkWorkByWorkIdQuery(WorkQuery?.[0]?.ma_baiLamBaiTap);
+  const [postHomeworkWork, { isLoading: loadingPostHomeworkWork }] =
+    usePostHomeworkWorkMutation();
+  const [postHomeworkFileWork, { isLoading: loadingPostHomeworkFileWork }] =
+    usePostHomeworkWorkFileMutation();
+  const [accessToken] = usePostAccessTokenMutation();
+
+  const [deleteWorkFile] = useDeleteHomeworkWorkFileMutation();
+  const [deleteWork] = useDeleteHomeworkWorkMutation();
+
   const [homework, setHomework] = useState({});
   const [fileHomework, setFileHomework] = useState([]);
   const [listAttachment, setListAttachment] = useState([]);
@@ -27,8 +57,10 @@ export default function DoHomework() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openUploadFile, setOpenUploadFile] = useState(false);
   const [openUploadLink, setOpenUploadLink] = useState(false);
-  const isOpen = Boolean(anchorEl);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmited, setIsSubmited] = useState(false);
+  const [isSubmiting, setIsSubmiting] = useState(false);
   const handleClick = (event) => {
     if (isOpenMenu) {
       setIsOpenMenu(false);
@@ -37,46 +69,79 @@ export default function DoHomework() {
       setIsOpenMenu(true);
     }
   };
-
   const handleSubmit = async (e) => {
     try {
-      // const metadata = {
-      //   name: listAttachment[0].file.name, // Filename at Google Drive
-      //   mimeType: listAttachment[0].file.type, // MIME type
-      //   parents: ["11QuuncFo8yO4u8xZUgBeHwjXTBHkMLoP"],
-      // };
-      // // Multpart POST body
-      // const formData = new FormData();
-      // formData.append(
-      //   "metadata",
-      //   new Blob([JSON.stringify(metadata)], { type: "application/json" }),
-      // );
-      // formData.append("file", listAttachment[0].file);
-      // console.log(formData);
-      // const response = await fetch(
-      //   "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-      //   {
-      //     method: "POST",
-      //     headers: new Headers({
-      //       Authorization: "Bearer " + ggOauthKey.access_token,
-      //     }),
-      //     body: formData,
-      //   },
-      // );
-      // const data = await response.json();
-      // console.log("File uploaded successfully:", data);
-      const formData = new FormData();
-      formData.append("file", listAttachment[0].file);
-      const response = await fetch("http://localhost:8000/sendFile", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
+      e.preventDefault();
+      const access_token = await accessToken();
+      const userWorkData = await postHomeworkWork({
+        ma_baiTap: homeworkId,
+        ma_taiKhoan: userId,
+        nopTre:
+          HomeworkQuery.thoiGianKetThuc < new Date().toISOString() ? 1 : 0,
       });
-      const data = await response.json();
-      console.log("File uploaded successfully:", data);
+      listAttachment.forEach(async (attachment) => {
+        const metadata = {
+          name: attachment.file.name,
+          mimeType: attachment.file.type,
+          parents: ["11QuuncFo8yO4u8xZUgBeHwjXTBHkMLoP"],
+        };
+        // Multpart POST body
+        const formData = new FormData();
+        formData.append(
+          "metadata",
+          new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+        );
+        formData.append("file", attachment.file);
+        const response = await fetch(
+          "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+          {
+            method: "POST",
+            headers: new Headers({
+              Authorization: "Bearer " + access_token.data.token,
+            }),
+            body: formData,
+          },
+        );
+        const data = await response.json();
+        console.log(data);
+        if (data.error) {
+          throw new Error("Upload file failed! Please try again.");
+        } else {
+          try {
+            const fileDataResponse = await postHomeworkFileWork({
+              ma_baiLamBaiTap: userWorkData.data.ma_baiLamBaiTap,
+              maFile: data.id,
+              tenFile: data.name,
+            });
+          } catch (error) {
+            throw new Error(
+              "There was an error while submitting your work. Please try again later.",
+            );
+          }
+        }
+        setIsSubmited(true);
+      });
+      setErrorMessage("Turn In successfully!");
     } catch (error) {
       console.error("Error uploading file:", error);
+      setErrorMessage(error.message);
     }
+  };
+
+  const handleUnsubmit = async (e) => {
+    setIsSubmiting(true);
+    deleteFileFromDrive(FileHomeworkWorkQuery)
+      .then(() => {
+        deleteWorkFile({ ma_baiLamBaiTap: WorkQuery[0].ma_baiLamBaiTap });
+        deleteWork({ ma_baiLamBaiTap: WorkQuery[0].ma_baiLamBaiTap });
+        setIsSubmited(false);
+        setIsSubmiting(false);
+      })
+      .catch((error) => {
+        setIsSubmiting(false);
+
+        console.error(error);
+      });
   };
   const removeAnswerAttachment = (id) => {
     setListAttachment((prevList) =>
@@ -105,6 +170,64 @@ export default function DoHomework() {
       if (FileQuery.length === 0) return;
       const google_drive_url = "https://www.googleapis.com/drive/v2/files";
       FileQuery.forEach(async (file) => {
+        if (!file.isYoutubeLink) {
+          const data = await (
+            await fetch(
+              `${google_drive_url}/${file.ma_file}?key=${process.env.REACT_APP_GOOGLE_DRIVE_API_KEY}`,
+              {
+                method: "GET",
+              },
+            )
+          ).json();
+          // listFile.push({});
+          setFileHomework((currentList) => {
+            return [
+              ...currentList,
+              {
+                title: data.title,
+                thumbnail: data.thumbnailLink,
+                downloadUrl: data.downloadUrl,
+                embedLink: data.embedLink,
+                laFileDapAn: file.laFileDapAn,
+              },
+            ];
+          });
+        } else {
+          console.log(file);
+          const url =
+            "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" +
+            file.ma_file +
+            "&key=" +
+            process.env.REACT_APP_GOOGLE_DRIVE_API_KEY;
+          try {
+            const data = await (await fetch(url)).json();
+            console.log(data);
+            setFileHomework((currentList) => {
+              return [
+                ...currentList,
+                {
+                  title: data.items[0].snippet.title,
+                  thumbnail: data.items[0].snippet.thumbnails.high.url,
+                  downloadUrl: "",
+                  embedLink: `https://www.youtube.com/watch?v=${file.ma_file}`,
+                  laFileDapAn: file.laFileDapAn,
+                },
+              ];
+            });
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      });
+    }
+  }, [FileQuery, isLoadingFileQuery]);
+
+  useEffect(() => {
+    if (!isLoadingFileHomeworkWork && FileHomeworkWorkQuery) {
+      if (FileHomeworkWorkQuery.length === 0) return;
+      const google_drive_url = "https://www.googleapis.com/drive/v2/files";
+      FileHomeworkWorkQuery.forEach(async (file) => {
+        console.log(file);
         const data = await (
           await fetch(
             `${google_drive_url}/${file.ma_file}?key=${process.env.REACT_APP_GOOGLE_DRIVE_API_KEY}`,
@@ -113,22 +236,28 @@ export default function DoHomework() {
             },
           )
         ).json();
-        // listFile.push({});
-        setFileHomework((currentList) => {
+        setListAttachment((currentList) => {
           return [
             ...currentList,
             {
-              title: data.title,
-              thumbnail: data.thumbnailLink,
-              downloadUrl: data.downloadUrl,
-              embedLink: data.embedLink,
-              laFileDapAn: file.laFileDapAn,
+              Vid_id: file.ma_file,
+              Title: data.title,
+              Subtitle: data.downloadUrl,
+              Thumbnail: data.thumbnailLink,
             },
           ];
         });
       });
     }
-  }, [FileQuery, isLoadingFileQuery]);
+  }, [FileHomeworkWorkQuery, isLoadingFileHomeworkWork]);
+
+  useEffect(() => {
+    if (WorkQuery?.length !== 0) {
+      setIsSubmited(true);
+    } else {
+      setIsSubmited(false);
+    }
+  }, [WorkQuery]);
 
   return (
     <form
@@ -139,8 +268,6 @@ export default function DoHomework() {
         maxHeight: "auto",
       }}
       onSubmit={(e) => {
-        e.preventDefault();
-        console.log("hello");
         handleSubmit(e);
       }}
     >
@@ -298,8 +425,8 @@ export default function DoHomework() {
                 marginBottom: "20px",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
-                gap: "2%",
+                justifyContent: "start",
+                gap: "5px",
               }}
             >
               {listAttachment.map((attachment) => (
@@ -307,14 +434,17 @@ export default function DoHomework() {
                   Title={attachment.Title}
                   Subtitle={attachment.Subtitle}
                   Thumbnail={attachment.Thumbnail}
-                  handleRemove={() => removeAnswerAttachment(attachment.Vid_id)}
+                  handleRemove={() => {
+                    removeAnswerAttachment(attachment.Vid_id);
+                  }}
+                  isRemoveAble={!isSubmited}
                 />
               ))}
             </Box>
             <Button
               onClick={handleClick}
               sx={{
-                display: "flex",
+                display: !isSubmited ? "flex" : "none",
                 justifyContent: "center",
                 alignItems: "center",
                 textTransform: "none",
@@ -344,7 +474,6 @@ export default function DoHomework() {
                   paddingLeft: "10%",
                   display: "flex",
                   flexDirection: "row",
-
                   gap: "10%",
                 }}
                 onClick={handleOpenModalFile}
@@ -355,7 +484,6 @@ export default function DoHomework() {
               <DohomeworkFile
                 open={openUploadFile}
                 handleClose={handleCloseModalFile}
-                // handleClass={handleJoin}
                 setListAttachment={setListAttachment}
               />
               <MenuItem
@@ -363,7 +491,6 @@ export default function DoHomework() {
                   paddingLeft: "10%",
                   display: "flex",
                   flexDirection: "row",
-
                   gap: "10%",
                 }}
                 onClick={handleOpenModalLink}
@@ -374,11 +501,21 @@ export default function DoHomework() {
               <DohomeworkLink
                 open={openUploadLink}
                 handleClose={handleCloseModalLink}
-                // handleClass={handleJoin}
                 setListAttachment={setListAttachment}
               />
             </Menu>
-
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: "red",
+                marginBottom: "20px",
+                backgroundColor: "#ff00001a",
+                borderRadius: "5px",
+                display: errorMessage === "" ? "none" : "block",
+              }}
+            >
+              {errorMessage}
+            </Typography>
             <Button
               variant="contained"
               sx={{
@@ -386,11 +523,45 @@ export default function DoHomework() {
                 "&:hover": { backgroundColor: "#007850" },
                 width: "100%",
                 alignSelf: "flex-end",
+                display: isSubmited ? "none" : "initial",
               }}
               disabled={listAttachment.length === 0 ? true : false}
               type="submit"
             >
-              {listAttachment.length === 0 ? "Add your work" : "Turn in"}
+              {listAttachment.length === 0 ? (
+                "Add your work"
+              ) : loadingPostHomeworkWork ? (
+                <CircularProgress
+                  sx={{
+                    color: "white",
+                  }}
+                  size="1rem"
+                />
+              ) : (
+                "Turn In"
+              )}
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#009265",
+                "&:hover": { backgroundColor: "#007850" },
+                width: "100%",
+                alignSelf: "flex-end",
+                display: isSubmited ? "initial" : "none",
+              }}
+              onClick={handleUnsubmit}
+            >
+              {isSubmiting ? (
+                <CircularProgress
+                  sx={{
+                    color: "white",
+                  }}
+                  size="1rem"
+                />
+              ) : (
+                "Unsubmit"
+              )}
             </Button>
           </Box>
         </Box>

@@ -75,15 +75,16 @@ async def read(ma_baiLamBaiTap: str, db: Session = Depends(database.get_db)):
     return db_object
 
 
-@router.post("/sendFile/")
-def upload(file: UploadFile = File(...)):
-    try:
-        contents = file.file.read()
-        with open(file.filename, "wb") as f:
-            f.write(contents)
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        file.file.close()
-
-    return {"message": f"Successfully uploaded {file.filename}"}
+@router.delete("/{ma_Bailambaitap}", status_code=status.HTTP_200_OK)
+async def delete(ma_Bailambaitap: str, db: Session = Depends(database.get_db)):
+    db_object_list = (
+        db.query(models.FileBaiLamBaiTap)
+        .filter(models.FileBaiLamBaiTap.ma_baiLamBaiTap == ma_Bailambaitap)
+        .all()
+    )
+    if db_object_list is None:
+        raise HTTPException(status_code=400, detail="Ma bailambaitap not found")
+    for db_object in db_object_list:
+        db.delete(db_object)
+    db.commit()
+    return {"detail": "Delete successfully"}

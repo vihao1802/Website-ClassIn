@@ -258,14 +258,17 @@ class BaiTap(BaiTapBase):
 class FileBaiTapBase(BaseModel):
     tenFile: str
     laFileDapAn: int
+    ma_file: str
 
 
 class FileBaiTapCreate(FileBaiTapBase):
-    pass
+    isYoutubeLink: int
+
+    class Config:
+        from_attributes = True
 
 
 class FileBaiTap(FileBaiTapBase):
-    ma_file: UUID
     ma_baiTap: UUID
 
     class Config:
@@ -298,11 +301,11 @@ class FileBaiLamBaiTapBase(BaseModel):
 
 
 class FileBaiLamBaiTapCreate(FileBaiLamBaiTapBase):
-    pass
+    ma_file: str
+    tenFile: str
 
 
 class FileBaiLamBaiTap(FileBaiLamBaiTapBase):
-    ma_file: UUID
     ma_baiLamBaiTap: UUID
 
     class Config:
