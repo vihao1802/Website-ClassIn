@@ -35,7 +35,12 @@ from router import (
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 main_route = APIRouter()
-origins = ["http://localhost:3000", "localhost:3000"]
+origins = [
+    "http://localhost:3000",
+    "localhost:3000",
+    "http://192.168.240.1:3000",
+    "192.168.240.1:3000",
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -144,6 +149,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="127.0.0.1",
+        # host="192.168.240.1",
         port=load_env_global.get_PORT(),
         reload=True,
     )

@@ -17,7 +17,15 @@ const schema = yup.object({
   name: yup.string().required("Title is required"),
 });
 
-const ModalAddUnit = ({ open, handleClose, classId, unit, mode, refetch }) => {
+const ModalAddUnit = ({
+  open,
+  handleClose,
+  classId,
+  unit,
+  mode,
+  refetch,
+  alert,
+}) => {
   const [addUnit, dataAdd] = usePostAddUnitMutation();
   const forMikAdd = useFormik({
     initialValues: {
@@ -28,14 +36,19 @@ const ModalAddUnit = ({ open, handleClose, classId, unit, mode, refetch }) => {
       addUnit({ ma_lopHoc: classId, ten: values.name });
       refetch();
       handleClose();
+      alert({
+        message: "Add Unit successfully",
+        severity: "success",
+        open: true,
+      });
     },
   });
 
-  const [editUnit, dataEdit] = usePutEditUnitMutation();
+  const [editUnit] = usePutEditUnitMutation();
 
   useEffect(() => {
     if (mode === "edit") forMikEdit.setValues({ name: unit.name });
-  }, []);
+  }, [unit]);
   const forMikEdit = useFormik({
     initialValues: {
       name: "",
@@ -45,6 +58,11 @@ const ModalAddUnit = ({ open, handleClose, classId, unit, mode, refetch }) => {
       editUnit({ ma_chuong: unit.id, ten: values.name });
       refetch();
       handleClose();
+      alert({
+        message: "Edit Unit successfully",
+        severity: "success",
+        open: true,
+      });
     },
   });
 

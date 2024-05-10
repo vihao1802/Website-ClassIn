@@ -323,6 +323,10 @@ class DeKiemTraCreate(DeKiemTraBase):
     pass
 
 
+class DeKiemTraUpdate(BaseModel):
+    tieuDe: str
+
+
 class DeKiemTra(DeKiemTraBase):
     ma_deKiemTra: UUID
     ma_chuong: UUID

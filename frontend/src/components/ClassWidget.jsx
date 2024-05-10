@@ -57,12 +57,18 @@ import profileImage from "assets/profile.jpg";
 
 import { DataGrid } from "@mui/x-data-grid";
 import ModalAddUnit from "components/ModalAddUnit";
-import { useGetUnitActivitiesQuery, useGetClassDetailsQuery } from "state/api";
+import {
+  useGetUnitActivitiesQuery,
+  useGetClassDetailsQuery,
+  usePutDeleteUnitMutation,
+} from "state/api";
 import AvatarName from "./AvatarName";
 import Loading from "./Loading";
 import ChatBoxGroup from "./ChatBoxGroup";
 import GradeTab from "./GradeTab";
 import PeopleTab from "./PeopleTab";
+import AlertComponent from "./AlertComponent";
+import ModalEditTest from "./ModalEditTest";
 
 const ClassWidget = ({ classItem, userId }) => {
   //const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
@@ -115,6 +121,29 @@ const ClassWidget = ({ classItem, userId }) => {
     act: actitvity,
   });
 
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const [deleteUnit] = usePutDeleteUnitMutation();
+
+  const [anchorElTestMenu, setAnchorElTestMenu] = useState(null);
+  const isOpenTestMenu = Boolean(anchorElTestMenu);
+  const handleClickTestMenu = (event) => {
+    setAnchorElTestMenu(event.currentTarget);
+  };
+  const handleCloseTestMenu = () => setAnchorElTestMenu(null);
+  const [currentTest, setCurrentTest] = useState({
+    id: "",
+    title: "",
+  });
+
+  const [openEditTest, setOpenEditTest] = useState(false);
+  const handleOpenEditTest = () => setOpenEditTest(true);
+  const handleCloseEditTest = () => setOpenEditTest(false);
+
   if (isUnitsLoading) {
     return <Loading />;
   }
@@ -127,6 +156,12 @@ const ClassWidget = ({ classItem, userId }) => {
         flexDirection: "column",
       }}
     >
+      <AlertComponent
+        open={alert.open}
+        message={alert.message}
+        severity={alert.severity}
+        onClose={() => setAlert({ ...alert, open: false })}
+      />
       <Box
         sx={{
           height: "50px",
@@ -349,6 +384,7 @@ const ClassWidget = ({ classItem, userId }) => {
                         classId={classItem?.ma_lopHoc}
                         refetch={refetchUnits}
                         mode="add"
+                        alert={setAlert}
                       />
                     </nav>
                   </Menu>
@@ -363,7 +399,7 @@ const ClassWidget = ({ classItem, userId }) => {
             sx={{
               height: "100%",
               maxHeight: "510px",
-              padding: "0 10%",
+              // padding: "0 10%",
               overflowY: "scroll",
               "::-webkit-scrollbar": { width: "10px" },
               "::-webkit-scrollbar-track": {
@@ -428,16 +464,15 @@ const ClassWidget = ({ classItem, userId }) => {
                   <AccordionDetails sx={{ padding: "unset" }}>
                     <List>
                       {unit.deKiemTra.map((test, testIndex) => (
-                        <ListItem
-                          key={testIndex}
-                          disablePadding
-                          onClick={() =>
-                            classItem?.ma_giangVien === userId
-                              ? navigate(`/tests/${test.ma_deKiemTra}/common`)
-                              : navigate(`/tests/${test.ma_deKiemTra}/do`)
-                          }
-                        >
-                          <ListItemButton sx={{ height: "80px" }}>
+                        <ListItem key={testIndex} disablePadding>
+                          <ListItemButton
+                            sx={{ height: "80px" }}
+                            onClick={() =>
+                              classItem?.ma_giangVien === userId
+                                ? navigate(`/tests/${test.ma_deKiemTra}/common`)
+                                : navigate(`/tests/${test.ma_deKiemTra}/do`)
+                            }
+                          >
                             <ListItemIcon>
                               <HistoryEduRounded />
                             </ListItemIcon>
@@ -466,6 +501,50 @@ const ClassWidget = ({ classItem, userId }) => {
                               </Typography>
                             </Box>
                           </ListItemButton>
+                          {classItem?.ma_giangVien === userId && (
+                            <IconButton
+                              sx={{
+                                color: "#009265",
+                                width: "40px",
+                                marginRight: "30px",
+                              }}
+                              onClick={(event) => {
+                                setAnchorElTestMenu(event.currentTarget);
+                                setCurrentTest({
+                                  id: test.ma_deKiemTra,
+                                  title: test.tieuDe,
+                                });
+                              }}
+                            >
+                              <MoreHorizOutlined />
+                            </IconButton>
+                          )}
+                          <Menu
+                            anchorEl={anchorElTestMenu}
+                            open={isOpenTestMenu}
+                            onClose={handleCloseTestMenu}
+                            anchorOrigin={{
+                              vertical: "bottom",
+                              horizontal: "left",
+                            }}
+                          >
+                            <MenuItem
+                              onClick={
+                                (handleCloseTestMenu, handleOpenEditTest)
+                              }
+                            >
+                              <FlexBetween>
+                                <EditRounded color="primary" />
+                                <Typography color="primary">Edit</Typography>
+                              </FlexBetween>
+                            </MenuItem>
+                            <MenuItem onClick={handleCloseTestMenu}>
+                              <FlexBetween>
+                                <DeleteRounded color="error" />
+                                <Typography color="error">Delete</Typography>
+                              </FlexBetween>
+                            </MenuItem>
+                          </Menu>
                         </ListItem>
                       ))}
                       {unit.baiTap.map((exercise, exerciseIndex) => (
@@ -553,7 +632,20 @@ const ClassWidget = ({ classItem, userId }) => {
                   <Typography color="primary">Edit</Typography>
                 </FlexBetween>
               </MenuItem>
-              <MenuItem onClick={handleCloseActivityMenu}>
+              <MenuItem
+                onClick={
+                  (handleCloseActivityMenu,
+                  () => {
+                    deleteUnit(currentUnit.id);
+                    refetchUnits();
+                    setAlert({
+                      message: "Delete Unit successfully",
+                      severity: "success",
+                      open: true,
+                    });
+                  })
+                }
+              >
                 <FlexBetween>
                   <DeleteRounded color="error" />
                   <Typography color="error">Delete</Typography>
@@ -567,6 +659,7 @@ const ClassWidget = ({ classItem, userId }) => {
               unit={currentUnit}
               refetch={refetchUnits}
               mode="edit"
+              alert={setAlert}
             />
           </Box>
         </TabPanel>
@@ -620,6 +713,13 @@ const ClassWidget = ({ classItem, userId }) => {
       ) : (
         <Loading />
       )} */}
+      <ModalEditTest
+        open={openEditTest}
+        handleClose={handleCloseEditTest}
+        refetch={refetchUnits}
+        alert={setAlert}
+        test={currentTest}
+      />
     </Box>
   );
 };
