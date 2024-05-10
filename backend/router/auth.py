@@ -216,9 +216,7 @@ def sendEmail(payload):
 
     token = create_access_token(payload)
     recover_url = (
-        load_env_global.get_DOMAIN_CLIENT()
-        + "/auth/recoverPassword?token="
-        + token
+        load_env_global.get_DOMAIN_CLIENT() + "/changepassword?token=" + token
     )
     html_string = """\
     <html lang='en'>
