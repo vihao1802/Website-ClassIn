@@ -247,7 +247,7 @@ export const api = createApi({
         url: `auth/forgot-password`,
         method: "POST",
         body: {
-          user_email: recoverEmail,
+          email: recoverEmail,
         },
       }),
     }),
