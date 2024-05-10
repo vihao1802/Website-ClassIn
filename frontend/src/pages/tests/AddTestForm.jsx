@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -20,6 +21,11 @@ import {
   RadioGroup,
   Menu,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import {
   MoreHorizOutlined,
@@ -55,6 +61,7 @@ const schema = yup.object({
 
 const AddTestForm = () => {
   const userId = getUserId_Cookie();
+  const navigator = useNavigate();
   // checkboxlist
   const [checkedQuestion, setCheckedQuestion] = useState([]);
   const handleToggle = (value) => () => {
@@ -143,10 +150,12 @@ const AddTestForm = () => {
       const initialUnitItems =
         unitsByClassIdData.length === 0
           ? [{ id: null, label: "Default Unit" }]
-          : unitsByClassIdData.map((item) => ({
-              id: item.ma_chuong,
-              label: item.ten,
-            }));
+          : unitsByClassIdData
+              .filter((item) => item.anChuong === 0)
+              .map((item) => ({
+                id: item.ma_chuong,
+                label: item.ten,
+              }));
       if (unitsByClassIdData.length === 0) setIsNewUnit(true);
       else setIsNewUnit(false);
       setUnitItems(initialUnitItems);
@@ -164,6 +173,7 @@ const AddTestForm = () => {
   const [createTest] = usePostCreateTestMutation();
   const [creatTestDetail] = usePostCreatTestDetailMutation();
   const [createUnit] = usePostAddUnitMutation();
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [alert, setAlert] = useState({
     open: false,
     severity: "",
@@ -175,6 +185,7 @@ const AddTestForm = () => {
     },
     validationSchema: schema,
     onSubmit: async (values) => {
+      setOpenConfirmDialog(false);
       if (checkedQuestion.length === 0) {
         setAlert({
           open: true,
@@ -244,6 +255,12 @@ const AddTestForm = () => {
       for (const testDetail of testDetailList) {
         await creatTestDetail(testDetail);
       }
+      setAlert({
+        open: true,
+        severity: "success",
+        message: "Create test successfully",
+      });
+      // navigator(-1);
     },
   });
 
@@ -664,7 +681,7 @@ const AddTestForm = () => {
                   onClick={() => setShowAnswer(!showAnswer)}
                 />
               }
-              label="Public Answer"
+              label="Show Answer"
             />
             <FormControlLabel
               control={
@@ -674,7 +691,7 @@ const AddTestForm = () => {
                   onClick={() => setShuffleQuestion(!shuffleQuestion)}
                 />
               }
-              label="Random Question"
+              label="Shuffle Question"
             />
           </FormGroup>
           <Box
@@ -691,13 +708,38 @@ const AddTestForm = () => {
                 "&:hover": { backgroundColor: "#007850" },
                 width: "100%",
               }}
-              onClick={forMikCreate.submitForm}
+              onClick={() => setOpenConfirmDialog(true)}
             >
               Create
             </Button>
           </Box>
         </Box>
       </Box>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+      >
+        <DialogTitle>{"Confirm Submmit"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Please check your test carefully before creating!{" "}
+            <strong>
+              You can not edit anything expect the test title after creating
+            </strong>
+            .
+            <br />
+            Are you sure you want to create?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirmDialog(false)} color="success">
+            Cancel
+          </Button>
+          <Button onClick={forMikCreate.submitForm} autoFocus color="success">
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
       <AddQuestionForm
         open={openEdit}
         handleClose={handleCloseEdit}

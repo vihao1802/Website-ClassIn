@@ -573,6 +573,23 @@ export const api = createApi({
       }),
       invalidatesTags: ["Questions"],
     }),
+    putDeleteUnit: build.mutation({
+      query: (uid) => ({
+        url: `chuong/${uid}/delete`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Units"],
+    }),
+    putEditTest: build.mutation({
+      query: (data) => ({
+        url: `deKiemTra/${data.tid}`,
+        method: "PUT",
+        body: {
+          tieuDe: data.testTitle,
+        },
+      }),
+      invalidatesTags: ["Tests"],
+    }),
   }),
 });
 
@@ -640,5 +657,7 @@ export const {
   usePostCreateStudentWorkDetailMutation,
   useGetExercisesByExerciseIdQuery,
   useGetUserSubmissionsExerciseDetailsQuery,
+  usePutDeleteUnitMutation,
+  usePutEditTestMutation,
   usePostForgotPasswordMutation,
 } = api;

@@ -20,7 +20,7 @@ const AlertComponent = ({ severity, message, onClose, open }) => {
         severity={severity}
         sx={{
           position: "absolute",
-          zIndex: 10,
+          zIndex: 1000,
           width: "50%",
           left: "25%",
           top: "5%",
