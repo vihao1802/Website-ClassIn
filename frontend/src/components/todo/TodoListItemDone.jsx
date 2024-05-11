@@ -13,8 +13,8 @@ import theme from "theme";
 const TodoListItemDone = ({ item }) => {
   const navigate = useNavigate();
 
-  const handleDetailExercise = () => {
-    // navigate("/exercise/detail");
+  const handleDetailExercise = (exerciseId) => {
+    // navigate(`/exercises/${exerciseId}/common`);
   };
   const handleDetailTest = (testId, workId) => {
     navigate(`/tests/${testId}/work/${workId}`);
@@ -53,7 +53,7 @@ const TodoListItemDone = ({ item }) => {
       <Button
         onClick={
           item.ma_baiTap
-            ? () => handleDetailExercise()
+            ? () => handleDetailExercise(item.ma_baiTap)
             : () => handleDetailTest(item.ma_deKiemTra, item.ma_baiLamKiemTra)
         }
         sx={{
@@ -61,11 +61,13 @@ const TodoListItemDone = ({ item }) => {
           borderRadius: "20px",
           marginLeft: "auto",
           padding: "5px 25px",
-          backgroundColor: theme.main_theme,
+          backgroundColor:
+            !item.ma_baiTap && item.xemDapAn === 0 ? "grey" : theme.main_theme,
           "&:hover": {
             backgroundColor: "#007850",
           },
         }}
+        disabled={!item.ma_baiTap && item.xemDapAn === 0}
       >
         <Box>
           <Typography
@@ -75,7 +77,7 @@ const TodoListItemDone = ({ item }) => {
               textAlign: "center",
             }}
           >
-            Detail
+            {!item.ma_baiTap && item.xemDapAn === 0 ? "Locked" : "Detail"}
           </Typography>
         </Box>
       </Button>

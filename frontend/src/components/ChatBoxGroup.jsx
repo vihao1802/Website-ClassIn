@@ -533,7 +533,11 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                     text={item.noiDung}
                     date={item.thoiGianGui}
                     title={
-                      item.position === "right" ? "You" : item.ten_taiKhoan
+                      item.position === "right"
+                        ? "You"
+                        : item.isTeacher
+                        ? item.ten_taiKhoan + " (Teacher)"
+                        : item.ten_taiKhoan
                     }
                     titleColor="#009265"
                     styles={{ maxWidth: "400px" }}
