@@ -61,7 +61,7 @@ cd frontend
 ```
 npm i
 ```
-8. Create and fill out file `.env` in folder `frontend` with format:
+8. Create and fill out file `.env.local` in folder `frontend` with format:
 ```env
 REACT_APP_BASE_URL=http://localhost:8000/api
 REACT_APP_WEBSOCKET_URL=ws://localhost:8000/api/ws
