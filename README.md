@@ -20,9 +20,9 @@
 <!-- GETTING STARTED -->
 ## 🎯 Getting Started
 
-### Prerequisites
+### 💎 Prerequisites
 
-* Install venv on Linux
+* Install venv on Linux or WSL(Windows Subsystem for Linux)
 ```
 sudo apt install python3.10-venv
 ```
@@ -61,7 +61,22 @@ cd frontend
 ```
 npm i
 ```
-
+8. Create and fill out file `.env` in folder `frontend` with format:
+```env
+REACT_APP_BASE_URL=http://localhost:8000/api
+REACT_APP_WEBSOCKET_URL=ws://localhost:8000/api/ws
+```
+9. Create and fill out file `.env` in folder `backend` with format:
+```env
+URL_DATABASE="sqlite:///./classin_database.db"
+PORT=8000
+DOMAIN_URL=http://localhost:8000
+DOMAIN_CLIENT=http:localhost:3000
+JWT_ALGORITHM=HS256
+JWT_SECRET=#use_generate_UUID_tool_for_this
+EMAIL=#email_for_upload_file_feature 
+PASSWORD_EMAIL=#password_email_for_upload_file_feature
+```
 ## 🚀 Usage
 ⚠️ Should use two terminals when run app
 
