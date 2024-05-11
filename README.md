@@ -15,6 +15,7 @@
 
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
 
+### 📄 PDF file: [BaoCaoDoAn_Nhom7]()
 
 <!-- GETTING STARTED -->
 ## 🎯 Getting Started
