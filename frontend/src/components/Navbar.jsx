@@ -32,6 +32,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const handleLogout = () => {
     document.cookie =
       "user_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    window.location.reload();
   };
   return (
     <AppBar
@@ -40,6 +41,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         backgroundColor: "white",
         borderBottom: "1px solid #e7e7e7",
         boxShadow: "none",
+        zIndex: 20,
       }}
     >
       <Toolbar
@@ -137,7 +139,6 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 onClick={() => {
                   handleClose();
                   handleLogout();
-                  navigate("/signin");
                 }}
               >
                 <FlexBetween color="red">

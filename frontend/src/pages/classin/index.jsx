@@ -122,6 +122,7 @@ const Classin = () => {
           borderRight: "1px solid #e7e7e7",
           display: "flex",
           flexDirection: "column",
+          gap: "10px",
         }}
       >
         <FlexBetween>

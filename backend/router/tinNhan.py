@@ -124,7 +124,7 @@ async def read(
         )
     result = []
     db_object = (
-        db.query(models.TinNhan, models.TaiKhoan)
+        db.query(models.TinNhan, models.TaiKhoan, models.LopHoc)
         .join(
             models.TaiKhoan,
             models.TinNhan.ma_taiKhoan == models.TaiKhoan.ma_taiKhoan,
@@ -133,10 +133,14 @@ async def read(
             models.NhomChat,
             models.NhomChat.ma_nhomChat == models.TinNhan.ma_nhomChat,
         )
+        .join(
+            models.LopHoc,
+            models.LopHoc.ma_lopHoc == models.NhomChat.ma_lopHoc,
+        )
         .filter(models.NhomChat.ma_lopHoc == ma_lopHoc)
         .filter(models.TinNhan.anTinNhan == 0)
     )
-    for TinNhan, TaiKhoan in db_object:
+    for TinNhan, TaiKhoan, LopHoc in db_object:
         TinNhan.ten_taiKhoan = TaiKhoan.hoTen
         TinNhan.email = TaiKhoan.email
         TinNhan.anhDaiDien = TaiKhoan.anhDaiDien
@@ -170,6 +174,10 @@ async def read(
                 TinNhan.ma_nguoiKetBan = db_friend.ma_nguoiKetBan
 
             TinNhan.position = "left"
+        if TinNhan.ma_taiKhoan == LopHoc.ma_giangVien:
+            TinNhan.isTeacher = 1
+        else:
+            TinNhan.isTeacher = 0
         result.append(TinNhan)
 
     # sort by thoiGianGui old to new
