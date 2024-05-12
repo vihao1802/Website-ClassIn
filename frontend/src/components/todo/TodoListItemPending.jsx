@@ -14,8 +14,8 @@ import theme from "theme";
 const TodoListItemPending = ({ item }) => {
   const navigate = useNavigate();
 
-  const handleClickDoExercise = (id) => {
-    // navigate(`/exercise/${id}/do`);
+  const handleClickDoExercise = (homeworkId) => {
+    navigate(`/dohomework/${homeworkId}`);
   };
   const handleClickDoTest = (id) => {
     navigate(`/tests/${id}/do`);
@@ -44,6 +44,14 @@ const TodoListItemPending = ({ item }) => {
               size="small"
               variant="outlined"
             />
+            {new Date(item.thoiGianKetThuc) <= new Date() && (
+              <Chip
+                label="Overdue"
+                color={"error"}
+                size="small"
+                variant="outlined"
+              />
+            )}
           </Stack>
         </Box>
         <Typography color="#666666">
@@ -51,35 +59,37 @@ const TodoListItemPending = ({ item }) => {
           {item.ten_lopHoc}
         </Typography>
       </Box>
-      <Button
-        onClick={
-          item.ma_baiTap
-            ? () => handleClickDoExercise()
-            : () => handleClickDoTest(item.ma_deKiemTra)
-        }
-        sx={{
-          textTransform: "none",
-          borderRadius: "20px",
-          marginLeft: "auto",
-          padding: "5px 25px",
-          backgroundColor: theme.main_theme,
-          "&:hover": {
-            backgroundColor: "#007850",
-          },
-        }}
-      >
-        <Box>
-          <Typography
-            sx={{
-              color: "white",
-              fontWeight: "bold",
-              textAlign: "center",
-            }}
-          >
-            {item.ma_baiTap ? "Submit" : "Start"}
-          </Typography>
-        </Box>
-      </Button>
+      {new Date(item.thoiGianKetThuc) > new Date() && (
+        <Button
+          onClick={
+            item.ma_baiTap
+              ? () => handleClickDoExercise(item.ma_baiTap)
+              : () => handleClickDoTest(item.ma_deKiemTra)
+          }
+          sx={{
+            textTransform: "none",
+            borderRadius: "20px",
+            marginLeft: "auto",
+            padding: "5px 25px",
+            backgroundColor: theme.main_theme,
+            "&:hover": {
+              backgroundColor: "#007850",
+            },
+          }}
+        >
+          <Box>
+            <Typography
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {item.ma_baiTap ? "Submit" : "Start"}
+            </Typography>
+          </Box>
+        </Button>
+      )}
     </ListItemButton>
   );
 };

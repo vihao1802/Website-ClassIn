@@ -25,6 +25,7 @@ import {
 } from "state/api";
 import AvatarName from "./AvatarName";
 import AlertComponent from "./AlertComponent";
+import { useNavigate } from "react-router-dom";
 const ChatBoxGroup = ({ classItem, clientId }) => {
   // scroll to bottom of chat box
   const boxRef = useRef(null);
@@ -33,6 +34,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   const [userScrolled, setUserScrolled] = useState(false);
   // const [notification, setNotification] = useState(0);
   const notification = useRef(0);
+  const navigate = useNavigate();
 
   // handle message text field
   let messageTextField = "";
@@ -181,7 +183,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   useEffect(() => {
     // Connect to WebSocket
     if (clientId && maNhomChat) {
-      const url = `ws://localhost:8000/api/ws/tai-khoan/${clientId}`;
+      const url = `${process.env.REACT_APP_WEBSOCKET_URL}/tai-khoan/${clientId}`;
       const ws = new WebSocket(url);
       console.log("connecting to " + url);
 
@@ -253,6 +255,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
         message: message,
         state: true,
       });
+      navigate("/chats");
     } else {
       console.error("Error changing status friend");
     }
@@ -530,7 +533,11 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                     text={item.noiDung}
                     date={item.thoiGianGui}
                     title={
-                      item.position === "right" ? "You" : item.ten_taiKhoan
+                      item.position === "right"
+                        ? "You"
+                        : item.isTeacher
+                        ? item.ten_taiKhoan + " (Teacher)"
+                        : item.ten_taiKhoan
                     }
                     titleColor="#009265"
                     styles={{ maxWidth: "400px" }}

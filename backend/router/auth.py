@@ -3,7 +3,7 @@ import smtplib
 from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Annotated
+from typing import Annotated, Optional
 
 import bcrypt
 import database
@@ -67,7 +67,7 @@ def authenticate_user(username: str, password: str, db: Session):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -216,9 +216,7 @@ def sendEmail(payload):
 
     token = create_access_token(payload)
     recover_url = (
-        load_env_global.get_DOMAIN_CLIENT()
-        + "/auth/recoverPassword?token="
-        + token
+        load_env_global.get_DOMAIN_CLIENT() + "/changepassword?token=" + token
     )
     html_string = """\
     <html lang='en'>

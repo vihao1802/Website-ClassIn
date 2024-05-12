@@ -67,9 +67,8 @@ const PeopleTab = ({ classItem, userId }) => {
         Classmates
       </Typography>
       {students.map((student) => (
-        <>
+        <Box key={student.ma_taiKhoan}>
           <Box
-            key={student.ma_taiKhoan}
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -100,7 +99,7 @@ const PeopleTab = ({ classItem, userId }) => {
             </Typography>
           </Box>
           <Divider variant="middle" color="#666666" />
-        </>
+        </Box>
       ))}
     </Box>
   );

@@ -113,7 +113,7 @@ export const api = createApi({
     }),
     getClassDetails: build.query({
       query: (cid) => `lopHoc/lopHoc/${cid}`,
-      providesTags: ["ClassDetails"],
+      providesTags: ["Class"],
     }),
     getClass: build.query({
       query: (uid) => `lopHoc/${uid}`,
@@ -137,7 +137,7 @@ export const api = createApi({
     }),
     getStudentsByClassId: build.query({
       query: (cid) => `lopHoc/${cid}/taiKhoan`,
-      providesTags: ["StudentsByClassId"],
+      providesTags: ["StudentsByClassId", "Class"],
     }),
     getTestByTestId: build.query({
       query: (tid) => `deKiemTra/${tid}`,
@@ -157,7 +157,7 @@ export const api = createApi({
     }),
     getClassByInstructorId: build.query({
       query: (uid) => `lopHoc/taiKhoan/${uid}`,
-      providesTags: ["ClassByInstructorId"],
+      providesTags: ["Class"],
     }),
     getUserSubmissionsDetails: build.query({
       query: (tid) => `deKiemTra/${tid}/getSubmissionDetails`,
@@ -255,7 +255,7 @@ export const api = createApi({
         url: `auth/forgot-password`,
         method: "POST",
         body: {
-          user_email: recoverEmail,
+          email: recoverEmail,
         },
       }),
     }),
@@ -538,7 +538,7 @@ export const api = createApi({
         method: "PUT",
         body: data,
       }),
-      providesTags: ["User"],
+      providesTags: ["User", "UnregisteredUsers"],
     }),
     updatePassword: build.mutation({
       query: ({ acc_id, data }) => ({

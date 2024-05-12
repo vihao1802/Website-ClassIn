@@ -22,12 +22,12 @@ import FlexBetween from "components/FlexBetween";
 const schemaChangePassword = yup.object({
   currentPassword: yup
     .string()
-    .trim("No leading or trailing whitespace allowed")
-    .matches(
-      /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{1,}$/,
-      "Have at least one Uppercase and one special character and one number",
-    )
-    .min(8, "Password should be of minimum 8 characters length")
+    // .trim("No leading or trailing whitespace allowed")
+    // .matches(
+    //   /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{1,}$/,
+    //   "Have at least one Uppercase and one special character and one number",
+    // )
+    // .min(8, "Password should be of minimum 8 characters length")
     .required("Current Password is required"),
   newPassword: yup
     .string()
@@ -38,6 +38,13 @@ const schemaChangePassword = yup.object({
     )
     .min(8, "Password Verify should be of minimum 8 characters length")
     .required("New Password is required"),
+  cfmPassword: yup
+    .string()
+    .oneOf(
+      [yup.ref("newPassword"), null],
+      "Confirm Password must match New Password",
+    )
+    .required("Confirm Password is required"),
 });
 const VerifyPassword = () => {
   const { token } = useParams();
@@ -64,16 +71,18 @@ const VerifyPassword = () => {
     initialValues: {
       currentPassword: "",
       newPassword: "",
+      cfmPassword: "",
     },
     validationSchema: schemaChangePassword,
     onSubmit: async (values) => {
+      console.log(jwtDecode(token).id);
       const result = await updatePassword({
         acc_id: jwtDecode(token).id,
         data: {
           currentPassword: values.currentPassword,
           newPassword: values.newPassword,
         },
-      }); // replace yourPasswordData with actual data
+      });
       if (result.error) {
         setShowAlert({
           message: result.error.data.detail,
@@ -102,156 +111,186 @@ const VerifyPassword = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
             width: "100%",
-            gap: 3,
-            marginTop: "10px",
+            height: "100vh",
+            border: "1px solid gray",
+            borderRadius: "10px",
           }}
         >
+          <Typography variant="h3" color="black">
+            Change Password
+          </Typography>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
               width: "50%",
+              gap: 3,
+              marginTop: "10px",
             }}
           >
-            <Typography variant="h7" color="#009265" fontWeight="bold">
-              Current Password
-            </Typography>
-            <FormControl variant="outlined">
-              <OutlinedInput
-                size="small"
-                placeholder="Current Password"
-                type={showCurrentPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowCurrentPassword}
-                      onMouseDown={handleMouseDownCurrentPassword}
-                      edge="end"
-                    >
-                      {showCurrentPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                onBlur={formikChangePassword.handleBlur}
-                onChange={formikChangePassword.handleChange}
-                value={formikChangePassword.values.currentPassword}
-                name="currentPassword"
-                color="success"
-                error={
-                  Boolean(formikChangePassword.touched.currentPassword) &&
-                  Boolean(formikChangePassword.errors.currentPassword)
-                }
-              />
-              <FormHelperText sx={{ color: "red" }}>
-                {formikChangePassword.touched.currentPassword &&
-                  formikChangePassword.errors.currentPassword}
-              </FormHelperText>
-            </FormControl>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "50%",
+              }}
+            >
+              <Typography variant="h7" color="#009265" fontWeight="bold">
+                Current Password
+              </Typography>
+              <FormControl variant="outlined">
+                <OutlinedInput
+                  size="small"
+                  placeholder="Current Password"
+                  type={showCurrentPassword ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowCurrentPassword}
+                        onMouseDown={handleMouseDownCurrentPassword}
+                        edge="end"
+                      >
+                        {showCurrentPassword ? (
+                          <Visibility />
+                        ) : (
+                          <VisibilityOff />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  onBlur={formikChangePassword.handleBlur}
+                  onChange={formikChangePassword.handleChange}
+                  value={formikChangePassword.values.currentPassword}
+                  name="currentPassword"
+                  color="success"
+                  error={
+                    Boolean(formikChangePassword.touched.currentPassword) &&
+                    Boolean(formikChangePassword.errors.currentPassword)
+                  }
+                />
+                <FormHelperText sx={{ color: "red" }}>
+                  {formikChangePassword.touched.currentPassword &&
+                    formikChangePassword.errors.currentPassword}
+                </FormHelperText>
+              </FormControl>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "50%",
+              }}
+            >
+              <Typography variant="h7" color="#009265" fontWeight="bold">
+                New Password
+              </Typography>
+              <FormControl variant="outlined">
+                <OutlinedInput
+                  size="small"
+                  placeholder="New Password"
+                  type={showNewPassword ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowNewPassword}
+                        onMouseDown={handleMouseDownNewPassword}
+                        edge="end"
+                      >
+                        {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  onBlur={formikChangePassword.handleBlur}
+                  onChange={formikChangePassword.handleChange}
+                  value={formikChangePassword.values.newPassword}
+                  name="newPassword"
+                  color="success"
+                  error={
+                    Boolean(formikChangePassword.touched.newPassword) &&
+                    Boolean(formikChangePassword.errors.newPassword)
+                  }
+                />
+                <FormHelperText sx={{ color: "red" }}>
+                  {formikChangePassword.touched.newPassword &&
+                    formikChangePassword.errors.newPassword}
+                </FormHelperText>
+              </FormControl>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "50%",
+              }}
+            >
+              <Typography variant="h7" color="#009265" fontWeight="bold">
+                Confirm Password
+              </Typography>
+              <FormControl variant="outlined">
+                <OutlinedInput
+                  size="small"
+                  placeholder="Confirm Password"
+                  type={showNewPassword ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowNewPassword}
+                        onMouseDown={handleMouseDownNewPassword}
+                        edge="end"
+                      >
+                        {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  onBlur={formikChangePassword.handleBlur}
+                  onChange={formikChangePassword.handleChange}
+                  value={formikChangePassword.values.cfmPassword}
+                  name="cfmPassword"
+                  color="success"
+                  error={
+                    Boolean(formikChangePassword.touched.cfmPassword) &&
+                    Boolean(formikChangePassword.errors.cfmPassword)
+                  }
+                />
+                <FormHelperText sx={{ color: "red" }}>
+                  {formikChangePassword.touched.cfmPassword &&
+                    formikChangePassword.errors.cfmPassword}
+                </FormHelperText>
+              </FormControl>
+            </Box>
           </Box>
-          <Box
+          <FlexBetween
             sx={{
-              display: "flex",
-              flexDirection: "column",
               width: "50%",
-            }}
-          >
-            <Typography variant="h7" color="#009265" fontWeight="bold">
-              New Password
-            </Typography>
-            <FormControl variant="outlined">
-              <OutlinedInput
-                size="small"
-                placeholder="New Password"
-                type={showNewPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowNewPassword}
-                      onMouseDown={handleMouseDownNewPassword}
-                      edge="end"
-                    >
-                      {showNewPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                onBlur={formikChangePassword.handleBlur}
-                onChange={formikChangePassword.handleChange}
-                value={formikChangePassword.values.newPassword}
-                name="newPassword"
-                color="success"
-                error={
-                  Boolean(formikChangePassword.touched.newPassword) &&
-                  Boolean(formikChangePassword.errors.newPassword)
-                }
-              />
-              <FormHelperText sx={{ color: "red" }}>
-                {formikChangePassword.touched.newPassword &&
-                  formikChangePassword.errors.newPassword}
-              </FormHelperText>
-            </FormControl>
-          </Box>
-          <Box
-            sx={{
               display: "flex",
-              flexDirection: "column",
-              width: "50%",
+              justifyContent: "center",
+              alignItems: "center",
             }}
+            mt="20px"
           >
-            <Typography variant="h7" color="#009265" fontWeight="bold">
-              Confirm Password
-            </Typography>
-            <FormControl variant="outlined">
-              <OutlinedInput
-                size="small"
-                placeholder="New Password"
-                type={showNewPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowNewPassword}
-                      onMouseDown={handleMouseDownNewPassword}
-                      edge="end"
-                    >
-                      {showNewPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                onBlur={formikChangePassword.handleBlur}
-                onChange={formikChangePassword.handleChange}
-                value={formikChangePassword.values.newPassword}
-                name="newPassword"
-                color="success"
-                error={
-                  Boolean(formikChangePassword.touched.newPassword) &&
-                  Boolean(formikChangePassword.errors.newPassword)
-                }
-              />
-              <FormHelperText sx={{ color: "red" }}>
-                {formikChangePassword.touched.newPassword &&
-                  formikChangePassword.errors.newPassword}
-              </FormHelperText>
-            </FormControl>
-          </Box>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: loadingUpdatePassword ? "#ffffff" : "#009265",
+                "&:hover": { backgroundColor: "#007850" },
+                width: "50%",
+              }}
+              disabled={loadingUpdatePassword}
+              type="submit"
+            >
+              {loadingUpdatePassword ? "Updating..." : "Update"}
+            </Button>
+          </FlexBetween>
         </Box>
-        <FlexBetween mt="20px">
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: loadingUpdatePassword ? "#ffffff" : "#009265",
-              "&:hover": { backgroundColor: "#007850" },
-              width: "20%",
-            }}
-            disabled={loadingUpdatePassword}
-            type="submit"
-          >
-            {loadingUpdatePassword ? "Updating..." : "Update"}
-          </Button>
-        </FlexBetween>
       </form>
     </Box>
   );
