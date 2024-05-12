@@ -119,7 +119,7 @@ const Home = () => {
           justifyContent="left"
           style={{ marginTop: "200px", marginLeft: "50px", width: "auto" }}
         >
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <Typography
               sx={{
                 color: "#009265",
@@ -137,7 +137,7 @@ const Home = () => {
             justifyContent="left"
             style={{ marginTop: "100px", width: "1200px" }}
           >
-            <Grid xs={12}>
+            <Grid item xs={12}>
               <Grid container spacing={2} justifyContent={"left"}>
                 <Grid
                   item
@@ -200,7 +200,7 @@ const Home = () => {
             justifyContent="left"
             style={{ marginTop: "250px", width: "1200px" }}
           >
-            <Grid xs={12}>
+            <Grid item xs={12}>
               <Grid
                 container
                 spacing={2}
@@ -271,7 +271,7 @@ const Home = () => {
             justifyContent="left"
             style={{ marginTop: "250px", width: "1200px" }}
           >
-            <Grid xs={12}>
+            <Grid item xs={12}>
               <Grid container spacing={2} justifyContent={"left"}>
                 <Grid
                   item
