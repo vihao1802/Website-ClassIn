@@ -94,7 +94,9 @@ const PeopleTab = ({ classItem, userId }) => {
                 padding: "10px 0",
               }}
             >
-              {student.ma_taiKhoan === userId ? "You" : student.hoTen}
+              {student.ma_taiKhoan === userId
+                ? student.hoTen + " (You)"
+                : student.hoTen}
             </Typography>
           </Box>
           <Divider variant="middle" color="#666666" />

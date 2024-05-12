@@ -43,7 +43,14 @@ const schema = yup.object({
   answerD: yup.string().required("Answer D is required"),
 });
 
-const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
+const AddQuestionForm = ({
+  open,
+  handleClose,
+  mode,
+  userId,
+  questionId,
+  alertComponent,
+}) => {
   const [alert, setAlert] = useState({
     open: false,
     severity: "success",
@@ -78,12 +85,12 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
           laCauTraLoiDung: selectedAnwser === i ? 1 : 0,
         });
       }
-      setAlert({
+      handleClose();
+      alertComponent({
         open: true,
         severity: "success",
-        message: "Thêm câu hỏi thành công!",
+        message: "Add question successfully!",
       });
-      handleClose();
     },
   });
 
@@ -127,12 +134,12 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
           });
         }
       }
-      setAlert({
+      handleClose();
+      alertComponent({
         open: true,
         severity: "success",
-        message: "Cập nhật câu hỏi thành công!",
+        message: "Update question successfully!",
       });
-      handleClose();
     },
   });
   const { data: questionsAnswers, isLoading: isQuestionsAnswersLoading } =
@@ -159,6 +166,18 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
       );
     }
   }, [isQuestionsAnswersLoading, questionsAnswers]);
+
+  useEffect(() => {
+    if (mode === "add") {
+      forMikAdd.setValues({
+        title: "",
+        answerA: "",
+        answerB: "",
+        answerC: "",
+        answerD: "",
+      });
+    }
+  }, [mode]);
 
   const [file, setFile] = useState(null);
 
@@ -190,7 +209,7 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
         setAlert({
           open: true,
           severity: "error",
-          message: "File không hợp lệ.",
+          message: "File is not in the correct format.",
         });
         return;
       }
@@ -200,7 +219,7 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
         setAlert({
           open: true,
           severity: "error",
-          message: "Không tìm thấy câu hỏi trong file.",
+          message: "Can not find any question in the file.",
         });
         return;
       }
@@ -212,7 +231,7 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
           setAlert({
             open: true,
             severity: "error",
-            message: `Câu hỏi số ${index + 1} không có nội dung.`,
+            message: `The question number ${index + 1} is empty.`,
           });
           return;
         }
@@ -222,7 +241,7 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
             setAlert({
               open: true,
               severity: "error",
-              message: `Câu hỏi số ${index + 1} có một đáp án trống.`,
+              message: `The question number ${index + 1} has an empty option.`,
             });
             return;
           }
@@ -237,7 +256,9 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
           setAlert({
             open: true,
             severity: "error",
-            message: `Câu hỏi số ${index + 1} không có đáp án đúng.`,
+            message: `The question number ${
+              index + 1
+            } does not have a correct answer.`,
           });
           return;
         }
@@ -263,12 +284,12 @@ const AddQuestionForm = ({ open, handleClose, mode, userId, questionId }) => {
           });
         }
       });
-      setAlert({
+      handleClose();
+      alertComponent({
         open: true,
         severity: "success",
-        message: "Thêm câu hỏi thành công!",
+        message: "Add questions successfully!",
       });
-      handleClose();
     };
     if (file.path.includes(".docx")) reader.readAsArrayBuffer(file);
     else if (file.path.includes(".txt")) reader.readAsText(file);

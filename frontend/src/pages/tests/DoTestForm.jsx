@@ -39,6 +39,7 @@ const DoTestForm = ({ mode }) => {
   const startTime = useMemo(() => dayjs().format("YYYY-MM-DD HH:mm:ss"), []);
   const [shuffle, setShuffle] = useState(false);
   const [testOrderArray, setTestOrderArray] = useState([]);
+  const [openConfirmDialogSubmit, setOpenConfirmDialogSubmit] = useState(false);
 
   const { data: testItem, isLoading: isTestLoading } =
     useGetTestByTestIdQuery(testId);
@@ -98,7 +99,48 @@ const DoTestForm = ({ mode }) => {
   const [createStudentWork] = usePostCreateStudentWorkMutation();
   const [createStudentWorkDetail] = usePostCreateStudentWorkDetailMutation();
 
+  const [removeEvent, setRemoveEvent] = useState(false);
+  useEffect(() => {
+    if (mode === "do" && !removeEvent && questionsSorted.length > 0) {
+      // prevent load page
+      const handleBeforeUnload = (e) => {
+        handleSubmit();
+        window.history.back();
+
+        // Ngăn chặn trang web từ việc reload
+        e.preventDefault();
+        return (e.returnValue = "Bạn có chắc chắn muốn rời khỏi?");
+      };
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      // prevent change tab
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "hidden") {
+          handleSubmit();
+        }
+      };
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+
+      // prevent back button
+      window.onpopstate = () => {
+        handleSubmit();
+      };
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
+        window.onpopstate = null;
+      };
+    }
+  }, [mode, removeEvent, questionsSorted]);
+
   const handleSubmit = async () => {
+    if (questionsSorted.length === 0) {
+      console.log("questionsSorted is empty");
+      return;
+    }
     const correctAnswers = questionsSorted.filter((item, index) => {
       return item.cauTraLoi.find(
         (answer) =>
@@ -117,17 +159,17 @@ const DoTestForm = ({ mode }) => {
       correctAnswers: correctAnswers,
     };
     const response = await createStudentWork(data).unwrap();
-    console.log(response);
+
     for (let i = 0; i < questionsSorted.length; i++) {
       const detailData = {
         wid: response.ma_baiLamKiemTra,
         qid: questionsSorted[i].cauHoi.ma_cauHoi,
-        aid: isChoose[i].aid,
+        aid: isChoose[i].aid ? isChoose[i].aid : null,
         order: i + 1,
       };
-      await createStudentWorkDetail(detailData).unwrap();
+      createStudentWorkDetail(detailData).unwrap();
     }
-    navigate(-1);
+    setOpenConfirmDialogSubmit(true);
   };
 
   //work
@@ -144,7 +186,6 @@ const DoTestForm = ({ mode }) => {
       testDetails &&
       !isTestDetailsLoading
     ) {
-      console.log(testDetails);
       const tempArray = [...testDetails];
       const newQuestionsSorted = tempArray.sort((a, b) => {
         const orderA = workItem.find(
@@ -571,6 +612,29 @@ const DoTestForm = ({ mode }) => {
       ) : (
         <Loading />
       )}
+      <Dialog
+        open={openConfirmDialogSubmit}
+        onClose={() => setOpenConfirmDialogSubmit(false)}
+      >
+        <DialogTitle>{"Notification"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Submit successfully!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setRemoveEvent(true);
+              navigate(-1);
+            }}
+            autoFocus
+            color="success"
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

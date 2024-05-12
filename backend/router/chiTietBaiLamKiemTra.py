@@ -21,6 +21,7 @@ async def create(
     ma_baiLamKiemTra = str(schema_object.ma_baiLamKiemTra)
     ma_cauHoi = str(schema_object.ma_cauHoi)
     ma_dapAnChon = str(schema_object.ma_dapAnChon)
+    print(ma_dapAnChon)
     # check ma_baiLamKiemTra
     db_object_check = (
         db.query(models.BaiLamKiemTra)
@@ -41,19 +42,13 @@ async def create(
     if db_object_check is None:
         raise HTTPException(status_code=400, detail="ma_cauHoi not found")
 
-    # check ma_cauTraLoi
-    db_object_check = (
-        db.query(models.CauTraLoi)
-        .filter(models.CauTraLoi.ma_cauTraLoi == ma_dapAnChon)
-        .first()
-    )
-    if db_object_check is None:
-        raise HTTPException(status_code=400, detail="ma_cauTraLoi not found")
-
     db_object = models.ChiTietBaiLamKiemTra(**schema_object.dict())
     db_object.ma_baiLamKiemTra = ma_baiLamKiemTra
     db_object.ma_cauHoi = ma_cauHoi
-    db_object.ma_dapAnChon = ma_dapAnChon
+    if ma_dapAnChon == "None":
+        db_object.ma_dapAnChon = None
+    else:
+        db_object.ma_dapAnChon = ma_dapAnChon
 
     db.add(db_object)
     db.commit()
