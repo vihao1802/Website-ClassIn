@@ -241,6 +241,14 @@ export const api = createApi({
       query: (cid) => `chuong/lopHoc/${cid}`,
       providesTags: ["Units"],
     }),
+    getTestWorksByUserId: build.query({
+      query: (uid) => `baiLamKiemTra/taiKhoan/${uid}`,
+      providesTags: ["Tests"],
+    }),
+    getExercisesByUnitId: build.query({
+      query: (uid) => `bai-tap/chuong/${uid}`,
+      providesTags: ["Exercises"],
+    }),
     // POST METHODS
     postForgotPassword: build.mutation({
       query: (recoverEmail) => ({
@@ -660,4 +668,6 @@ export const {
   usePutDeleteUnitMutation,
   usePutEditTestMutation,
   usePostForgotPasswordMutation,
+  useGetTestWorksByUserIdQuery,
+  useGetExercisesByUnitIdQuery,
 } = api;

@@ -159,3 +159,18 @@ async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
         "users_submit": user_submit,
         "users_unsubmit": user_unsubmit,
     }
+
+
+@router.get("/chuong/{ma_chuong}", status_code=status.HTTP_200_OK)
+async def get_bai_tap_by_chuong(
+    ma_chuong: str, db: Session = Depends(database.get_db)
+):
+    db_object = (
+        db.query(models.BaiTap)
+        .filter(models.BaiTap.ma_chuong == ma_chuong)
+        .all()
+    )
+    if db_object is None:
+        raise HTTPException(status_code=404, detail="ma_chuong not found")
+
+    return db_object
