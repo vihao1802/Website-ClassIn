@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -415,7 +416,7 @@ class BaiLamKiemTra(BaiLamKiemTraBase):
 class ChiTietBaiLamKiemTraBase(BaseModel):
     ma_baiLamKiemTra: UUID
     ma_cauHoi: UUID
-    ma_dapAnChon: UUID  # ma_cauTraLoi
+    ma_dapAnChon: Union[UUID, None] = None  # ma_cauTraLoi
     thuTu: int
 
 

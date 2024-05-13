@@ -11,9 +11,12 @@ import FlexBetween from "components/FlexBetween";
 import Header from "components/Header";
 import AddQuestionForm from "components/ModalAddQuestion";
 import { useGetQuestionsQuery, useDeleteQuestionMutation } from "state/api";
+import AlertComponent from "components/AlertComponent";
+import { getUserId_Cookie } from "utils/handleCookies";
 
 const Questions = () => {
-  const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  // const userId = "1cfa4d8e-5f63-45f6-9cc9-b1ecae2c14f9";
+  const userId = getUserId_Cookie();
   const [openAdd, setOpenAdd] = useState(false);
   const handleOpenAdd = () => setOpenAdd(true);
   const handleCloseAdd = () => setOpenAdd(false);
@@ -62,9 +65,20 @@ const Questions = () => {
       },
     },
   ];
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   return (
     <Box sx={{ margin: "0 50px", padding: "30px" }}>
+      <AlertComponent
+        open={alert.open}
+        message={alert.message}
+        severity={alert.severity}
+        onClose={() => setAlert({ ...alert, open: false })}
+      />
       <Header title="QUESTIONS" subtitle="List of questions" />
       <Box m="0 auto" width="1000px">
         <Paper>
@@ -138,6 +152,7 @@ const Questions = () => {
         handleClose={handleCloseAdd}
         mode="add"
         userId={userId}
+        alertComponent={setAlert}
       />
       <AddQuestionForm
         open={openEdit}
@@ -145,6 +160,7 @@ const Questions = () => {
         mode="edit"
         userId={userId}
         questionId={selectedRow?.ma_cauHoi}
+        alertComponent={setAlert}
       />
     </Box>
   );

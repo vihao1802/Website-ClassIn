@@ -192,7 +192,7 @@ const TestExcerciseDetail = ({ mode }) => {
       headerName: "Score",
       width: 150,
       editable: false,
-      sortable: false,
+      sortable: true,
       renderCell: (item) => {
         return item.value === -1 ? "Not graded" : item.value;
       },
@@ -319,8 +319,32 @@ const TestExcerciseDetail = ({ mode }) => {
               </Typography>
               <Chip
                 variant="primary"
-                color="success"
-                label="Ongoing"
+                label={
+                  mode === "test"
+                    ? dayjs().isBefore(testItemData.thoiGianBatDau)
+                      ? "Not started"
+                      : dayjs().isBefore(testItemData.thoiGianKetThuc)
+                      ? "Ongoing"
+                      : "Ended"
+                    : dayjs().isBefore(exerciseItemData.thoiGianBatDau)
+                    ? "Not started"
+                    : dayjs().isBefore(exerciseItemData.thoiGianKetThuc)
+                    ? "Ongoing"
+                    : "Ended"
+                }
+                color={
+                  mode === "test"
+                    ? dayjs().isBefore(testItemData.thoiGianBatDau)
+                      ? "primary"
+                      : dayjs().isBefore(testItemData.thoiGianKetThuc)
+                      ? "success"
+                      : "error"
+                    : dayjs().isBefore(exerciseItemData.thoiGianBatDau)
+                    ? "primary"
+                    : dayjs().isBefore(exerciseItemData.thoiGianKetThuc)
+                    ? "success"
+                    : "error"
+                }
                 size="small"
               />
             </FlexBetween>
