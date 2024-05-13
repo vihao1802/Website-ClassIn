@@ -19,6 +19,7 @@ import {
   DeleteRounded,
   HistoryEduRounded,
   Grade,
+  RefreshRounded,
 } from "@mui/icons-material";
 import {
   Tab,
@@ -47,6 +48,11 @@ import {
   Modal,
   Avatar,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 
 import "react-chat-elements/dist/main.css";
@@ -61,6 +67,7 @@ import {
   useGetUnitActivitiesQuery,
   useGetClassDetailsQuery,
   usePutDeleteUnitMutation,
+  useGetTestWorksByUserIdQuery,
 } from "state/api";
 import AvatarName from "./AvatarName";
 import Loading from "./Loading";
@@ -144,7 +151,12 @@ const ClassWidget = ({ classItem, userId }) => {
   const handleOpenEditTest = () => setOpenEditTest(true);
   const handleCloseEditTest = () => setOpenEditTest(false);
 
-  if (isUnitsLoading) {
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [dialogTest, setDialogTest] = useState("");
+  const { data: testWorksData, isLoading: testWorksDataLoading } =
+    useGetTestWorksByUserIdQuery(userId);
+
+  if (isUnitsLoading || testWorksDataLoading) {
     return <Loading />;
   }
   return (
@@ -390,6 +402,16 @@ const ClassWidget = ({ classItem, userId }) => {
                   </Menu>
                 </FlexBetween>
               )}
+              <IconButton
+                sx={{
+                  color: "#666666",
+                  width: "40px",
+                  marginLeft: "10px",
+                }}
+                onClick={refetchUnits}
+              >
+                <RefreshRounded />
+              </IconButton>
             </FlexBetween>
           </FlexBetween>
 
@@ -467,11 +489,49 @@ const ClassWidget = ({ classItem, userId }) => {
                         <ListItem key={testIndex} disablePadding>
                           <ListItemButton
                             sx={{ height: "80px" }}
-                            onClick={() =>
-                              classItem?.ma_giangVien === userId
-                                ? navigate(`/tests/${test.ma_deKiemTra}/common`)
-                                : navigate(`/tests/${test.ma_deKiemTra}/do`)
-                            }
+                            onClick={() => {
+                              if (classItem?.ma_giangVien === userId)
+                                navigate(`/tests/${test.ma_deKiemTra}/common`);
+                              else {
+                                if (dayjs().isBefore(test.thoiGianBatDau)) {
+                                  setAlert({
+                                    message: "Test is not started yet",
+                                    severity: "info",
+                                    open: true,
+                                  });
+                                } else {
+                                  const testWork = testWorksData?.find(
+                                    (item) =>
+                                      item.ma_deKiemTra === test.ma_deKiemTra,
+                                  );
+                                  if (!testWork) {
+                                    if (
+                                      dayjs().isBefore(test.thoiGianKetThuc)
+                                    ) {
+                                      setOpenConfirmDialog(true);
+                                      setDialogTest(test.ma_deKiemTra);
+                                    } else
+                                      setAlert({
+                                        message: "Test is ended",
+                                        severity: "error",
+                                        open: true,
+                                      });
+                                  } else {
+                                    if (test.xemDapAn === 1)
+                                      navigate(
+                                        `/tests/${test.ma_deKiemTra}/work/${testWork.ma_baiLamKiemTra}`,
+                                      );
+                                    else
+                                      setAlert({
+                                        message:
+                                          "This test is not shown answer",
+                                        severity: "warning",
+                                        open: true,
+                                      });
+                                  }
+                                }
+                              }
+                            }}
                           >
                             <ListItemIcon>
                               <HistoryEduRounded />
@@ -483,8 +543,20 @@ const ClassWidget = ({ classItem, userId }) => {
                                 </Typography>
                                 <Box p="3px 0 3px 10px">
                                   <Chip
-                                    label="Ongoing"
-                                    color="success"
+                                    label={
+                                      dayjs().isBefore(test.thoiGianBatDau)
+                                        ? "Not started"
+                                        : dayjs().isBefore(test.thoiGianKetThuc)
+                                        ? "Ongoing"
+                                        : "Ended"
+                                    }
+                                    color={
+                                      dayjs().isBefore(test.thoiGianBatDau)
+                                        ? "primary"
+                                        : dayjs().isBefore(test.thoiGianKetThuc)
+                                        ? "success"
+                                        : "error"
+                                    }
                                     size="small"
                                   />
                                 </Box>
@@ -495,7 +567,7 @@ const ClassWidget = ({ classItem, userId }) => {
                                   "HH:mm - DD/MM/YYYY",
                                 ) +
                                   " to " +
-                                  dayjs(test.hanChotNopBai).format(
+                                  dayjs(test.thoiGianKetThuc).format(
                                     "HH:mm - DD/MM/YYYY",
                                   )}
                               </Typography>
@@ -720,6 +792,34 @@ const ClassWidget = ({ classItem, userId }) => {
         alert={setAlert}
         test={currentTest}
       />
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+      >
+        <DialogTitle>{"Confirm Do The Test"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <strong>
+              You can not exit while doing test. If you try to exit, your test
+              will automatically submit.
+            </strong>
+            <br />
+            Are you sure you want to do the test?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirmDialog(false)} color="success">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => dialogTest && navigate(`/tests/${dialogTest}/do`)}
+            autoFocus
+            color="success"
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

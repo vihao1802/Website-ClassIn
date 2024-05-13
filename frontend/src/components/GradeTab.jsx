@@ -3,16 +3,24 @@ import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import DataGridCustomToolbar from "./DataGridCustomToolbar";
 import { LineChart } from "@mui/x-charts";
-import { Box, Grid, Paper, Typography } from "@mui/material";
-import { Autocomplete } from "@mui/material";
-import { TextField } from "@mui/material";
-import { FormControl } from "@mui/material";
-import { Select } from "@mui/material";
-import { MenuItem } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Chip,
+  Autocomplete,
+  TextField,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import {
   useGetUnitsByClassIdQuery,
   useGetTestsByUnitIdQuery,
   useGetUserSubmissionsDetailsQuery,
+  useGetExercisesByUnitIdQuery,
+  useGetUserSubmissionsExerciseDetailsQuery,
 } from "state/api";
 import {
   PeopleRounded,
@@ -25,7 +33,7 @@ import {
 import Loading from "./Loading";
 import AvatarName from "./AvatarName";
 
-const columns = [
+const testColumns = [
   {
     field: "hoTen",
     headerName: "Student Name",
@@ -82,9 +90,79 @@ const columns = [
   },
 ];
 
+const exerciseColumns = [
+  {
+    field: "hoTen",
+    headerName: "Student Name",
+    width: 300,
+    editable: false,
+    sortable: false,
+    renderCell: (item) => {
+      return (
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
+          {/* <Box
+          component="img"
+          alt="profile"
+          src={profileImage}
+          height="32px"
+          width="32px"
+          borderRadius="50%"
+          sx={{ objectFit: "cover" }}
+        /> */}
+          <AvatarName name={item.value} />
+          <Typography
+            sx={{
+              fontSize: "16px",
+              color: "black",
+              marginLeft: "10px",
+              padding: "10px 0",
+            }}
+          >
+            {item.value}
+          </Typography>
+        </Box>
+      );
+    },
+  },
+  {
+    field: "email",
+    headerName: "Email",
+    width: 300,
+    editable: false,
+    sortable: false,
+  },
+  {
+    field: "nopTre",
+    headerName: "Status",
+    width: 200,
+    editable: false,
+    sortable: false,
+    renderCell: (item) => {
+      return (
+        <Chip
+          variant="outlined"
+          color={item.value === 1 ? "error" : "success"}
+          label={item.value === 1 ? "Late" : "On time"}
+          size="small"
+        />
+      );
+    },
+  },
+  {
+    field: "diem",
+    headerName: "Score",
+    width: 200,
+    editable: false,
+    sortable: true,
+    renderCell: (item) => {
+      return item.value === -1 ? "Not graded" : item.value;
+    },
+  },
+];
+
 const GradeTab = ({ classId }) => {
   // grade tab
-  const [testOrExcercise, setTestOrExercise] = React.useState("te");
+  const [testOrExcercise, setTestOrExercise] = useState("te");
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
 
@@ -97,16 +175,28 @@ const GradeTab = ({ classId }) => {
   const { data: units, isLoading: unitsLoading } =
     useGetUnitsByClassIdQuery(classId);
 
-  const [currentTest, setCurrentTest] = React.useState(null);
+  const [currentTest, setCurrentTest] = useState(null);
   const [statisticItems, setStatisticItems] = useState([]);
 
   const { data: tests, isLoading: testsLoading } = useGetTestsByUnitIdQuery(
     currentUnit?.value,
-    { skip: Boolean(!currentUnit) },
+    { skip: Boolean(!currentUnit) || testOrExcercise === "ex" },
   );
   const { data: testResults, isLoading: testResultsLoading } =
     useGetUserSubmissionsDetailsQuery(currentTest?.value, {
-      skip: Boolean(!currentTest),
+      skip: Boolean(!currentTest) || testOrExcercise === "ex",
+    });
+
+  const [currentExercise, setCurrentExercise] = useState(null);
+
+  const { data: exercises, isLoading: exercisesLoading } =
+    useGetExercisesByUnitIdQuery(currentUnit?.value, {
+      skip: Boolean(!currentUnit) || testOrExcercise === "te",
+    });
+
+  const { data: exerciseResults, isLoading: exerciseResultsLoading } =
+    useGetUserSubmissionsExerciseDetailsQuery(currentExercise?.value, {
+      skip: Boolean(!currentExercise) || testOrExcercise === "te",
     });
 
   useEffect(() => {
@@ -117,13 +207,24 @@ const GradeTab = ({ classId }) => {
           value: units[0].ma_chuong,
         });
     }
-    if (tests && !testsLoading) {
-      tests.length <= 0
-        ? setCurrentTest(null)
-        : setCurrentTest({
-            label: tests[0].tieuDe,
-            value: tests[0].ma_deKiemTra,
-          });
+    if (testOrExcercise === "te") {
+      if (tests && !testsLoading) {
+        tests.length <= 0
+          ? setCurrentTest(null)
+          : setCurrentTest({
+              label: tests[0].tieuDe,
+              value: tests[0].ma_deKiemTra,
+            });
+      }
+    } else {
+      if (exercises && !exercisesLoading) {
+        exercises.length <= 0
+          ? setCurrentExercise(null)
+          : setCurrentExercise({
+              label: exercises[0].tieuDe,
+              value: exercises[0].ma_baiTap,
+            });
+      }
     }
   }, [units, unitsLoading]);
 
@@ -138,8 +239,32 @@ const GradeTab = ({ classId }) => {
     }
   }, [tests, testsLoading]);
 
+  useEffect(() => {
+    if (exercises && !exercisesLoading) {
+      exercises.length <= 0
+        ? setCurrentExercise(null)
+        : setCurrentExercise({
+            label: exercises[0].tieuDe,
+            value: exercises[0].ma_baiTap,
+          });
+    }
+  }, [exercises, exercisesLoading]);
+
   const scoreArray = useMemo(() => {
-    if (testResults && !testResultsLoading) {
+    if (
+      testOrExcercise === "ex" &&
+      exerciseResults &&
+      !exerciseResultsLoading
+    ) {
+      const studentScores = exerciseResults?.users_submit.map(
+        (user) => user.diem,
+      );
+      const scoreDistribution = Array.from({ length: 11 }, () => 0);
+      studentScores.forEach((score) => {
+        scoreDistribution[score]++;
+      });
+      return scoreDistribution;
+    } else if (testOrExcercise === "te" && testResults && !testResultsLoading) {
       const studentScores = testResults?.users_submit.map((user) => user.diem);
       const scoreDistribution = Array.from({ length: 11 }, () => 0);
       studentScores.forEach((score) => {
@@ -148,10 +273,126 @@ const GradeTab = ({ classId }) => {
       return scoreDistribution;
     }
     return [];
-  }, [testResults, testResultsLoading]);
+  }, [
+    testResults,
+    testResultsLoading,
+    exerciseResults,
+    exerciseResultsLoading,
+    testOrExcercise,
+  ]);
 
   useEffect(() => {
-    if (testResults && !testResultsLoading) {
+    if (
+      testOrExcercise === "ex" &&
+      exerciseResults &&
+      !exerciseResultsLoading
+    ) {
+      setStatisticItems([
+        {
+          label: "Submitted",
+          value: exerciseResults?.users_submit.length,
+          icon: (
+            <PeopleRounded
+              sx={{
+                color: "#009265",
+                fontSize: "40px",
+              }}
+            />
+          ),
+        },
+        {
+          label: "Not Submitted",
+          value: exerciseResults?.users_unsubmit.length,
+          icon: (
+            <PersonOffRounded
+              sx={{
+                color: "#009265",
+                fontSize: "40px",
+              }}
+            />
+          ),
+        },
+        {
+          label: "Average Score",
+          value:
+            exerciseResults?.users_submit.length !== 0
+              ? (
+                  exerciseResults?.users_submit
+                    .filter((item) => item.diem >= 0)
+                    .reduce((total, current) => {
+                      return total + current.diem;
+                    }, 0) / exerciseResults?.users_submit.length
+                ).toFixed(2)
+              : 0,
+          icon: (
+            <StarHalfRounded
+              sx={{
+                color: "#009265",
+                fontSize: "40px",
+              }}
+            />
+          ),
+        },
+        {
+          label: "Highest Score",
+          value:
+            exerciseResults?.users_submit.length > 0
+              ? exerciseResults?.users_submit.length === 1
+                ? exerciseResults?.users_submit[0].diem
+                : exerciseResults?.users_submit
+                    .filter((item) => item.diem >= 0)
+                    .reduce((max, current) => {
+                      return max.diem > current.diem ? max : current;
+                    }).diem
+              : 0,
+          icon: (
+            <EmojiEventsRounded
+              sx={{
+                color: "#009265",
+                fontSize: "40px",
+              }}
+            />
+          ),
+        },
+        {
+          label: "Lowest Score",
+          value:
+            exerciseResults?.users_submit.length > 0
+              ? exerciseResults?.users_submit.length === 1
+                ? exerciseResults?.users_submit[0].diem
+                : exerciseResults?.users_submit
+                    .filter((item) => item.diem >= 0)
+                    .reduce((min, current) => {
+                      return min.diem < current.diem ? min : current;
+                    }).diem
+              : 0,
+          icon: (
+            <ThumbDownRounded
+              sx={{
+                color: "#009265",
+                fontSize: "40px",
+              }}
+            />
+          ),
+        },
+        {
+          label: "Score less than 5",
+          value:
+            exerciseResults?.users_submit.length !== 0
+              ? exerciseResults?.users_submit.filter((user) => user.diem < 5)
+                  .length
+              : 0,
+          icon: (
+            <SentimentDissatisfiedRounded
+              sx={{
+                color: "#009265",
+                fontSize: "40px",
+              }}
+            />
+          ),
+        },
+      ]);
+    } else if (testOrExcercise === "te" && testResults && !testResultsLoading) {
       setStatisticItems([
         {
           label: "Submitted",
@@ -251,7 +492,13 @@ const GradeTab = ({ classId }) => {
         },
       ]);
     }
-  }, [testResults, testResultsLoading]);
+  }, [
+    testResults,
+    testResultsLoading,
+    exerciseResults,
+    exerciseResultsLoading,
+    testOrExcercise,
+  ]);
   if (unitsLoading || testsLoading || testResultsLoading) {
     return <Loading />;
   }
@@ -267,6 +514,12 @@ const GradeTab = ({ classId }) => {
     tests?.map((test) => ({
       label: test.tieuDe,
       value: test.ma_deKiemTra,
+    })) || [];
+
+  const exercisesAutoComplete =
+    exercises?.map((exercise) => ({
+      label: exercise.tieuDe,
+      value: exercise.ma_baiTap,
     })) || [];
 
   return (
@@ -308,17 +561,26 @@ const GradeTab = ({ classId }) => {
           }}
         />
         <Autocomplete
-          value={currentTest}
-          options={testsAutoComplete}
+          value={testOrExcercise === "te" ? currentTest : currentExercise}
+          options={
+            testOrExcercise === "te" ? testsAutoComplete : exercisesAutoComplete
+          }
           sx={{ width: 400, marginLeft: "10px" }}
           renderInput={(params) => (
-            <TextField {...params} label="Test Title" color="success" />
+            <TextField
+              {...params}
+              label={
+                testOrExcercise === "te" ? "Test Title" : "Excercise Title"
+              }
+              color="success"
+            />
           )}
           isOptionEqualToValue={(option, value) => {
             return option.value === value.value;
           }}
           onChange={(event, value) => {
-            setCurrentTest(value);
+            if (testOrExcercise === "te") setCurrentTest(value);
+            else setCurrentExercise(value);
           }}
           size="small"
         />
@@ -332,7 +594,6 @@ const GradeTab = ({ classId }) => {
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, sm: 8, md: 12 }}
         >
-          {/* {console.log(statisticItems)} */}
           {statisticItems.map((item, index) => (
             <Grid item xs={2} sm={4} md={4} key={index}>
               <Paper>
@@ -410,10 +671,22 @@ const GradeTab = ({ classId }) => {
         }}
       >
         <DataGrid
-          loading={testResultsLoading}
-          rows={testResults?.users_submit || []}
-          getRowId={(row) => row.ma_baiLamKiemTra}
-          columns={columns}
+          loading={
+            testOrExcercise === "te"
+              ? testResultsLoading
+              : exerciseResultsLoading
+          }
+          rows={
+            testOrExcercise === "te"
+              ? testResults?.users_submit || []
+              : exerciseResults?.users_submit || []
+          }
+          getRowId={
+            testOrExcercise === "te"
+              ? (row) => row.ma_baiLamKiemTra
+              : (row) => row.ma_baiLamBaiTap
+          }
+          columns={testOrExcercise === "te" ? testColumns : exerciseColumns}
           initialState={{
             pagination: { paginationModel: { pageSize: 5 } },
           }}
