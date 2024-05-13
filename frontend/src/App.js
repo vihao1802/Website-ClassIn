@@ -18,6 +18,8 @@ import ClassDetail from "pages/classDetail";
 import CreateHomeWork from "pages/homework";
 import DoHomework from "pages/do_homework";
 import VerifyPassword from "pages/login/verifypassword";
+import Document from "./pages/document/create";
+import EditDocument from "./pages/document/edit";
 import { getUserId_Cookie } from "utils/handleCookies";
 function App() {
   const isAuth = Boolean(getUserId_Cookie());
@@ -30,6 +32,14 @@ function App() {
           <Route
             path="/"
             element={!isAuth ? <Home /> : <Navigate to="/classin" />}
+          />
+          <Route
+            path="/document/create"
+            element={isAuth ? <Document /> : <Navigate to="/signin" />}
+          />
+          <Route
+            path="/document/edit/:documentId"
+            element={isAuth ? <EditDocument /> : <Navigate to="/signin" />}
           />
           <Route
             path="/home"

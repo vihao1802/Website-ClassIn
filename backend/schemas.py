@@ -180,6 +180,7 @@ class HocLieu(HocLieuBase):
 
 
 class FileHocLieuBase(BaseModel):
+    ma_file: str
     tenFile: str
 
 
@@ -188,8 +189,9 @@ class FileHocLieuCreate(FileHocLieuBase):
 
 
 class FileHocLieu(FileHocLieuBase):
-    ma_file: UUID
+    ma_file: str
     ma_hocLieu: UUID
+    tenFile: str
 
     class Config:
         from_attributes = True

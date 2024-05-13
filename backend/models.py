@@ -101,7 +101,7 @@ class HocLieu(Base):
 class FileHocLieu(Base):
     __tablename__ = "fileHocLieu"
 
-    ma_file = Column(String, primary_key=True, default=generate_uuid)
+    ma_file = Column(String, primary_key=True)
     tenFile = Column(String)
 
     ma_hocLieu = Column(String, ForeignKey("hocLieu.ma_hocLieu"))

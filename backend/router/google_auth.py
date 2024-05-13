@@ -13,7 +13,7 @@ router = APIRouter(prefix="/googleapi", tags=["GoogleApi"])
 @router.post("/access-token")
 def get_access_token():
     # Path to your service account key file
-    SERVICE_ACCOUNT_FILE = "/mnt/f/wez-backup/Wez_R_Coding/Website-ClassIn/backend/config/xenon-timer-421207-29f217c35846.json"
+    SERVICE_ACCOUNT_FILE = "/mnt/d/code/ptpmmnt/Website-ClassIn/backend/config/xenon-timer-421207-29f217c35846.json"
 
     # Define the scopes for the access token
     SCOPES = [

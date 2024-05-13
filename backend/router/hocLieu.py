@@ -82,3 +82,23 @@ async def read(ma_chuong: str, db: Session = Depends(database.get_db)):
     if not db_object:
         raise HTTPException(status_code=400, detail="Chuong not found")
     return db_object
+
+
+@router.put("/{ma_hocLieu}", status_code=status.HTTP_200_OK)
+async def update(
+    ma_hocLieu: str,
+    schema_object: schemas.HocLieuCreate,
+    db: Session = Depends(database.get_db),
+):
+    db_object = (
+        db.query(models.HocLieu)
+        .filter(models.HocLieu.ma_hocLieu == ma_hocLieu)
+        .first()
+    )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="HocLieu not found")
+    db.query(models.HocLieu).filter(models.HocLieu.ma_hocLieu == ma_hocLieu).update(
+        schema_object.dict()
+    )
+    db.commit()
+    return db_object
