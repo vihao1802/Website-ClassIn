@@ -679,6 +679,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["Tests"],
     }),
+    putDeleteTest: build.mutation({
+      query: (data) => ({
+        url: `deKiemTra/${data}/delete`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Tests"],
+    }),
     DeleteFileDocument: build.mutation({
       query: ({ ma_hocLieu, ma_file }) => ({
         url: `fileHocLieu/${ma_hocLieu}/${ma_file}`,
@@ -758,6 +765,7 @@ export const {
   usePostForgotPasswordMutation,
   useGetTestWorksByUserIdQuery,
   useGetExercisesByUnitIdQuery,
+  usePutDeleteTestMutation,
   usePostDocumentMutation,
   usePostFileDocumentMutation,
   useGetDocumentsByDocumentIdQuery,
