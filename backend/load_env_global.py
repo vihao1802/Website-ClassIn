@@ -36,3 +36,6 @@ def get_EMAIL():
 
 def get_PASSWORD_EMAIL():
     return str(os.getenv("PASSWORD_EMAIL"))
+
+def get_SERVICE_ACCOUNT_FILE():
+    return str(os.getenv("SERVICE_ACCOUNT_FILE"))

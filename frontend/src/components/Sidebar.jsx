@@ -36,6 +36,7 @@ const navItems = [
     text: "Questions",
     icon: <QuizOutlined />,
   },
+
 ];
 
 const Sidebar = ({ drawerWidth, isSidebarOpen, setIsSidebarOpen }) => {

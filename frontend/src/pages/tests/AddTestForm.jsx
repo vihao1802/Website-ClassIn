@@ -323,7 +323,12 @@ const AddTestForm = () => {
                 New Question
               </Typography>
             </Button>
-            <AddQuestionForm mode="add" open={open} handleClose={handleClose} />
+            <AddQuestionForm
+              mode="add"
+              open={open}
+              handleClose={handleClose}
+              alertComponent={setAlert}
+            />
           </FlexBetween>
           <TextField
             fullWidth
@@ -746,6 +751,7 @@ const AddTestForm = () => {
         mode="edit"
         userId={userId}
         questionId={selectedQid}
+        alertComponent={setAlert}
       />
       <AlertComponent
         open={alert.open}

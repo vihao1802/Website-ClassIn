@@ -100,7 +100,7 @@ const HomeNavbar = ({
           }}
           onClick={() => navigate("/")}
         >
-          ClassIn
+          {title}
         </Typography>
       </FlexBetween>
       {!IsNotHomePage && (
