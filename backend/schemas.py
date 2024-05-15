@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -288,6 +289,12 @@ class BaiLamBaiTapCreate(BaiLamBaiTapBase):
     pass
 
 
+class BaiLamBaiTapUpdate(BaseModel):
+
+    nhanXet: str
+    diem: float
+
+
 class BaiLamBaiTap(BaiLamBaiTapBase):
     ma_baiLamBaiTap: UUID
     thoiGianNopBai: datetime
@@ -298,11 +305,12 @@ class BaiLamBaiTap(BaiLamBaiTapBase):
 
 class FileBaiLamBaiTapBase(BaseModel):
     tenFile: str
+    ma_file: str
 
 
 class FileBaiLamBaiTapCreate(FileBaiLamBaiTapBase):
-    ma_file: str
     tenFile: str
+    ma_file: str
 
 
 class FileBaiLamBaiTap(FileBaiLamBaiTapBase):

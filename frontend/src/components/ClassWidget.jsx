@@ -147,6 +147,10 @@ const ClassWidget = ({ classItem, userId }) => {
   if (isUnitsLoading) {
     return <Loading />;
   }
+
+  const handleOpenCreateHomework = () => {
+    navigate("/createhomework");
+  };
   return (
     <Box
       sx={{
@@ -355,7 +359,11 @@ const ClassWidget = ({ classItem, userId }) => {
                           <Typography>Test</Typography>
                         </FlexBetween>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseCreateMenu}>
+                      <MenuItem
+                        onClick={
+                          (handleCloseCreateMenu, handleOpenCreateHomework)
+                        }
+                      >
                         <FlexBetween width="90%">
                           <ArticleOutlined />
                           <Typography>Exercise</Typography>
@@ -555,7 +563,7 @@ const ClassWidget = ({ classItem, userId }) => {
                               ? navigate(
                                   `/exercises/${exercise.ma_baiTap}/common`,
                                 )
-                              : null
+                              : navigate(`/dohomework/${exercise.ma_baiTap}/`)
                           }
                           disablePadding
                         >

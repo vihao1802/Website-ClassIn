@@ -49,20 +49,32 @@ const UserInfoForm = ({ data, userId }) => {
       phone: data.dienThoai,
     },
     validationSchema: schemaUpdateInfo,
-    onSubmit: (values) => {
-      updateUserInfo({
-        acc_id: userId,
-        data: {
-          hoTen: values.name.trim(),
-          email: values.email,
-          dienThoai: values.phone,
-        },
-      });
-      setShowAlert({
-        message: "Update profile successfully!",
-        state: true,
-        severity: "success",
-      });
+    onSubmit: async (values) => {
+      try {
+        const updateInfo = await updateUserInfo({
+          acc_id: userId,
+          data: {
+            hoTen: values.name.trim(),
+            email: values.email,
+            dienThoai: values.phone,
+          },
+        });
+        if (updateInfo.error) {
+          throw new Error(updateInfo.error.data.detail);
+        }
+        setShowAlert({
+          message: "Update profile successfully!",
+          state: true,
+          severity: "success",
+        });
+      } catch (err) {
+        console.log(err.message);
+        setShowAlert({
+          message: "Update profile failed!",
+          state: true,
+          severity: "error",
+        });
+      }
     },
   });
   return (

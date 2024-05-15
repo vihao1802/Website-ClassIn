@@ -576,7 +576,7 @@ const AddTestForm = () => {
           )}
         </Box>
 
-        {/* RIGHBAR*/}
+        {/* RIGHTBAR*/}
         <Box
           sx={{
             height: "100%",

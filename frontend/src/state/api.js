@@ -510,12 +510,24 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageFriend"],
     }),
+
     deleteMessageFriend: build.mutation({
       query: ({ messageId }) => ({
         url: `tin-nhan-ban-be/${messageId}/delete-message`,
         method: "PUT",
       }),
       invalidatesTags: ["MessageFriend"],
+    }),
+    updateHomeworkWork: build.mutation({
+      query: ({ ma_baiLamBaiTap, diem, nhanXet }) => ({
+        url: `bai-lam-bai-tap/${ma_baiLamBaiTap}`,
+        method: "PUT",
+        body: {
+          nhanXet: nhanXet,
+          diem: diem,
+        },
+      }),
+      invalidatesTags: ["Homework"],
     }),
     updateStatusFriend: build.mutation({
       query: ({ acc_id, friend_id, status }) => ({
@@ -670,4 +682,5 @@ export const {
   usePutEditTestMutation,
   usePostForgotPasswordMutation,
   useChangePasswordWithLinkMutation,
+  useUpdateHomeworkWorkMutation,
 } = api;
