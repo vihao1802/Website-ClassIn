@@ -542,7 +542,7 @@ export default function DoHomework() {
               >
                 {errorMessage}
               </Typography>
-              {WorkQuery?.[0].diem <= -1 && (
+              {WorkQuery?.[0]?.diem <= -1 && (
                 <>
                   <Button
                     variant="contained"
