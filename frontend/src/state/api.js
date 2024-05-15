@@ -551,6 +551,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    deleteDocument : build.mutation({
+      query: ({ ma_hocLieu }) => ({
+        url: `hocLieu/${ma_hocLieu}/daXoa`,
+        method: "PUT",
+      }),
+    }),
+    invalidatesTags: ["Documents"],
     getMessageFriend: build.query({
       query: ({ acc_id, friend_id }) =>
         `tin-nhan-ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}`,
@@ -746,4 +753,5 @@ export const {
   useGetFileDocumentsByUnitsIdQuery,
   usePutDocumentMutation,
   useDeleteFileDocumentMutation,
+  useDeleteDocumentMutation,
 } = api;

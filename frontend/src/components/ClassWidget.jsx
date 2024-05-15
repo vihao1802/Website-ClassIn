@@ -20,7 +20,9 @@ import {
   HistoryEduRounded,
   Grade,
   RefreshRounded,
+
 } from "@mui/icons-material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Tab,
   IconButton,
@@ -373,7 +375,7 @@ const ClassWidget = ({ classItem, userId }) => {
                           <Typography>Exercise</Typography>
                         </FlexBetween>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseCreateMenu}>
+                      <MenuItem onClick={() =>{handleCloseCreateMenu();navigate("/document/create");} }>
                         <FlexBetween>
                           <BookOutlined />
                           <Typography>Document</Typography>
@@ -664,7 +666,9 @@ const ClassWidget = ({ classItem, userId }) => {
                       ))}
                       {unit.hocLieu.map((document, documentIndex) => (
                         <ListItem key={documentIndex} disablePadding>
-                          <ListItemButton sx={{ height: "80px" }}>
+                          <ListItemButton sx={{ height: "80px" }} onClick={()=> {                         
+                              navigate(`/document/edit/${document.ma_hocLieu}`);
+                          }}>
                             <ListItemIcon>
                               <BookOutlined />
                             </ListItemIcon>
