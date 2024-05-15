@@ -17,6 +17,7 @@ import Profile from "pages/profile";
 import ClassDetail from "pages/classDetail";
 import CreateHomeWork from "pages/homework";
 import DoHomework from "pages/do_homework";
+import ScoreHomework from "pages/score_homework";
 import VerifyPassword from "pages/login/verifypassword";
 import Document from "./pages/document/create";
 import EditDocument from "./pages/document/edit";
@@ -90,6 +91,10 @@ function App() {
           <Route
             path="/createhomework"
             element={isAuth ? <CreateHomeWork /> : <Navigate to="/signin" />}
+          />
+          <Route
+            path="/scorehomework/hw/:homeworkId/s/:studentId"
+            element={isAuth ? <ScoreHomework /> : <Navigate to="/signin" />}
           />
           <Route
             path="/dohomework/:homeworkId"

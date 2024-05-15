@@ -49,13 +49,18 @@ async def create(
 @router.get(
     "/",
     status_code=status.HTTP_200_OK,
+    response_model=list[schemas.FileBaiLamBaiTap],
 )
 async def read(db: Session = Depends(database.get_db)):
     db_object = db.query(models.FileBaiLamBaiTap).all()
     return db_object
 
 
-@router.get("/{ma_baiLamBaiTap}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/{ma_baiLamBaiTap}",
+    response_model=list[schemas.FileBaiLamBaiTap],
+    status_code=status.HTTP_200_OK,
+)
 async def read(ma_baiLamBaiTap: str, db: Session = Depends(database.get_db)):
     # Check ma_baiLamBaiTap exists
     db_object_check = (

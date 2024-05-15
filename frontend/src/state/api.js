@@ -183,8 +183,6 @@ export const api = createApi({
       query: (uid) => `tai-khoan/${uid}/get-all-user-with-status-friend`,
       providesTags: ["ListFriends"],
     }),
-    
-    
 
     getHomeWorkByHomeworkId: build.query({
       query: (homeworkId) => `bai-tap/${homeworkId}`,
@@ -285,11 +283,7 @@ export const api = createApi({
     // usePostDocumentMutation,
     // usePostFileDocumentMutation,
     postDocument: build.mutation({
-      query: (
-        {tieuDe,
-        noiDung,
-        machuong,}
-      ) => ({
+      query: ({ tieuDe, noiDung, machuong }) => ({
         url: `/hocLieu/${machuong}`,
         method: "POST",
         body: {
@@ -300,7 +294,7 @@ export const api = createApi({
       //invalidatesTags: ["PostDocument"],
     }),
     postFileDocument: build.mutation({
-      query: ({ tenFile,  ma_file,ma_hoclieu }) => ({
+      query: ({ tenFile, ma_file, ma_hoclieu }) => ({
         headers: {
           "Content-Type": "application/json",
         },
@@ -309,7 +303,6 @@ export const api = createApi({
         body: {
           ma_file: ma_file,
           tenFile: tenFile,
-
         },
       }),
       invalidatesTags: ["HomeworkFile"],
@@ -551,7 +544,7 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
-    deleteDocument : build.mutation({
+    deleteDocument: build.mutation({
       query: ({ ma_hocLieu }) => ({
         url: `hocLieu/${ma_hocLieu}/daXoa`,
         method: "PUT",
@@ -574,12 +567,24 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageFriend"],
     }),
+
     deleteMessageFriend: build.mutation({
       query: ({ messageId }) => ({
         url: `tin-nhan-ban-be/${messageId}/delete-message`,
         method: "PUT",
       }),
       invalidatesTags: ["MessageFriend"],
+    }),
+    updateHomeworkWork: build.mutation({
+      query: ({ ma_baiLamBaiTap, diem, nhanXet }) => ({
+        url: `bai-lam-bai-tap/${ma_baiLamBaiTap}`,
+        method: "PUT",
+        body: {
+          nhanXet: nhanXet,
+          diem: diem,
+        },
+      }),
+      invalidatesTags: ["Homework"],
     }),
     updateStatusFriend: build.mutation({
       query: ({ acc_id, friend_id, status }) => ({
@@ -605,7 +610,7 @@ export const api = createApi({
       providesTags: ["User"],
     }),
     putDocument: build.mutation({
-      query: ({ tieuDe,noiDung,ma_hocLieu }) => ({
+      query: ({ tieuDe, noiDung, ma_hocLieu }) => ({
         url: `hocLieu/${ma_hocLieu}`,
         method: "PUT",
         body: {
@@ -615,6 +620,15 @@ export const api = createApi({
       }),
       invalidatesTags: ["Documents"],
     }),
+    changePasswordWithLink: build.mutation({
+      query: ({ acc_id, data }) => ({
+        url: `auth/recover-password/${acc_id}`,
+        method: "POST",
+        body: data,
+      }),
+      // providesTags: ["User"],
+    }),
+
     putEditUnit: build.mutation({
       query: (data) => ({
         url: `chuong/${data.ma_chuong}`,
@@ -666,10 +680,7 @@ export const api = createApi({
       invalidatesTags: ["Tests"],
     }),
     DeleteFileDocument: build.mutation({
-      query: ({
-        ma_hocLieu,
-        ma_file,
-      }) => ({
+      query: ({ ma_hocLieu, ma_file }) => ({
         url: `fileHocLieu/${ma_hocLieu}/${ma_file}`,
         method: "DELETE",
       }),
@@ -754,4 +765,6 @@ export const {
   usePutDocumentMutation,
   useDeleteFileDocumentMutation,
   useDeleteDocumentMutation,
+  useChangePasswordWithLinkMutation,
+  useUpdateHomeworkWorkMutation,
 } = api;
