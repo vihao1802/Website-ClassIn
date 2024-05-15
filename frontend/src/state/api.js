@@ -598,6 +598,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["Tests"],
     }),
+    putDeleteTest: build.mutation({
+      query: (data) => ({
+        url: `deKiemTra/${data}/delete`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Tests"],
+    }),
   }),
 });
 
@@ -670,4 +677,5 @@ export const {
   usePostForgotPasswordMutation,
   useGetTestWorksByUserIdQuery,
   useGetExercisesByUnitIdQuery,
+  usePutDeleteTestMutation,
 } = api;
