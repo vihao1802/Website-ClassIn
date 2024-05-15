@@ -249,6 +249,19 @@ export const api = createApi({
       query: (uid) => `bai-tap/chuong/${uid}`,
       providesTags: ["Exercises"],
     }),
+    getUnitsByUnitsId: build.query({
+      query: (uid) => `chuong/${uid}`,
+      providesTags: ["Units"],
+    }),
+    getDocumentsByDocumentId: build.query({
+      query: (did) => `hocLieu/${did}`,
+      providesTags: ["Documents"],
+    }),
+    getFileDocumentsByUnitsId: build.query({
+      query: (uid) => `fileHocLieu/${uid}`,
+      providesTags: ["FileDocuments"],
+    }),
+
     // POST METHODS
     postForgotPassword: build.mutation({
       query: (recoverEmail) => ({
@@ -267,6 +280,35 @@ export const api = createApi({
       }),
       providesTags: ["accessToken"],
     }),
+    // usePostDocumentMutation,
+    // usePostFileDocumentMutation,
+    postDocument: build.mutation({
+      query: ({ tieuDe, noiDung, machuong }) => ({
+        url: `/hocLieu/${machuong}`,
+        method: "POST",
+        body: {
+          tieuDe: tieuDe,
+          noiDung: noiDung,
+        },
+      }),
+      //invalidatesTags: ["PostDocument"],
+    }),
+    postFileDocument: build.mutation({
+      query: ({ tenFile, ma_file, ma_hoclieu }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `/fileHocLieu/${ma_hoclieu}`,
+        method: "POST",
+        body: {
+          ma_file: ma_file,
+          tenFile: tenFile,
+        },
+      }),
+      invalidatesTags: ["HomeworkFile"],
+      //invalidatesTags: ["postFileDocument"],
+    }),
+
     postHomework: build.mutation({
       query: ({
         machuong,
@@ -502,6 +544,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    deleteDocument: build.mutation({
+      query: ({ ma_hocLieu }) => ({
+        url: `hocLieu/${ma_hocLieu}/daXoa`,
+        method: "PUT",
+      }),
+    }),
+    invalidatesTags: ["Documents"],
     getMessageFriend: build.query({
       query: ({ acc_id, friend_id }) =>
         `tin-nhan-ban-be/tai-khoan/${acc_id}/tai-khoan/${friend_id}`,
@@ -518,12 +567,24 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageFriend"],
     }),
+
     deleteMessageFriend: build.mutation({
       query: ({ messageId }) => ({
         url: `tin-nhan-ban-be/${messageId}/delete-message`,
         method: "PUT",
       }),
       invalidatesTags: ["MessageFriend"],
+    }),
+    updateHomeworkWork: build.mutation({
+      query: ({ ma_baiLamBaiTap, diem, nhanXet }) => ({
+        url: `bai-lam-bai-tap/${ma_baiLamBaiTap}`,
+        method: "PUT",
+        body: {
+          nhanXet: nhanXet,
+          diem: diem,
+        },
+      }),
+      invalidatesTags: ["Homework"],
     }),
     updateStatusFriend: build.mutation({
       query: ({ acc_id, friend_id, status }) => ({
@@ -548,6 +609,26 @@ export const api = createApi({
       }),
       providesTags: ["User"],
     }),
+    putDocument: build.mutation({
+      query: ({ tieuDe, noiDung, ma_hocLieu }) => ({
+        url: `hocLieu/${ma_hocLieu}`,
+        method: "PUT",
+        body: {
+          tieuDe: tieuDe,
+          noiDung: noiDung,
+        },
+      }),
+      invalidatesTags: ["Documents"],
+    }),
+    changePasswordWithLink: build.mutation({
+      query: ({ acc_id, data }) => ({
+        url: `auth/recover-password/${acc_id}`,
+        method: "POST",
+        body: data,
+      }),
+      // providesTags: ["User"],
+    }),
+
     putEditUnit: build.mutation({
       query: (data) => ({
         url: `chuong/${data.ma_chuong}`,
@@ -604,6 +685,13 @@ export const api = createApi({
         method: "PUT",
       }),
       invalidatesTags: ["Tests"],
+    }),
+    DeleteFileDocument: build.mutation({
+      query: ({ ma_hocLieu, ma_file }) => ({
+        url: `fileHocLieu/${ma_hocLieu}/${ma_file}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["FileDocuments"],
     }),
   }),
 });
@@ -678,4 +766,13 @@ export const {
   useGetTestWorksByUserIdQuery,
   useGetExercisesByUnitIdQuery,
   usePutDeleteTestMutation,
+  usePostDocumentMutation,
+  usePostFileDocumentMutation,
+  useGetDocumentsByDocumentIdQuery,
+  useGetFileDocumentsByUnitsIdQuery,
+  usePutDocumentMutation,
+  useDeleteFileDocumentMutation,
+  useDeleteDocumentMutation,
+  useChangePasswordWithLinkMutation,
+  useUpdateHomeworkWorkMutation,
 } = api;

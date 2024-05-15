@@ -26,7 +26,9 @@ import {
   AddLink,
   Today,
 } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
+import AlertComponent from "../../components/AlertComponent";
 import HomeNavbar from "components/HomeNavbar";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -55,6 +57,9 @@ const PUBLIC_ANSWER_OPT = [
   { id: "3", label: "Not public answer" },
 ];
 export default function CreateHomeWork() {
+  const navigate = useNavigate();
+
+  const [showAlert, setShowAlert] = useState({ message: "", state: false });
   const [message, setMessage] = useState("");
   const [dateMessage, setDateMessage] = useState("");
   const [valueClass, setValueClass] = useState([{ id: "", label: "" }]);
@@ -277,13 +282,23 @@ export default function CreateHomeWork() {
           }
         });
       }
+      setShowAlert({
+        message: "Create homework successfully!",
+        state: true,
+        severity: "success",
+      });
+      navigate("/classin");
     } catch (err) {
       setMessage(err.message);
       if (homework_id !== "") {
-        console.log("xoa bai tap");
         await DeleteHomeworkFile({ ma_baitap: homework_id });
         await DeleteHomework({ ma_baitap: homework_id });
       }
+      setShowAlert({
+        message: "Create homework failed! Please try again.",
+        state: true,
+        severity: "error",
+      });
     }
   };
   const formik = useFormik({
@@ -338,6 +353,12 @@ export default function CreateHomeWork() {
       }}
     >
       <HomeNavbar IsNotHomePage={true} />
+      <AlertComponent
+        severity="success"
+        message={showAlert.message}
+        open={showAlert.state}
+        onClose={() => setShowAlert({ ...showAlert, state: false })}
+      />
       <Box
         sx={{
           height: "100%",
@@ -366,7 +387,7 @@ export default function CreateHomeWork() {
             <TextField
               id="homework-title"
               name="homework_title"
-              label="Homework Title"
+              label="Title"
               variant="filled"
               size="normal"
               color="success"
@@ -382,13 +403,13 @@ export default function CreateHomeWork() {
             <TextField
               id="homework-content"
               name="homework_content"
-              label="Homework Content"
+              label="Content"
               variant="filled"
               size="normal"
               color="success"
               fullWidth
               multiline
-              rows={8}
+              rows={5}
               error={
                 formik.touched.homework_content
                   ? formik.errors.homework_content
@@ -492,7 +513,7 @@ export default function CreateHomeWork() {
                 }}
                 fullWidth
                 multiline
-                rows={8}
+                rows={5}
                 onChange={formik.handleChange}
               />
               <Box
@@ -665,14 +686,6 @@ export default function CreateHomeWork() {
                   }
                 }}
               />
-              <Typography
-                sx={{
-                  color: "red",
-                  fontSize: "0.75rem",
-                }}
-              >
-                {dateMessage}
-              </Typography>
             </Box>
             <DateTimePicker
               label="End at"
@@ -723,10 +736,10 @@ export default function CreateHomeWork() {
                 alignSelf: "flex-end",
               }}
               type="submit"
-              disable={loadingPostHomework}
+              disable={loadingPostHomework && loadingPostHomeworkFile}
               // onClick={(e) => formik.handleSubmit(e)}
             >
-              {loadingPostHomework ? (
+              {loadingPostHomework && loadingPostHomeworkFile ? (
                 <CircularProgress sx={{ color: "white" }} size="1.5rem" />
               ) : (
                 "Create homework"

@@ -181,6 +181,7 @@ class HocLieu(HocLieuBase):
 
 
 class FileHocLieuBase(BaseModel):
+    ma_file: str
     tenFile: str
 
 
@@ -189,8 +190,9 @@ class FileHocLieuCreate(FileHocLieuBase):
 
 
 class FileHocLieu(FileHocLieuBase):
-    ma_file: UUID
+    ma_file: str
     ma_hocLieu: UUID
+    tenFile: str
 
     class Config:
         from_attributes = True
@@ -289,6 +291,12 @@ class BaiLamBaiTapCreate(BaiLamBaiTapBase):
     pass
 
 
+class BaiLamBaiTapUpdate(BaseModel):
+
+    nhanXet: str
+    diem: float
+
+
 class BaiLamBaiTap(BaiLamBaiTapBase):
     ma_baiLamBaiTap: UUID
     thoiGianNopBai: datetime
@@ -299,11 +307,12 @@ class BaiLamBaiTap(BaiLamBaiTapBase):
 
 class FileBaiLamBaiTapBase(BaseModel):
     tenFile: str
+    ma_file: str
 
 
 class FileBaiLamBaiTapCreate(FileBaiLamBaiTapBase):
-    ma_file: str
     tenFile: str
+    ma_file: str
 
 
 class FileBaiLamBaiTap(FileBaiLamBaiTapBase):

@@ -20,7 +20,9 @@ import {
   HistoryEduRounded,
   Grade,
   RefreshRounded,
+
 } from "@mui/icons-material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Tab,
   IconButton,
@@ -161,6 +163,10 @@ const ClassWidget = ({ classItem, userId }) => {
   if (isUnitsLoading || testWorksDataLoading) {
     return <Loading />;
   }
+
+  const handleOpenCreateHomework = () => {
+    navigate("/createhomework");
+  };
   return (
     <Box
       sx={{
@@ -369,13 +375,17 @@ const ClassWidget = ({ classItem, userId }) => {
                           <Typography>Test</Typography>
                         </FlexBetween>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseCreateMenu}>
+                      <MenuItem
+                        onClick={
+                          (handleCloseCreateMenu, handleOpenCreateHomework)
+                        }
+                      >
                         <FlexBetween width="90%">
                           <ArticleOutlined />
                           <Typography>Exercise</Typography>
                         </FlexBetween>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseCreateMenu}>
+                      <MenuItem onClick={() =>{handleCloseCreateMenu();navigate("/document/create");} }>
                         <FlexBetween>
                           <BookOutlined />
                           <Typography>Document</Typography>
@@ -648,7 +658,7 @@ const ClassWidget = ({ classItem, userId }) => {
                               ? navigate(
                                   `/exercises/${exercise.ma_baiTap}/common`,
                                 )
-                              : null
+                              : navigate(`/dohomework/${exercise.ma_baiTap}/`)
                           }
                           disablePadding
                         >
@@ -685,7 +695,9 @@ const ClassWidget = ({ classItem, userId }) => {
                       ))}
                       {unit.hocLieu.map((document, documentIndex) => (
                         <ListItem key={documentIndex} disablePadding>
-                          <ListItemButton sx={{ height: "80px" }}>
+                          <ListItemButton sx={{ height: "80px" }} onClick={()=> {                         
+                              navigate(`/document/edit/${document.ma_hocLieu}`);
+                          }}>
                             <ListItemIcon>
                               <BookOutlined />
                             </ListItemIcon>

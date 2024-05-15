@@ -61,10 +61,32 @@ async def read(ma_hocLieu: str, db: Session = Depends(database.get_db)):
         db_object = (
             db.query(models.FileHocLieu)
             .filter(models.FileHocLieu.ma_hocLieu == ma_hocLieu)
-            .first()
+            .all()
         )
     except Exception as e:
         print(e)
     if db_object is None:
         raise HTTPException(status_code=400, detail="FileHocLieu not found")
     return db_object
+
+@router.delete("/{ma_hocLieu}/{ma_file}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete(ma_hocLieu: str, ma_file: str, db: Session = Depends(database.get_db)):
+    # check ma_hocLieu exists
+    db_object = (
+        db.query(models.HocLieu)
+        .filter(models.HocLieu.ma_hocLieu == ma_hocLieu)
+        .first()
+    )
+    if db_object is None:
+        raise HTTPException(status_code=400, detail="ma_hocLieu not found")
+    # check ma_file exists
+    db_file = (
+        db.query(models.FileHocLieu)
+        .filter(models.FileHocLieu.ma_file == ma_file)
+        .first()
+    )
+    if db_file is None:
+        raise HTTPException(status_code=400, detail="FileHocLieu not found")
+    db.delete(db_file)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
