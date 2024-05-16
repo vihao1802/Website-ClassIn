@@ -15,9 +15,9 @@
 
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
 
-### 📄 PDF: [BaoCaoDoAn_Nhom7_PTPMMaNguonMo]()
+### 📄 PDF: [BaoCaoDoAn_Nhom7_PTPMMaNguonMo](){:target="_blank"}
 
-### 📄 Google Slides: [SlideTrinhBay_Nhom7_PTPMMaNguonMo](https://docs.google.com/presentation/d/1O3w8enWdViNA_mb9UN14ebD8CZW3sGc9qqyelSkavUs/edit?usp=sharing)
+### 📄 Google Slides: [SlideTrinhBay_Nhom7_PTPMMaNguonMo](https://docs.google.com/presentation/d/1O3w8enWdViNA_mb9UN14ebD8CZW3sGc9qqyelSkavUs/edit?usp=sharing){:target="_blank"}
 
 <!-- GETTING STARTED -->
 
