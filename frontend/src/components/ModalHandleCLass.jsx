@@ -75,6 +75,7 @@ const ModalHandleClass = (props) => {
           severity: "success",
         });
         props.handleClose();
+        props.refetchClassInfo();
       } catch (error) {
         setShowAlert({
           message: error.message,
@@ -144,6 +145,7 @@ const ModalHandleClass = (props) => {
           });
 
           props.handleClose();
+          props.refetchClassInfo();
         } catch (error) {
           throw new Error("Fail when create class! Please try again later");
         }
