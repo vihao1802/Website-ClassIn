@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import HomeNavbar from "../../components/HomeNavbar";
 import {
@@ -83,10 +83,7 @@ export default function ScoreHomework() {
       console.log(StudentQuery);
       try {
         const fetchData = async () => {
-          const studentInfo = await fetchFileFromDrive(
-            "1Ld1wdSrr06EjoBuAQYXnA8EvXZQaBE82",
-          );
-          console.log(studentInfo);
+          const studentInfo = await fetchFileFromDrive(StudentQuery?.avatar);
           setAvatar(studentInfo?.thumbnailLink);
         };
         fetchData();
@@ -136,6 +133,7 @@ export default function ScoreHomework() {
       handleSubmit(values);
     },
   });
+
   const handleSubmit = async (values) => {
     try {
       const response = await UpdateHomeworkWork({
@@ -143,7 +141,6 @@ export default function ScoreHomework() {
         diem: values.score,
         nhanXet: values.comment,
       });
-      console.log(response);
       if (response.data === undefined || response.data === null) {
         throw new Error("Return score failed.");
       }

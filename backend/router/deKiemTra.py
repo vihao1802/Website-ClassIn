@@ -1,8 +1,10 @@
 from datetime import date, datetime
 
 import database
+import load_env_global
 import models
 import schemas
+import yagmail
 from email_validator import EmailNotValidError, validate_email
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy import exists

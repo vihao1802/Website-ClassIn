@@ -129,6 +129,69 @@ const TestExcerciseDetail = ({ mode }) => {
       },
     },
   ];
+
+  const unsubmittedcolumns = [
+    {
+      field: "hoTen",
+      headerName: "Student Name",
+      width: 800,
+      editable: false,
+      sortable: false,
+      renderCell: (item) => {
+        return (
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            {/* <Box
+            component="img"
+            alt="profile"
+            src={profileImage}
+            height="32px"
+            width="32px"
+            borderRadius="50%"
+            sx={{ objectFit: "cover" }}
+          /> */}
+            <AvatarName name={item.value} />
+            <Typography
+              sx={{
+                fontSize: "16px",
+                color: "black",
+                marginLeft: "10px",
+                padding: "10px 0",
+              }}
+            >
+              {item.value}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+  ];
+
+  const [value, setValue] = React.useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const { data: testItemData, isLoading: isTestItemLoading } =
+    useGetTestByTestIdQuery(testId, { skip: mode === "exercise" });
+
+  const {
+    data: userSubmissionDetail,
+    isLoading: isUserSubmissionDetailLoading,
+  } = useGetUserSubmissionsDetailsQuery(testId, {
+    skip: mode === "exercise",
+  });
+
+  const { data: exerciseItemData, isLoading: isExerciseItemLoading } =
+    useGetExercisesByExerciseIdQuery(exerciseId, { skip: mode === "test" });
+
+  const {
+    data: userSubmissionExerciseDetail,
+    isLoading: isUserSubmissionExerciseDetailLoading,
+  } = useGetUserSubmissionsExerciseDetailsQuery(exerciseId, {
+    skip: mode === "test",
+  });
+
   const submittedcolumns_Exercise = [
     {
       field: "hoTen",
@@ -197,8 +260,7 @@ const TestExcerciseDetail = ({ mode }) => {
         return item.value === -1 ? "Not graded" : item.value;
       },
     },
-
-    {
+    exerciseItemData?.anLopHoc === 0 && {
       field: "review",
       headerName: "Review",
       width: 100,
@@ -213,75 +275,15 @@ const TestExcerciseDetail = ({ mode }) => {
             color="inherit"
             onClick={() => {
               // navigate(`/tests/${testId}/work/${item.row.ma_baiLamKiemTra}`);
+              navigate(
+                `/scorehomework/hw/${exerciseId}/s/${item.row.ma_taiKhoan}`,
+              );
             }}
           />,
         ];
       },
     },
   ];
-
-  const unsubmittedcolumns = [
-    {
-      field: "hoTen",
-      headerName: "Student Name",
-      width: 800,
-      editable: false,
-      sortable: false,
-      renderCell: (item) => {
-        return (
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
-            {/* <Box
-            component="img"
-            alt="profile"
-            src={profileImage}
-            height="32px"
-            width="32px"
-            borderRadius="50%"
-            sx={{ objectFit: "cover" }}
-          /> */}
-            <AvatarName name={item.value} />
-            <Typography
-              sx={{
-                fontSize: "16px",
-                color: "black",
-                marginLeft: "10px",
-                padding: "10px 0",
-              }}
-            >
-              {item.value}
-            </Typography>
-          </Box>
-        );
-      },
-    },
-  ];
-
-  const [value, setValue] = React.useState("1");
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const { data: testItemData, isLoading: isTestItemLoading } =
-    useGetTestByTestIdQuery(testId, { skip: mode === "exercise" });
-
-  const {
-    data: userSubmissionDetail,
-    isLoading: isUserSubmissionDetailLoading,
-  } = useGetUserSubmissionsDetailsQuery(testId, {
-    skip: mode === "exercise",
-  });
-
-  const { data: exerciseItemData, isLoading: isExerciseItemLoading } =
-    useGetExercisesByExerciseIdQuery(exerciseId, { skip: mode === "test" });
-
-  const {
-    data: userSubmissionExerciseDetail,
-    isLoading: isUserSubmissionExerciseDetailLoading,
-  } = useGetUserSubmissionsExerciseDetailsQuery(exerciseId, {
-    skip: mode === "test",
-  });
-
   if (isTestItemLoading || isExerciseItemLoading) return <Loading />;
 
   return (
@@ -498,9 +500,10 @@ const TestExcerciseDetail = ({ mode }) => {
               }}
               onClick={() => {
                 if (mode === "test") navigate(`/tests/${testId}/detail`);
+                else navigate(`/viewhomework/${exerciseId}`);
               }}
             >
-              See Details
+              See Detail
             </Button>
           </Paper>
         </Box>

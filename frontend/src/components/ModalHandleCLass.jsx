@@ -18,6 +18,7 @@ import {
   usePostCreateClassMutation,
   usePostAccessTokenMutation,
   usePostUserResigeterMutation,
+  usePostGroupChatMutation,
 } from "state/api";
 import AlertComponent from "components/AlertComponent";
 import { getUserId_Cookie } from "../utils/handleCookies";
@@ -50,6 +51,8 @@ const ModalHandleClass = (props) => {
   const [accessToken] = usePostAccessTokenMutation();
   const [PostCreateClass, { isLoading: isLoadingCreateClass }] =
     usePostCreateClassMutation();
+  const [PostGroupChat, { isLoading: isLoadingPostGroupChat }] =
+    usePostGroupChatMutation();
   const [PostJoinClass, { isLoading: isLoadingJoinClass }] =
     usePostUserResigeterMutation();
   const forMikJoin = useFormik({
@@ -63,7 +66,7 @@ const ModalHandleClass = (props) => {
           ma_lopHoc: values.code,
           ma_taiKhoan: props.userId,
         });
-        if (res.status !== 200 || res.status !== 201) {
+        if (res.error) {
           throw new Error("Join class failed! Please try again later");
         }
         setShowAlert({
@@ -124,11 +127,22 @@ const ModalHandleClass = (props) => {
             moTa: "",
             anhDaiDien: data.id,
           });
+          if (res.error) {
+            throw new Error("Fail when create class! Please try again later");
+          }
+          const resMessage = await PostGroupChat({
+            ma_lopHoc: res.data.ma_lopHoc,
+            ten: res.data.ten,
+          });
+          if (resMessage.error) {
+            throw new Error("Fail when create class! Please try again later");
+          }
           setShowAlert({
             message: "Create class successfully!",
             state: true,
             severity: "success",
           });
+
           props.handleClose();
         } catch (error) {
           throw new Error("Fail when create class! Please try again later");
@@ -497,11 +511,11 @@ const ModalHandleClass = (props) => {
                   forMikCreate.submitForm();
                 }
               }}
-              disabled={isLoadingCreateClass}
+              disabled={isLoadingCreateClass || isLoadingPostGroupChat}
             >
               {props.title === "Join class"
                 ? "Join"
-                : isLoadingCreateClass
+                : isLoadingCreateClass || isLoadingPostGroupChat
                 ? "Creating..."
                 : "Create"}
             </Button>

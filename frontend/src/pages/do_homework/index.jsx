@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 import HomeNavbar from "../../components/HomeNavbar";
-import {
-  useGetHomeWorkByHomeworkIdQuery,
-  useGetFileHomeworkByHomeworkIdQuery,
-} from "state/api";
+
 import { Typography, Box, Button, CircularProgress } from "@mui/material";
-import { Add, AttachFile, InsertLink } from "@mui/icons-material";
+import { Add, AttachFile, InsertLink, Work } from "@mui/icons-material";
 import { MenuItem, Menu } from "@mui/joy";
 import { useState } from "react";
 import AttachmentLink from "components/homework/AttachmentLink";
@@ -20,6 +17,8 @@ import {
   useDeleteHomeworkWorkFileMutation,
   useDeleteHomeworkWorkMutation,
   usePostAccessTokenMutation,
+  useGetHomeWorkByHomeworkIdQuery,
+  useGetFileHomeworkByHomeworkIdQuery,
 } from "state/api";
 import AlertComponent from "../../components/AlertComponent";
 
@@ -416,8 +415,9 @@ export default function DoHomework() {
             width: "25%",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
+            justifyContent: "flex-start",
             alignItems: "center",
+            marginTop: "1rem",
           }}
         >
           {/* WORK */}
@@ -542,7 +542,7 @@ export default function DoHomework() {
               >
                 {errorMessage}
               </Typography>
-              {WorkQuery?.[0]?.diem <= -1 && (
+              {(WorkQuery?.[0]?.diem <= -1 || WorkQuery?.length === 0) && (
                 <>
                   <Button
                     variant="contained"
@@ -553,12 +553,15 @@ export default function DoHomework() {
                       alignSelf: "flex-end",
                       display: isSubmited ? "none" : "initial",
                     }}
-                    disabled={listAttachment.length === 0 ? true : false}
+                    disabled={
+                      loadingPostHomeworkWork || loadingPostHomeworkFileWork
+                    }
                     type="submit"
                   >
                     {listAttachment.length === 0 ? (
                       "Add your work"
-                    ) : loadingPostHomeworkWork ? (
+                    ) : loadingPostHomeworkWork ||
+                      loadingPostHomeworkFileWork ? (
                       <CircularProgress
                         sx={{
                           color: "white",

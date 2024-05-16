@@ -36,6 +36,32 @@ async def create_bai_tap(
     return db_object
 
 
+@router.put(
+    "/{ma_bai_tap}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.BaiTap,
+)
+async def update_bai_tap(
+    ma_bai_tap: str,
+    schema_object: schemas.BaiTapUpdate,
+    db: Session = Depends(database.get_db),
+):
+    db_object = (
+        db.query(models.BaiTap)
+        .filter(models.BaiTap.ma_baiTap == ma_bai_tap)
+        .first()
+    )
+    update_data = schema_object.dict(exclude_unset=True)
+
+    if db_object is None:
+        raise HTTPException(status_code=404, detail="ma_bai_tap not found")
+    db.query(models.BaiTap).filter(
+        models.BaiTap.ma_baiTap == ma_bai_tap
+    ).update(schema_object.dict())
+    db.commit()
+    return db_object
+
+
 @router.get(
     "/{ma_bai_tap}",
     status_code=status.HTTP_200_OK,
@@ -95,6 +121,7 @@ async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
     for baitap, chuong, lop, giangvien in query:
         baitap.tenChuong = chuong.ten
         baitap.tenLop = lop.ten
+        baitap.anLopHoc = lop.anLopHoc
         baitap.tenGV = giangvien.hoTen
         return baitap
 

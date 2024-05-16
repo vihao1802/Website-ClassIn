@@ -20,6 +20,7 @@ import {
   ExpandLessRounded,
   ExpandMoreRounded,
   SchoolOutlined,
+  ArchiveOutlined,
 } from "@mui/icons-material";
 import FlexBetween from "components/FlexBetween";
 import profileImage from "assets/profile.jpg";
@@ -71,6 +72,11 @@ const Classin = () => {
 
   const handleClickRegistered = () => {
     setOpenRegistered(!openRegistered);
+  };
+
+  const [openArchived, setOpenArchived] = React.useState(false);
+  const handleClickArchived = () => {
+    setOpenArchived(!openArchived);
   };
 
   //const { data: userList, isLoading: userListLoading } = useGetAllUserQuery();
@@ -197,71 +203,82 @@ const Classin = () => {
         </FlexBetween>
         <Box
           sx={{
-            height: "100%",
-            overflowY: "scroll",
-
-            "::-webkit-scrollbar": { width: "10px" },
-            "::-webkit-scrollbar-track": {
-              background: "#f1f1f1",
-            },
-            "::-webkit-scrollbar-thumb": {
-              background: "#858585",
-            },
-            "::-webkit-scrollbar-thumb:hover": {
-              background: "#777",
-            },
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "calc(100% - 50px)",
           }}
         >
-          {/* Teaching */}
-          <ListItemButton
-            onClick={handleClickTeaching}
-            sx={
-              openTeaching
-                ? {
-                    marginTop: "10px",
-                    borderBottomRightRadius: "30px",
-                    borderTopRightRadius: "30px",
-                    backgroundColor: "#e7e7e7",
-                    border: "1px solid #009265",
-                  }
-                : {
-                    marginTop: "10px",
-                    borderBottomRightRadius: "30px",
-                    borderTopRightRadius: "30px",
-                  }
-            }
+          <Box
+            sx={{
+              height: "100%",
+              overflowY: "scroll",
+
+              "::-webkit-scrollbar": { width: "10px" },
+              "::-webkit-scrollbar-track": {
+                background: "#f1f1f1",
+              },
+              "::-webkit-scrollbar-thumb": {
+                background: "#858585",
+              },
+              "::-webkit-scrollbar-thumb:hover": {
+                background: "#777",
+              },
+            }}
           >
-            <ListItemIcon>
-              <LocalLibraryOutlined />
-            </ListItemIcon>
-            <ListItemText primary="Teaching" />
-            {openTeaching ? <ExpandLessRounded /> : <ExpandMoreRounded />}
-          </ListItemButton>
-          <Collapse in={openTeaching} timeout="auto" unmountOnExit>
-            {classInfo || !isClassInfoLoading ? (
-              <List>
-                {classInfo
-                  ?.filter((item) => item.ma_giangVien === userId)
-                  .map((item, index) => {
-                    return (
-                      <ListItem key={index} disablePadding>
-                        <ListItemButton
-                          onClick={() => {
-                            setActiveClass(item);
-                          }}
-                          sx={{
-                            backgroundColor:
-                              activeClass?.ma_lopHoc === item.ma_lopHoc
-                                ? "#e7e7e7"
-                                : "transparent",
-                            color:
-                              activeClass?.ma_lopHoc === item.ma_lopHoc
-                                ? "black"
-                                : "#666666",
-                          }}
-                        >
-                          <AvatarName name={item.ten} />
-                          {/* <Box
+            {/* Teaching */}
+            <ListItemButton
+              onClick={handleClickTeaching}
+              sx={
+                openTeaching
+                  ? {
+                      marginTop: "10px",
+                      borderBottomRightRadius: "30px",
+                      borderTopRightRadius: "30px",
+                      backgroundColor: "#e7e7e7",
+                      border: "1px solid #009265",
+                    }
+                  : {
+                      marginTop: "10px",
+                      borderBottomRightRadius: "30px",
+                      borderTopRightRadius: "30px",
+                    }
+              }
+            >
+              <ListItemIcon>
+                <LocalLibraryOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Teaching" />
+              {openTeaching ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+            </ListItemButton>
+            <Collapse in={openTeaching} timeout="auto" unmountOnExit>
+              {classInfo || !isClassInfoLoading ? (
+                <List>
+                  {classInfo
+                    ?.filter(
+                      (item) =>
+                        item.ma_giangVien === userId && item.anLopHoc === 0,
+                    )
+                    .map((item, index) => {
+                      return (
+                        <ListItem key={index} disablePadding>
+                          <ListItemButton
+                            onClick={() => {
+                              setActiveClass(item);
+                            }}
+                            sx={{
+                              backgroundColor:
+                                activeClass?.ma_lopHoc === item.ma_lopHoc
+                                  ? "#e7e7e7"
+                                  : "transparent",
+                              color:
+                                activeClass?.ma_lopHoc === item.ma_lopHoc
+                                  ? "black"
+                                  : "#666666",
+                            }}
+                          >
+                            <AvatarName name={item.ten} />
+                            {/* <Box
                     component="img"
                     alt="profile"
                     src={item.anhDaiDien}
@@ -271,76 +288,79 @@ const Classin = () => {
                     sx={{ objectFit: "cover" }}
                   /> */}
 
-                          <ListItemText
-                            primary={item.ten}
-                            sx={{ paddingLeft: "10px", maxWidth: "195px" }}
-                            primaryTypographyProps={{
-                              style: {
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              },
+                            <ListItemText
+                              primary={item.ten}
+                              sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                              primaryTypographyProps={{
+                                style: {
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                },
+                              }}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                </List>
+              ) : (
+                <Loading />
+              )}
+            </Collapse>
+            {/* Registered */}
+            <ListItemButton
+              onClick={handleClickRegistered}
+              sx={
+                openRegistered
+                  ? {
+                      marginTop: "10px",
+                      borderBottomRightRadius: "30px",
+                      borderTopRightRadius: "30px",
+                      backgroundColor: "#e7e7e7",
+                      border: "1px solid #009265",
+                    }
+                  : {
+                      marginTop: "10px",
+                      borderBottomRightRadius: "30px",
+                      borderTopRightRadius: "30px",
+                    }
+              }
+            >
+              <ListItemIcon>
+                <SchoolOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Enrolled" />
+              {openRegistered ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+            </ListItemButton>
+            <Collapse in={openRegistered} timeout="auto" unmountOnExit>
+              {classInfo || !isClassInfoLoading ? (
+                <List>
+                  {classInfo
+                    ?.filter(
+                      (item) =>
+                        item.ma_giangVien !== userId && item.anLopHoc === 0,
+                    )
+                    .map((item, index) => {
+                      return (
+                        <ListItem key={index} disablePadding>
+                          <ListItemButton
+                            onClick={() => {
+                              setActiveClass(item);
                             }}
-                          />
-                        </ListItemButton>
-                      </ListItem>
-                    );
-                  })}
-              </List>
-            ) : (
-              <Loading />
-            )}
-          </Collapse>
-          {/* Registered */}
-          <ListItemButton
-            onClick={handleClickRegistered}
-            sx={
-              openRegistered
-                ? {
-                    marginTop: "10px",
-                    borderBottomRightRadius: "30px",
-                    borderTopRightRadius: "30px",
-                    backgroundColor: "#e7e7e7",
-                    border: "1px solid #009265",
-                  }
-                : {
-                    marginTop: "10px",
-                    borderBottomRightRadius: "30px",
-                    borderTopRightRadius: "30px",
-                  }
-            }
-          >
-            <ListItemIcon>
-              <SchoolOutlined />
-            </ListItemIcon>
-            <ListItemText primary="Enrolled" />
-            {openRegistered ? <ExpandLessRounded /> : <ExpandMoreRounded />}
-          </ListItemButton>
-          <Collapse in={openRegistered} timeout="auto" unmountOnExit>
-            {classInfo || !isClassInfoLoading ? (
-              <List>
-                {classInfo
-                  ?.filter((item) => item.ma_giangVien !== userId)
-                  .map((item, index) => {
-                    return (
-                      <ListItem key={index} disablePadding>
-                        <ListItemButton
-                          onClick={() => {
-                            setActiveClass(item);
-                          }}
-                          sx={{
-                            backgroundColor:
-                              activeClass?.ma_lopHoc === item.ma_lopHoc
-                                ? "#e7e7e7"
-                                : "transparent",
-                            color:
-                              activeClass?.ma_lopHoc === item.ma_lopHoc
-                                ? "black"
-                                : "#666666",
-                          }}
-                        >
-                          <AvatarName name={item.ten} />
-                          {/* <Box
+                            sx={{
+                              backgroundColor:
+                                activeClass?.ma_lopHoc === item.ma_lopHoc
+                                  ? "#e7e7e7"
+                                  : "transparent",
+                              color:
+                                activeClass?.ma_lopHoc === item.ma_lopHoc
+                                  ? "black"
+                                  : "#666666",
+                            }}
+                          >
+                            <AvatarName name={item.ten} />
+                            {/* <Box
                               component="img"
                               alt="profile"
                               src={item.anhDaiDien}
@@ -350,26 +370,108 @@ const Classin = () => {
                               sx={{ objectFit: "cover" }}
                             /> */}
 
-                          <ListItemText
-                            primary={item.ten}
-                            sx={{ paddingLeft: "10px", maxWidth: "195px" }}
-                            primaryTypographyProps={{
-                              style: {
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              },
+                            <ListItemText
+                              primary={item.ten}
+                              sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                              primaryTypographyProps={{
+                                style: {
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                },
+                              }}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                </List>
+              ) : (
+                <Loading />
+              )}
+            </Collapse>
+          </Box>
+          <Box>
+            {/* Archived Classes*/}
+            <ListItemButton
+              onClick={handleClickArchived}
+              sx={
+                openArchived
+                  ? {
+                      marginTop: "10px",
+                      borderBottomRightRadius: "30px",
+                      borderTopRightRadius: "30px",
+                      backgroundColor: "#e7e7e7",
+                      border: "1px solid #009265",
+                    }
+                  : {
+                      marginTop: "10px",
+                      borderBottomRightRadius: "30px",
+                      borderTopRightRadius: "30px",
+                    }
+              }
+            >
+              <ListItemIcon>
+                <ArchiveOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Archived Classes" />
+              {openArchived ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+            </ListItemButton>
+            <Collapse in={openArchived} timeout="auto" unmountOnExit>
+              {classInfo || !isClassInfoLoading ? (
+                <List>
+                  {classInfo
+                    ?.filter((item) => item.anLopHoc === 1)
+                    .map((item, index) => {
+                      return (
+                        <ListItem key={index} disablePadding>
+                          <ListItemButton
+                            onClick={() => {
+                              setActiveClass(item);
                             }}
-                          />
-                        </ListItemButton>
-                      </ListItem>
-                    );
-                  })}
-              </List>
-            ) : (
-              <Loading />
-            )}
-          </Collapse>
+                            sx={{
+                              backgroundColor:
+                                activeClass?.ma_lopHoc === item.ma_lopHoc
+                                  ? "#e7e7e7"
+                                  : "transparent",
+                              color:
+                                activeClass?.ma_lopHoc === item.ma_lopHoc
+                                  ? "black"
+                                  : "#666666",
+                            }}
+                          >
+                            <AvatarName name={item.ten} />
+                            {/* <Box
+                    component="img"
+                    alt="profile"
+                    src={item.anhDaiDien}
+                    height="48px"
+                    width="48px"
+                    borderRadius="50%"
+                    sx={{ objectFit: "cover" }}
+                  /> */}
+
+                            <ListItemText
+                              primary={item.ten}
+                              sx={{ paddingLeft: "10px", maxWidth: "195px" }}
+                              primaryTypographyProps={{
+                                style: {
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                },
+                              }}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                </List>
+              ) : (
+                <Loading />
+              )}
+            </Collapse>
+          </Box>
         </Box>
       </Box>
       {/* CENTER CONTAIN */}
