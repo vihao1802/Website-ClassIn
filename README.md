@@ -15,9 +15,9 @@
 
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
 
-### 📄 PDF file: [BaoCaoDoAn_Nhom7_PTPMMaNguonMo]()
+### 📄 PDF: [BaoCaoDoAn_Nhom7_PTPMMaNguonMo]()
 
-### 📄 Google Slide file: [SlideTrinhBay_Nhom7_PTPMMaNguonMo]()
+### 📄 Google Slides: [SlideTrinhBay_Nhom7_PTPMMaNguonMo](https://docs.google.com/presentation/d/1O3w8enWdViNA_mb9UN14ebD8CZW3sGc9qqyelSkavUs/edit?usp=sharing)
 
 <!-- GETTING STARTED -->
 
@@ -92,7 +92,7 @@ SERVICE_ACCOUNT_FILE=#use_absolute_path_to_backend/config/xenon-timer.json_file
 
 ## 🚀 Usage
 
-⚠️ Should use two terminals when run app
+⚠️ Use two terminals for running this web application
 
 ### Frontend(First termnial):
 
