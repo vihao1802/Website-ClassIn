@@ -12,7 +12,8 @@ import {
     TextField,
     List,
     ListItem,
-    ListItemText
+    ListItemText,
+    CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Dropzone from 'react-dropzone';
@@ -30,19 +31,29 @@ import {
     usePostAccessTokenMutation,
     useDeleteFileDocumentMutation,
     usePostFileDocumentMutation,
+    useDeleteDocumentMutation,
 } from 'state/api'; 
-import { deleteFileFromDrive2 } from '../../../utils/google_ulti';
+import { getUserId_Cookie } from "utils/handleCookies";
+import { useNavigate } from 'react-router-dom';
+import HomeNavbar from "components/HomeNavbar";
 const EditDocument = () => {
     // 343cac63-adee-468b-8f43-5ecf10ef31af
+    const navigate = useNavigate();
+    const userId = getUserId_Cookie();
     let { documentId } = useParams();
-    const [classId] = useState("d513d100-c776-40e6-8ca1-cf61cf8ec7fc");
-    const [unitsId] = useState("3fcdd9de-4717-4339-be6a-b00ec2fa08ac");
+    const [teacherId,setTeacherId] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // Thêm trạng thái để lưu trữ thông báo lỗi
+    const [titleError, setTitleError] = useState("");
+    const [descriptionError, setDescriptionError] = useState("");
+    const [SigningIn, setSigningIn] = useState(false);
+
     //const [classId,setClassId] = useState("");
     //const [unitsId,setUnitsId] = useState("75f9837b-cf42-4260-80de-58c412fc4c2f");
     const REACT_APP_GOOGLE_DRIVE_API_KEY="AIzaSyBnRYgL_mPNKHmEKteVJw-fcf7P3dCJIwI";
     const [PostFileDocument, {isLoading: loadingPostFileDocument }] = usePostFileDocumentMutation();
     const [DeleteFileDocument,{isLoading:loadingDeleteFileDocument}] =useDeleteFileDocumentMutation();
     const [PutDocument, { isLoading: isPutDocumentMutation }] = usePutDocumentMutation();
+    const [DeleteDocument, { isLoading: isDeleteDocumentMutation }] = useDeleteDocumentMutation();
     const [accessToken] = usePostAccessTokenMutation();
     const [access_token,setAccess_token]=useState("");
     useEffect(() => {
@@ -74,42 +85,22 @@ const EditDocument = () => {
         data:DocumentsByDocumentId,
         isLoading : isDocumentsByDocumentId,
     } = useGetDocumentsByDocumentIdQuery(documentId);
-    // useEffect(() => {
-    //     //console.log(DocumentsByDocumentId);
-    //     if(!isDocumentsByDocumentId && DocumentsByDocumentId){
-    //         console.log("day la ma chuong:",DocumentsByDocumentId.ma_chuong);
-    //         setUnitsId(DocumentsByDocumentId.ma_chuong);
-    //         console.log("day la ma chuong sau khi set:",unitsId);
-    //     }
-    // }, [isDocumentsByDocumentId, DocumentsByDocumentId]);
-   
-    // useEffect(() => {
-    //     if(!isUnitsByUnitsId && UnitsByUnitsId){
-    //         setClassId(UnitsByUnitsId.ma_lop);
-    //     }
-    // }, [isUnitsByUnitsId, UnitsByUnitsId]);
-    const {
-        data:ClassDetails,
-        isLoading : isClassDetails,
-    } = useGetClassDetailsQuery(classId);
-    const {
-        data:Units,
-        isLoading : isUnits,
-    } = useGetUnitsQuery(unitsId);
+
     useEffect(() => {
         // Chỉ thiết lập title và description nếu DocumentsByDocumentId đã có dữ liệu
         
-        if (!isDocumentsByDocumentId && DocumentsByDocumentId && !isClassDetails && ClassDetails && !isUnits && Units) {
+        if (!isDocumentsByDocumentId && DocumentsByDocumentId ) {
             //console.log(DocumentsByDocumentId);
             //console.log(DocumentsByDocumentId.ma_chuong);
             setTitle(DocumentsByDocumentId.tieuDe);
             setDescription(DocumentsByDocumentId.noiDung);
-            setTextClass(ClassDetails.ten);
-            setTextUnits(Units.ten);
+            setTextClass(DocumentsByDocumentId.tenLopHoc);
+            setTextUnits(DocumentsByDocumentId.tenChuong);
+            setTeacherId(DocumentsByDocumentId.maGiangVien);
               
 
         }
-      }, [isDocumentsByDocumentId, DocumentsByDocumentId, isClassDetails, ClassDetails, isUnits, Units]);
+      }, [isDocumentsByDocumentId, DocumentsByDocumentId]);
     const {
         data:FileDocumentsByUnitsId,
         isLoading : isFileDocumentsByUnitsId,
@@ -203,11 +194,27 @@ const EditDocument = () => {
         // console.log(title);
         // console.log(description);
         //console.log(filesOld);
+        let valid = true;
+
+        if (!title) {
+            setTitleError("Vui lòng nhập tiêu đề.");
+            valid = false;
+        }
+        if (!description) {
+            setDescriptionError("Vui lòng nhập mô tả.");
+            valid = false;
+        }
+
+
+        if (!valid) {
+            return;
+        }
         console.log("deletedFiles",deletedFiles);
         console.log("New file:",files);
 
         try 
         {
+            setSigningIn(true);
             //console.log("Mã access token:",access_token);
             const res = await PutDocument({
                 tieuDe: title,
@@ -218,10 +225,12 @@ const EditDocument = () => {
             console.log(res);
             await UploadFile(documentId);
             await DeleteFileOld(documentId);
+            setSigningIn(false);
             window.location.reload();
 
         }
         catch (error) {
+            setSigningIn(false);
             console.log('Failed to upload document: ', error);
         }
     };
@@ -304,42 +313,30 @@ const EditDocument = () => {
         e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
         window.open(link, '_blank'); // Mở liên kết trong một tab mới
     }
-    
+    const handleDeleteDocument = async () => {
+        try {
+            setSigningIn(true);
+            const res = await DeleteDocument({ma_hocLieu: documentId});
+            console.log("Delete document successfully");
+            setSigningIn(false);
+            navigate('/classin');
+        }
+        catch (error) {
+            setSigningIn(false);
+            console.log('Failed to delete document: ', error);
+        }
+    };
     const formHeight = 300 + files.length * 95 + filesOld.length * 95;
 
     return (
         <Grid container style={{ backgroundColor: "#e0e0e0" }}>
             <Grid item xs={12} style={{ backgroundColor: "#F9EDED" }}>
-                <AppBar position="static" style={{ backgroundColor: "#fff" }}>
-                    <Toolbar style={{ justifyContent: "space-between" }}>
-                        <Box display="flex" alignItems="center">
-                            <IconButton color="black" edge="end" >
-                                <CloseIcon />
-                            </IconButton>
-                            <Typography component="div" style={{ color: "black", marginLeft: "30px", fontSize: "25px" }}>
-                                Document
-                            </Typography>
-                        </Box>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: "#1a73e8",
-                                width: "100px",
-                                height: "35px",
-                                "&:hover": {
-                                    backgroundColor: "#007850",
-                                },
-                            }}
-                            type="submit"
-                            onClick={handleUpload}
-                        >
-                            Upload
-                        </Button>
-                    </Toolbar>
-                </AppBar>
+            <HomeNavbar IsNotHomePage={true} title="Document" />
+                
+                
                 <Grid item xs={12} >
                     <Grid container spacing={2}>
-                        <Grid item xs={8} style={{ height: "93.5vh" }}>
+                        <Grid item xs={8} >
                             <form
                                 style={{
                                     backgroundColor: "white",
@@ -348,13 +345,19 @@ const EditDocument = () => {
                                     marginLeft: "30px",
                                     height: `${formHeight}px`,
                                     padding: "0",
-                                }}>
+                                    borderRadius: "20px",
+                                }}
+                            >
                                 <TextField
                                     id="title-text"
                                     label="Title"
                                     variant="filled"
                                     style={{ width: "95%", marginTop: "20px", marginLeft: "30px", fontSize: "30px" }}
                                     value={title}
+                                    error={!!titleError}
+                                    InputProps={userId === teacherId ? {readOnly: false} : {
+                                        readOnly: true, // Ngăn người dùng chỉnh sửa
+                                    }}
                                     onChange={handleTitleChange}
                                 />
                                 <TextField
@@ -365,6 +368,10 @@ const EditDocument = () => {
                                     rows={6}
                                     style={{ width: "95%", height: "20vh", marginTop: "20px", marginLeft: "30px", fontSize: "30px" }}
                                     value={description}
+                                    error={!!descriptionError}
+                                    InputProps={userId === teacherId ? {readOnly: false} : {
+                                        readOnly: true, // Ngăn người dùng chỉnh sửa
+                                    }}
                                     onChange={handleDescriptionChange}
                                 />
                                 
@@ -372,21 +379,41 @@ const EditDocument = () => {
                                     {filesOld.length > 0 && (
                                         <List>
                                             {filesOld.map((file, index) => (
-                                                <ListItem key={index} style={{ border: '0.1px solid #ccc', marginTop: '30px', marginLeft: "30px", padding: '10px', width: "95%", fontSize: "30px" }}>
+                                                <ListItem key={index} 
+                                                style={{                                    
+                                                    borderRadius: "50px",
+                                                    border: '0.1px solid #ccc', 
+                                                    marginTop: '30px', 
+                                                    marginLeft: "30px", 
+                                                    padding: '10px', 
+                                                    width: "70%", 
+                                                    fontSize: "30px" 
+                                                }}>
                                                     {getFileIcon(file.name)}
                                                     <ListItemText primary={file.name} />
                                                     <IconButton onClick={(e) => handleFileClick(e, file.alternateLink)}><FileOpenIcon /></IconButton>
-                                                    <IconButton onClick={() => removeFile(index,1)}><CloseIcon /></IconButton>
+                                                    {userId === teacherId && (
+                                                        <IconButton onClick={() => removeFile(index,1)}><CloseIcon /></IconButton>
+                                                    )}
                                                 </ListItem>
                                             ))}
                                         </List>
                                     )}
                                     {files.map((file, index) => (
                                         
-                                        <ListItem style={{ border: '0.1px solid #ccc', marginTop: '30px', marginLeft: "30px", padding: '10px', width: "95%", fontSize: "30px" }}>
-                                            {getFileIcon(file.name)}
+                                        <ListItem 
+                                        style={{                                    
+                                            borderRadius: "50px",
+                                            border: '0.1px solid #ccc', 
+                                            marginTop: '30px', 
+                                            marginLeft: "30px", 
+                                            padding: '10px', 
+                                            width: "70%", 
+                                            fontSize: "30px" 
+                                        }}>
+                                        {getFileIcon(file.name)}
                                             <ListItemText primary={file.name} />
-                                            <IconButton onClick={() => removeFile(index,2)}><CloseIcon /></IconButton>
+                                            <IconButton onClick={() => removeFile(index,2)}><CloseIcon /></IconButton>                                     
                                         </ListItem>
                                     
                                     ))}
@@ -394,18 +421,41 @@ const EditDocument = () => {
 
 
                             </form>
-                            <Dropzone onDrop={handleDrop}>
+                            {userId === teacherId && (<Dropzone onDrop={handleDrop}>
                                 {({ getRootProps, getInputProps }) => (
-                                    <div {...getRootProps()} style={{ backgroundColor: "white", marginTop: "30px", marginLeft: "30px", border: '0.1px solid #ccc', height: '20%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                                    <div {...getRootProps()} 
+                                    style={{ 
+                                        backgroundColor: "white", 
+                                        marginTop: "30px", 
+                                        marginLeft: "30px", 
+                                        border: '0.1px solid #ccc', 
+                                        height: '20%', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center', 
+                                        cursor: 'pointer',
+                                        borderRadius: "50px",
+                                    }}
+                                    >
                                         <input {...getInputProps()} />
                                         <Typography component="div" style={{ color: "black", fontSize: '20px' }}>
                                             Upload file by dragging and dropping or click here
                                         </Typography>
                                     </div>
                                 )}
-                            </Dropzone>
+                            </Dropzone>)}
+                            
                         </Grid>
-                        <Grid item xs={4} style={{backgroundColor:'white',marginTop:'16px', border: '0.1px solid #ccc'}} >
+                        <Grid item xs={0.5}  ></Grid>
+                        <Grid item xs={3} 
+                            style={{
+                                backgroundColor:'white',
+                                marginTop:'60px',
+                                border: '0.1px solid #ccc',
+                                height:'400px',
+                                borderRadius: "20px",
+                            }} 
+                        >
                                 <Typography>
                                     For:
                                 </Typography>
@@ -413,7 +463,7 @@ const EditDocument = () => {
                                     id="class-text"
                                     label="Class"
                                     //variant="filled"
-                                    style={{ width: "70%", marginTop: "20px", marginLeft: "30px", fontSize: "30px" }}
+                                    style={{ width: 300, marginTop: "20px", marginLeft: "30px", fontSize: "30px" }}
                                     InputProps={{
                                         readOnly: true, // Ngăn người dùng chỉnh sửa
                                     }}
@@ -427,13 +477,74 @@ const EditDocument = () => {
                                     id="units-text"
                                     label="Unints"
                                     //variant="filled"
-                                    style={{ width: "70%", marginTop: "20px", marginLeft: "30px", fontSize: "30px" }}
+                                    style={{ width: 300, marginTop: "20px", marginLeft: "30px", fontSize: "30px" }}
                                     InputProps={{
                                         readOnly: true, // Ngăn người dùng chỉnh sửa
                                     }}
                                     value={textunits}
                                 />
-
+                                {
+                                userId === teacherId && (
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            marginTop: "50px",
+                                            marginLeft: "80px",
+                                            width: "200px",
+                                            height: "40px",
+                                            backgroundColor: "#009265",
+                                            "&:hover": {
+                                                backgroundColor: "#007850",
+                                            },
+                                        }}
+                                        type="submit"
+                                        disabled={SigningIn}
+                                        onClick={handleUpload}
+                                    >
+                                        {SigningIn ? (
+                                            <CircularProgress
+                                                size={24}
+                                                sx={{
+                                                    color: "white",
+                                                }}
+                                            />
+                                        ) : (
+                                            "Update"
+                                        )}
+                                    </Button>
+                                    )
+                                }
+                                {
+                                userId === teacherId && (
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            marginTop: "30px",
+                                            marginLeft: "80px",
+                                            width: "200px",
+                                            height: "40px",
+                                            backgroundColor: "#D20103",
+                                            "&:hover": {
+                                                backgroundColor: "#B30406",
+                                            },
+                                        }}
+                                        type="submit"
+                                        disabled={SigningIn}
+                                        onClick={handleDeleteDocument}
+                                    >
+                                        {SigningIn ? (
+                                            <CircularProgress
+                                                size={24}
+                                                sx={{
+                                                    color: "white",
+                                                }}
+                                            />
+                                        ) : (
+                                            "Delete"
+                                        )}
+                                    </Button>
+                                    )
+                                }
 
 
 

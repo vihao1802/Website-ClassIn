@@ -21,10 +21,13 @@ import {
   useDeleteHomeworkWorkMutation,
   usePostAccessTokenMutation,
 } from "state/api";
+import AlertComponent from "../../components/AlertComponent";
 
 import { deleteFileFromDrive } from "utils/google_ulti";
 import { getUserId_Cookie } from "../../utils/handleCookies";
 export default function DoHomework() {
+  const [showAlert, setShowAlert] = useState({ message: "", state: false });
+
   const { homeworkId } = useParams();
   const userId = getUserId_Cookie();
   const { data: HomeworkQuery, isLoading: isLoadingHomeworkQuery } =
@@ -121,10 +124,18 @@ export default function DoHomework() {
         }
         setIsSubmited(true);
       });
-      setErrorMessage("Turn In successfully!");
+      setShowAlert({
+        message: "Create homework successfully!",
+        state: true,
+        severity: "success",
+      });
     } catch (error) {
       console.error("Error uploading file:", error);
-      setErrorMessage(error.message);
+      setShowAlert({
+        message: "Turn in failed!",
+        state: true,
+        severity: "error",
+      });
     }
   };
 
@@ -272,6 +283,12 @@ export default function DoHomework() {
       }}
     >
       <HomeNavbar IsNotHomePage={true} />
+      <AlertComponent
+        severity="success"
+        message={showAlert.message}
+        open={showAlert.state}
+        onClose={() => setShowAlert({ ...showAlert, state: false })}
+      />
       <Box
         sx={{
           height: "100%",
@@ -397,172 +414,227 @@ export default function DoHomework() {
         <Box
           sx={{
             width: "25%",
-            padding: "20px 20px",
-            margin: "20px",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-start",
-            border: "1px solid gray ",
-            borderRadius: "5px",
-            height: "fit-content",
-            boxShadow: "0px 0px 5px 0px #000000",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <Typography color="#009265" variant="h6" fontWeight="bold">
-            Your work
-          </Typography>
-
+          {/* WORK */}
           <Box
             sx={{
               width: "100%",
+              padding: "20px 20px",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "right",
+              justifyContent: "flex-start",
+              border: "1px solid gray ",
+              borderRadius: "5px",
+              // height: "fit-content",
+              boxShadow: "0px 0px 5px 0px #000000",
             }}
           >
+            <Typography color="#009265" variant="h6" fontWeight="bold">
+              Your work
+            </Typography>
+
             <Box
               sx={{
-                marginBottom: "20px",
+                width: "100%",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "start",
-                gap: "5px",
+                justifyContent: "right",
               }}
             >
-              {listAttachment.map((attachment) => (
-                <AttachmentLink
-                  Title={attachment.Title}
-                  Subtitle={attachment.Subtitle}
-                  Thumbnail={attachment.Thumbnail}
-                  handleRemove={() => {
-                    removeAnswerAttachment(attachment.Vid_id);
+              <Box
+                sx={{
+                  marginBottom: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "start",
+                  gap: "5px",
+                }}
+              >
+                {listAttachment.map((attachment) => (
+                  <AttachmentLink
+                    Title={attachment.Title}
+                    Subtitle={attachment.Subtitle}
+                    Thumbnail={attachment.Thumbnail}
+                    handleRemove={() => {
+                      removeAnswerAttachment(attachment.Vid_id);
+                    }}
+                    isRemoveAble={!isSubmited}
+                  />
+                ))}
+              </Box>
+              <Button
+                onClick={handleClick}
+                sx={{
+                  display: !isSubmited ? "flex" : "none",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  textTransform: "none",
+                  gap: "1rem",
+                  color: "#009265",
+                  marginBottom: "20px",
+                  border: "1px solid #009265",
+                }}
+              >
+                <Add sx={{ color: "#009265", fontSize: "18px" }} />
+                Add your work
+              </Button>
+              <Menu
+                anchorEl={anchorEl}
+                open={isOpenMenu}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                sx={{
+                  width: "22%",
+                }}
+              >
+                <MenuItem
+                  sx={{
+                    paddingLeft: "10%",
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "10%",
                   }}
-                  isRemoveAble={!isSubmited}
+                  onClick={handleOpenModalFile}
+                >
+                  <AttachFile />
+                  <Typography variant="subtitle1">File</Typography>
+                </MenuItem>
+                <DohomeworkFile
+                  open={openUploadFile}
+                  handleClose={handleCloseModalFile}
+                  setListAttachment={setListAttachment}
                 />
-              ))}
+                <MenuItem
+                  sx={{
+                    paddingLeft: "10%",
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "10%",
+                  }}
+                  onClick={handleOpenModalLink}
+                >
+                  <InsertLink />
+                  <Typography variant="subtitle1">Link</Typography>
+                </MenuItem>
+                <DohomeworkLink
+                  open={openUploadLink}
+                  handleClose={handleCloseModalLink}
+                  setListAttachment={setListAttachment}
+                />
+              </Menu>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: "red",
+                  marginBottom: "20px",
+                  backgroundColor: "#ff00001a",
+                  borderRadius: "5px",
+                  display: errorMessage === "" ? "none" : "block",
+                }}
+              >
+                {errorMessage}
+              </Typography>
+              {WorkQuery?.[0]?.diem <= -1 && (
+                <>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#009265",
+                      "&:hover": { backgroundColor: "#007850" },
+                      width: "100%",
+                      alignSelf: "flex-end",
+                      display: isSubmited ? "none" : "initial",
+                    }}
+                    disabled={listAttachment.length === 0 ? true : false}
+                    type="submit"
+                  >
+                    {listAttachment.length === 0 ? (
+                      "Add your work"
+                    ) : loadingPostHomeworkWork ? (
+                      <CircularProgress
+                        sx={{
+                          color: "white",
+                        }}
+                        size="1rem"
+                      />
+                    ) : (
+                      "Turn In"
+                    )}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#009265",
+                      "&:hover": { backgroundColor: "#007850" },
+                      width: "100%",
+                      alignSelf: "flex-end",
+                      display: isSubmited ? "initial" : "none",
+                    }}
+                    onClick={handleUnsubmit}
+                  >
+                    {isSubmiting ? (
+                      <CircularProgress
+                        sx={{
+                          color: "white",
+                        }}
+                        size="1rem"
+                      />
+                    ) : (
+                      "Unsubmit"
+                    )}
+                  </Button>
+                </>
+              )}
             </Box>
-            <Button
-              onClick={handleClick}
+          </Box>
+          {/* SCORE DISPLAY  */}
+          <Box
+            sx={{
+              width: "100%",
+              padding: "20px 20px",
+              margin: "20px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              border: "1px solid gray ",
+              borderRadius: "5px",
+              height: "fit-content",
+              boxShadow: "0px 0px 5px 0px #000000",
+            }}
+          >
+            <Typography color="#009265" variant="h6" fontWeight="bold">
+              Your score:
+            </Typography>
+
+            <Box
               sx={{
-                display: !isSubmited ? "flex" : "none",
+                display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                textTransform: "none",
-                gap: "1rem",
-                color: "#009265",
-                marginBottom: "20px",
-                border: "1px solid #009265",
+                gap: "10px",
+                height: "100%",
               }}
             >
-              <Add sx={{ color: "#009265", fontSize: "18px" }} />
-              Add your work
-            </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={isOpenMenu}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              sx={{
-                width: "22%",
-              }}
-            >
-              <MenuItem
-                sx={{
-                  paddingLeft: "10%",
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "10%",
-                }}
-                onClick={handleOpenModalFile}
-              >
-                <AttachFile />
-                <Typography variant="subtitle1">File</Typography>
-              </MenuItem>
-              <DohomeworkFile
-                open={openUploadFile}
-                handleClose={handleCloseModalFile}
-                setListAttachment={setListAttachment}
-              />
-              <MenuItem
-                sx={{
-                  paddingLeft: "10%",
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "10%",
-                }}
-                onClick={handleOpenModalLink}
-              >
-                <InsertLink />
-                <Typography variant="subtitle1">Link</Typography>
-              </MenuItem>
-              <DohomeworkLink
-                open={openUploadLink}
-                handleClose={handleCloseModalLink}
-                setListAttachment={setListAttachment}
-              />
-            </Menu>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color: "red",
-                marginBottom: "20px",
-                backgroundColor: "#ff00001a",
-                borderRadius: "5px",
-                display: errorMessage === "" ? "none" : "block",
-              }}
-            >
-              {errorMessage}
-            </Typography>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#009265",
-                "&:hover": { backgroundColor: "#007850" },
-                width: "100%",
-                alignSelf: "flex-end",
-                display: isSubmited ? "none" : "initial",
-              }}
-              disabled={listAttachment.length === 0 ? true : false}
-              type="submit"
-            >
-              {listAttachment.length === 0 ? (
-                "Add your work"
-              ) : loadingPostHomeworkWork ? (
-                <CircularProgress
-                  sx={{
-                    color: "white",
-                  }}
-                  size="1rem"
-                />
-              ) : (
-                "Turn In"
-              )}
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#009265",
-                "&:hover": { backgroundColor: "#007850" },
-                width: "100%",
-                alignSelf: "flex-end",
-                display: isSubmited ? "initial" : "none",
-              }}
-              onClick={handleUnsubmit}
-            >
-              {isSubmiting ? (
-                <CircularProgress
-                  sx={{
-                    color: "white",
-                  }}
-                  size="1rem"
-                />
-              ) : (
-                "Unsubmit"
-              )}
-            </Button>
+              <Typography variant="h4" sx={{ color: "#009265" }}>
+                {WorkQuery?.[0]?.diem === -1
+                  ? "Not graded"
+                  : WorkQuery?.[0]?.diem}
+              </Typography>
+              <Typography variant="subtitle1">
+                {WorkQuery?.[0]?.diem === -1
+                  ? "Your work has not been graded yet"
+                  : "Your work has been graded"}
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>

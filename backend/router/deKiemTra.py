@@ -53,6 +53,21 @@ async def update(
     return db_object.first()
 
 
+@router.put("/{ma_deKiemTra}/delete", status_code=status.HTTP_200_OK)
+async def delete(
+    ma_deKiemTra: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = db.query(models.DeKiemTra).filter(
+        models.DeKiemTra.ma_deKiemTra == ma_deKiemTra
+    )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="De kiem tra not found")
+    db_object.update({"daXoa": 1})
+    db.commit()
+    return db_object.first()
+
+
 @router.get(
     "/", response_model=list[schemas.DeKiemTra], status_code=status.HTTP_200_OK
 )

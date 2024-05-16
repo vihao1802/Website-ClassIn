@@ -48,17 +48,30 @@ async def read(db: Session = Depends(database.get_db)):
 
 @router.get("/{ma_hocLieu}", status_code=status.HTTP_200_OK)
 async def read(ma_hocLieu: str, db: Session = Depends(database.get_db)):
-    try:
-        db_object = (
-            db.query(models.HocLieu)
-            .filter(models.HocLieu.ma_hocLieu == ma_hocLieu)
-            .first()
+    print(ma_hocLieu)
+    query = (
+        db.query(models.HocLieu,models.Chuong,models.LopHoc,models.TaiKhoan)
+        .join(
+            models.Chuong,models.Chuong.ma_chuong == models.HocLieu.ma_chuong
         )
-    except Exception as e:
-        print(e)
-    if db_object is None:
+        .join(
+            models.LopHoc,models.LopHoc.ma_lopHoc == models.Chuong.ma_lopHoc
+        )
+        .join(
+            models.TaiKhoan,models.TaiKhoan.ma_taiKhoan == models.LopHoc.ma_giangVien
+        )
+        .filter(models.HocLieu.ma_hocLieu == ma_hocLieu)
+    ).all()
+    if query is None:
         raise HTTPException(status_code=400, detail="HocLieu not found")
-    return db_object
+    for hl,chuong,lh,gv in query:
+        print(hl)
+        hl.tenChuong = chuong.ten
+        hl.tenLopHoc = lh.ten
+        hl.maGiangVien=gv.ma_taiKhoan
+        return hl
+
+
 
 
 @router.get("/chuong/{ma_chuong}", status_code=status.HTTP_200_OK)
@@ -100,5 +113,21 @@ async def update(
     db.query(models.HocLieu).filter(models.HocLieu.ma_hocLieu == ma_hocLieu).update(
         schema_object.dict()
     )
+    db.commit()
+    return db_object
+
+@router.put("/{ma_hocLieu}/daXoa", status_code=status.HTTP_200_OK)
+async def update_daXoa(
+    ma_hocLieu: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = (
+        db.query(models.HocLieu)
+        .filter(models.HocLieu.ma_hocLieu == ma_hocLieu)
+        .first()
+    )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="HocLieu not found")
+    db_object.daXoa = 1
     db.commit()
     return db_object

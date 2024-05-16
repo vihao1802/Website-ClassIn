@@ -46,6 +46,28 @@ async def create(
     return db_object
 
 
+@router.put("/{ma_baiLamBaiTap}", status_code=status.HTTP_200_OK)
+async def update(
+    ma_baiLamBaiTap: str,
+    schema_object: schemas.BaiLamBaiTapUpdate,
+    db: Session = Depends(database.get_db),
+):
+    db_object = (
+        db.query(models.BaiLamBaiTap)
+        .filter(models.BaiLamBaiTap.ma_baiLamBaiTap == ma_baiLamBaiTap)
+        .first()
+    )
+    update_data = schema_object.dict(exclude_unset=True)
+    if db_object is None:
+        raise HTTPException(status_code=404, detail="BaiLamBaiTap not found")
+    db.query(models.BaiLamBaiTap).filter(
+        models.BaiLamBaiTap.ma_baiLamBaiTap == ma_baiLamBaiTap
+    ).update(update_data)
+    db.commit()
+    db.refresh(db_object)
+    return db_object
+
+
 @router.get(
     "/",
     response_model=list[schemas.BaiLamBaiTap],

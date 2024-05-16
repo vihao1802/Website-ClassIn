@@ -291,6 +291,12 @@ class BaiLamBaiTapCreate(BaiLamBaiTapBase):
     pass
 
 
+class BaiLamBaiTapUpdate(BaseModel):
+
+    nhanXet: str
+    diem: float
+
+
 class BaiLamBaiTap(BaiLamBaiTapBase):
     ma_baiLamBaiTap: UUID
     thoiGianNopBai: datetime
@@ -301,11 +307,12 @@ class BaiLamBaiTap(BaiLamBaiTapBase):
 
 class FileBaiLamBaiTapBase(BaseModel):
     tenFile: str
+    ma_file: str
 
 
 class FileBaiLamBaiTapCreate(FileBaiLamBaiTapBase):
-    ma_file: str
     tenFile: str
+    ma_file: str
 
 
 class FileBaiLamBaiTap(FileBaiLamBaiTapBase):

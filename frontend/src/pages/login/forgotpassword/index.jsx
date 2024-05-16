@@ -11,14 +11,15 @@ import {
   Link,
   Box,
 } from "@mui/material";
+import { CheckCircleOutline } from "@mui/icons-material";
 import AlertComponent from "../../../components/AlertComponent";
+import Loading from "../../../components/Loading";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import return_icon from "../../../assets/return.png";
 import { useNavigate } from "react-router-dom";
 import { usePostForgotPasswordMutation } from "../../../state/api";
 import HomeNavbar from "components/HomeNavbar";
-
 const validationSchema = yup.object({
   email: yup
     .string()
@@ -27,16 +28,15 @@ const validationSchema = yup.object({
 });
 
 const ForgotPasswordForm = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState({
     message: "",
     state: false,
     severity: "success",
   });
-  const [showFields, setShowFields] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState("");
-  const [VerifyEmail, { isVerifingEmail }] = usePostForgotPasswordMutation();
+  const [showFields, setShowFields] = useState(true);
+  const [VerifyEmail, { isLoading: loadingVerify }] =
+    usePostForgotPasswordMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -44,7 +44,7 @@ const ForgotPasswordForm = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      if (!showFields) {
+      if (showFields) {
         try {
           const res = await VerifyEmail(values.email);
           setShowAlert({
@@ -52,6 +52,8 @@ const ForgotPasswordForm = () => {
             state: true,
             severity: "success",
           });
+          setShowFields(false);
+
           if (res.data.status !== 200) {
             throw new Error("We don't recognize this email address.");
           }
@@ -60,7 +62,6 @@ const ForgotPasswordForm = () => {
               "We have some problem when sending email to your mailbox. Please try again later.",
             );
           }
-          setShowFields(true);
         } catch (error) {
           setShowAlert({
             message: error.message,
@@ -91,51 +92,99 @@ const ForgotPasswordForm = () => {
         }}
       >
         <form onSubmit={formik.handleSubmit}>
-          <Box
-            sx={{
-              width: "100%",
-            }}
-          >
-            <Typography
-              variant="h4"
-              component="div"
-              gutterBottom
-              sx={{ textAlign: "center" }}
+          {showFields && (
+            <Box
+              sx={{
+                width: "100%",
+              }}
             >
-              Forgot Password
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              component="div"
-              gutterBottom
-              sx={{ textAlign: "center", color: "gray" }}
+              <Typography
+                variant="h4"
+                component="div"
+                gutterBottom
+                sx={{ textAlign: "center" }}
+              >
+                Forgot Password
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                component="div"
+                gutterBottom
+                sx={{ textAlign: "center", color: "gray" }}
+              >
+                Please enter your email address to receive a verification link
+              </Typography>
+              <TextField
+                fullWidth
+                color="success"
+                id="email"
+                name="email"
+                label="Email"
+                variant="outlined"
+                margin="normal"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+                disabled={loadingVerify}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                type="submit"
+                style={{
+                  marginTop: "20px",
+                  backgroundColor: loadingVerify ? "#bbbdbd" : "#009265",
+                  color: loadingVerify ? "#797a7a" : "white",
+                }}
+                disabled={loadingVerify}
+              >
+                {loadingVerify ? "Verifying..." : "Send"}
+              </Button>
+            </Box>
+          )}
+          {!showFields && (
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              Please enter your email address to receive a verification code
-            </Typography>
-            <TextField
-              fullWidth
-              color="success"
-              id="email"
-              name="email"
-              label="Email"
-              variant="outlined"
-              margin="normal"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              type="submit"
-              style={{ marginTop: "20px", backgroundColor: "#009265" }}
-              disabled={isVerifingEmail}
-            >
-              {isVerifingEmail ? "Verifying..." : "Send"}
-            </Button>
-          </Box>
+              <CheckCircleOutline
+                sx={{
+                  fontSize: "4rem",
+                  color: "#009265",
+                  textAlign: "center",
+                  marginBottom: "50px",
+                }}
+              />
+              <Typography
+                variant="h6"
+                component="div"
+                gutterBottom
+                sx={{ textAlign: "center" }}
+              >
+                We have sent a verification link to your email.<br></br>Please
+                check your mailbox to recovery your password.
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                style={{
+                  marginTop: "20px",
+                  backgroundColor: "#009265",
+                }}
+                onClick={() => navigate("/signin")}
+              >
+                Go to sign in
+              </Button>
+            </Box>
+          )}
         </form>
       </Box>
     </Box>

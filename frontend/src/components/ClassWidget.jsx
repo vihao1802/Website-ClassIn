@@ -20,7 +20,9 @@ import {
   HistoryEduRounded,
   Grade,
   RefreshRounded,
+
 } from "@mui/icons-material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Tab,
   IconButton,
@@ -68,6 +70,7 @@ import {
   useGetClassDetailsQuery,
   usePutDeleteUnitMutation,
   useGetTestWorksByUserIdQuery,
+  usePutDeleteTestMutation,
 } from "state/api";
 import AvatarName from "./AvatarName";
 import Loading from "./Loading";
@@ -155,10 +158,15 @@ const ClassWidget = ({ classItem, userId }) => {
   const [dialogTest, setDialogTest] = useState("");
   const { data: testWorksData, isLoading: testWorksDataLoading } =
     useGetTestWorksByUserIdQuery(userId);
+  const [deleteTest] = usePutDeleteTestMutation();
 
   if (isUnitsLoading || testWorksDataLoading) {
     return <Loading />;
   }
+
+  const handleOpenCreateHomework = () => {
+    navigate("/createhomework");
+  };
   return (
     <Box
       sx={{
@@ -367,13 +375,17 @@ const ClassWidget = ({ classItem, userId }) => {
                           <Typography>Test</Typography>
                         </FlexBetween>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseCreateMenu}>
+                      <MenuItem
+                        onClick={
+                          (handleCloseCreateMenu, handleOpenCreateHomework)
+                        }
+                      >
                         <FlexBetween width="90%">
                           <ArticleOutlined />
                           <Typography>Exercise</Typography>
                         </FlexBetween>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseCreateMenu}>
+                      <MenuItem onClick={() =>{handleCloseCreateMenu();navigate("/document/create");} }>
                         <FlexBetween>
                           <BookOutlined />
                           <Typography>Document</Typography>
@@ -485,140 +497,159 @@ const ClassWidget = ({ classItem, userId }) => {
 
                   <AccordionDetails sx={{ padding: "unset" }}>
                     <List>
-                      {unit.deKiemTra.map((test, testIndex) => (
-                        <ListItem key={testIndex} disablePadding>
-                          <ListItemButton
-                            sx={{ height: "80px" }}
-                            onClick={() => {
-                              if (classItem?.ma_giangVien === userId)
-                                navigate(`/tests/${test.ma_deKiemTra}/common`);
-                              else {
-                                if (dayjs().isBefore(test.thoiGianBatDau)) {
-                                  setAlert({
-                                    message: "Test is not started yet",
-                                    severity: "info",
-                                    open: true,
-                                  });
-                                } else {
-                                  const testWork = testWorksData?.find(
-                                    (item) =>
-                                      item.ma_deKiemTra === test.ma_deKiemTra,
+                      {unit.deKiemTra
+                        .filter((item) => item.daXoa === 0)
+                        .map((test, testIndex) => (
+                          <ListItem key={testIndex} disablePadding>
+                            <ListItemButton
+                              sx={{ height: "80px" }}
+                              onClick={() => {
+                                if (classItem?.ma_giangVien === userId)
+                                  navigate(
+                                    `/tests/${test.ma_deKiemTra}/common`,
                                   );
-                                  if (!testWork) {
-                                    if (
-                                      dayjs().isBefore(test.thoiGianKetThuc)
-                                    ) {
-                                      setOpenConfirmDialog(true);
-                                      setDialogTest(test.ma_deKiemTra);
-                                    } else
-                                      setAlert({
-                                        message: "Test is ended",
-                                        severity: "error",
-                                        open: true,
-                                      });
+                                else {
+                                  if (dayjs().isBefore(test.thoiGianBatDau)) {
+                                    setAlert({
+                                      message: "Test is not started yet",
+                                      severity: "info",
+                                      open: true,
+                                    });
                                   } else {
-                                    if (test.xemDapAn === 1)
-                                      navigate(
-                                        `/tests/${test.ma_deKiemTra}/work/${testWork.ma_baiLamKiemTra}`,
-                                      );
-                                    else
-                                      setAlert({
-                                        message:
-                                          "This test is not shown answer",
-                                        severity: "warning",
-                                        open: true,
-                                      });
+                                    const testWork = testWorksData?.find(
+                                      (item) =>
+                                        item.ma_deKiemTra === test.ma_deKiemTra,
+                                    );
+                                    if (!testWork) {
+                                      if (
+                                        dayjs().isBefore(test.thoiGianKetThuc)
+                                      ) {
+                                        setOpenConfirmDialog(true);
+                                        setDialogTest(test.ma_deKiemTra);
+                                      } else
+                                        setAlert({
+                                          message: "Test is ended",
+                                          severity: "error",
+                                          open: true,
+                                        });
+                                    } else {
+                                      if (test.xemDapAn === 1)
+                                        navigate(
+                                          `/tests/${test.ma_deKiemTra}/work/${testWork.ma_baiLamKiemTra}`,
+                                        );
+                                      else
+                                        setAlert({
+                                          message:
+                                            "This test is not shown answer",
+                                          severity: "warning",
+                                          open: true,
+                                        });
+                                    }
                                   }
                                 }
-                              }
-                            }}
-                          >
-                            <ListItemIcon>
-                              <HistoryEduRounded />
-                            </ListItemIcon>
-                            <Box width="100%">
-                              <Box display="flex" flexDirection="row">
-                                <Typography variant="h6">
-                                  {test.tieuDe}
-                                </Typography>
-                                <Box p="3px 0 3px 10px">
-                                  <Chip
-                                    label={
-                                      dayjs().isBefore(test.thoiGianBatDau)
-                                        ? "Not started"
-                                        : dayjs().isBefore(test.thoiGianKetThuc)
-                                        ? "Ongoing"
-                                        : "Ended"
-                                    }
-                                    color={
-                                      dayjs().isBefore(test.thoiGianBatDau)
-                                        ? "primary"
-                                        : dayjs().isBefore(test.thoiGianKetThuc)
-                                        ? "success"
-                                        : "error"
-                                    }
-                                    size="small"
-                                  />
+                              }}
+                            >
+                              <ListItemIcon>
+                                <HistoryEduRounded />
+                              </ListItemIcon>
+                              <Box width="100%">
+                                <Box display="flex" flexDirection="row">
+                                  <Typography variant="h6">
+                                    {test.tieuDe}
+                                  </Typography>
+                                  <Box p="3px 0 3px 10px">
+                                    <Chip
+                                      label={
+                                        dayjs().isBefore(test.thoiGianBatDau)
+                                          ? "Not started"
+                                          : dayjs().isBefore(
+                                              test.thoiGianKetThuc,
+                                            )
+                                          ? "Ongoing"
+                                          : "Ended"
+                                      }
+                                      color={
+                                        dayjs().isBefore(test.thoiGianBatDau)
+                                          ? "primary"
+                                          : dayjs().isBefore(
+                                              test.thoiGianKetThuc,
+                                            )
+                                          ? "success"
+                                          : "error"
+                                      }
+                                      size="small"
+                                    />
+                                  </Box>
                                 </Box>
-                              </Box>
-                              <Typography color="#666666">
-                                Deadline:{" "}
-                                {dayjs(test.thoiGianBatDau).format(
-                                  "HH:mm - DD/MM/YYYY",
-                                ) +
-                                  " to " +
-                                  dayjs(test.thoiGianKetThuc).format(
+                                <Typography color="#666666">
+                                  Deadline:{" "}
+                                  {dayjs(test.thoiGianBatDau).format(
                                     "HH:mm - DD/MM/YYYY",
-                                  )}
-                              </Typography>
-                            </Box>
-                          </ListItemButton>
-                          {classItem?.ma_giangVien === userId && (
-                            <IconButton
-                              sx={{
-                                color: "#009265",
-                                width: "40px",
-                                marginRight: "30px",
-                              }}
-                              onClick={(event) => {
-                                setAnchorElTestMenu(event.currentTarget);
-                                setCurrentTest({
-                                  id: test.ma_deKiemTra,
-                                  title: test.tieuDe,
-                                });
+                                  ) +
+                                    " to " +
+                                    dayjs(test.thoiGianKetThuc).format(
+                                      "HH:mm - DD/MM/YYYY",
+                                    )}
+                                </Typography>
+                              </Box>
+                            </ListItemButton>
+                            {classItem?.ma_giangVien === userId && (
+                              <IconButton
+                                sx={{
+                                  color: "#009265",
+                                  width: "40px",
+                                  marginRight: "30px",
+                                }}
+                                onClick={(event) => {
+                                  setAnchorElTestMenu(event.currentTarget);
+                                  setCurrentTest({
+                                    id: test.ma_deKiemTra,
+                                    title: test.tieuDe,
+                                  });
+                                }}
+                              >
+                                <MoreHorizOutlined />
+                              </IconButton>
+                            )}
+                            <Menu
+                              anchorEl={anchorElTestMenu}
+                              open={isOpenTestMenu}
+                              onClose={handleCloseTestMenu}
+                              anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "left",
                               }}
                             >
-                              <MoreHorizOutlined />
-                            </IconButton>
-                          )}
-                          <Menu
-                            anchorEl={anchorElTestMenu}
-                            open={isOpenTestMenu}
-                            onClose={handleCloseTestMenu}
-                            anchorOrigin={{
-                              vertical: "bottom",
-                              horizontal: "left",
-                            }}
-                          >
-                            <MenuItem
-                              onClick={
-                                (handleCloseTestMenu, handleOpenEditTest)
-                              }
-                            >
-                              <FlexBetween>
-                                <EditRounded color="primary" />
-                                <Typography color="primary">Edit</Typography>
-                              </FlexBetween>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseTestMenu}>
-                              <FlexBetween>
-                                <DeleteRounded color="error" />
-                                <Typography color="error">Delete</Typography>
-                              </FlexBetween>
-                            </MenuItem>
-                          </Menu>
-                        </ListItem>
-                      ))}
+                              <MenuItem
+                                onClick={
+                                  (handleCloseTestMenu, handleOpenEditTest)
+                                }
+                              >
+                                <FlexBetween>
+                                  <EditRounded color="primary" />
+                                  <Typography color="primary">Edit</Typography>
+                                </FlexBetween>
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => {
+                                  deleteTest(currentTest.id);
+                                  refetchUnits();
+                                  setAlert({
+                                    message: "Delete Test successfully",
+                                    severity: "success",
+                                    open: true,
+                                  });
+                                  handleCloseTestMenu();
+                                }}
+                              >
+                                <FlexBetween>
+                                  <DeleteRounded color="error" />
+                                  <Typography color="error">Delete</Typography>
+                                </FlexBetween>
+                              </MenuItem>
+                            </Menu>
+                          </ListItem>
+                        ))}
                       {unit.baiTap.map((exercise, exerciseIndex) => (
                         <ListItem
                           key={exerciseIndex}
@@ -627,7 +658,7 @@ const ClassWidget = ({ classItem, userId }) => {
                               ? navigate(
                                   `/exercises/${exercise.ma_baiTap}/common`,
                                 )
-                              : null
+                              : navigate(`/dohomework/${exercise.ma_baiTap}/`)
                           }
                           disablePadding
                         >
@@ -664,7 +695,9 @@ const ClassWidget = ({ classItem, userId }) => {
                       ))}
                       {unit.hocLieu.map((document, documentIndex) => (
                         <ListItem key={documentIndex} disablePadding>
-                          <ListItemButton sx={{ height: "80px" }}>
+                          <ListItemButton sx={{ height: "80px" }} onClick={()=> {                         
+                              navigate(`/document/edit/${document.ma_hocLieu}`);
+                          }}>
                             <ListItemIcon>
                               <BookOutlined />
                             </ListItemIcon>
@@ -705,18 +738,16 @@ const ClassWidget = ({ classItem, userId }) => {
                 </FlexBetween>
               </MenuItem>
               <MenuItem
-                onClick={
-                  (handleCloseActivityMenu,
-                  () => {
-                    deleteUnit(currentUnit.id);
-                    refetchUnits();
-                    setAlert({
-                      message: "Delete Unit successfully",
-                      severity: "success",
-                      open: true,
-                    });
-                  })
-                }
+                onClick={() => {
+                  deleteUnit(currentUnit.id);
+                  refetchUnits();
+                  setAlert({
+                    message: "Delete Unit successfully",
+                    severity: "success",
+                    open: true,
+                  });
+                  handleCloseActivityMenu();
+                }}
               >
                 <FlexBetween>
                   <DeleteRounded color="error" />

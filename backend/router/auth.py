@@ -317,14 +317,54 @@ class ResetPassword(BaseModel):
     cfm_new_password: str
 
 
-@auth.post("/recoverPassword", status_code=status.HTTP_200_OK)
-async def recover_password(
+@auth.post("/recover-password/{ma_taiKhoan}", status_code=status.HTTP_200_OK)
+def update(
+    schema_object: schemas.TaiKhoanUpdatePassword,
+    ma_taiKhoan: str,
+    db: Session = Depends(database.get_db),
+):
+    # check ma_taiKhoan
+    db_object = (
+        db.query(models.TaiKhoan)
+        .filter(models.TaiKhoan.ma_taiKhoan == ma_taiKhoan)
+        .first()
+    )
+    if db_object is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="TaiKhoan not found"
+        )
+
+    result = verify_password(schema_object.currentPassword, db_object.matKhau)
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
+    result = verify_password(schema_object.newPassword, db_object.matKhau)
+    if result:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from the current password",
+        )
+
+    hashed_password = hash_password(schema_object.newPassword)
+    db_object.matKhau = hashed_password
+
+    db.commit()
+    db.refresh(
+        db_object
+    )  # This line will update the db_object with the most recent data from the database.
+    return db_object
+
+
+""" async def recover_password(
     newPassword: ResetPassword,
     req: Request,
     db: Session = Depends(database.get_db),
 ):
-    token = req.headers["authorization"]
-
+    token = req.headers["Authorization"]
+    print(req.headers["Authorization"])
     if not token:
         raise HTTPException(status_code=401, detail="Token is not valid")
 
@@ -369,7 +409,7 @@ async def recover_password(
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token Expired")
+        raise HTTPException(status_code=401, detail="Token Expired") """
 
 
 @auth.post("/logOut", status_code=status.HTTP_200_OK)
