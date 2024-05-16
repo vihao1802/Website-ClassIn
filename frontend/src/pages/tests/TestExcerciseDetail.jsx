@@ -275,6 +275,9 @@ const TestExcerciseDetail = ({ mode }) => {
             color="inherit"
             onClick={() => {
               // navigate(`/tests/${testId}/work/${item.row.ma_baiLamKiemTra}`);
+              navigate(
+                `/scorehomework/hw/${exerciseId}/s/${item.row.ma_taiKhoan}`,
+              );
             }}
           />,
         ];
@@ -497,9 +500,10 @@ const TestExcerciseDetail = ({ mode }) => {
               }}
               onClick={() => {
                 if (mode === "test") navigate(`/tests/${testId}/detail`);
+                else navigate(`/viewhomework/${exerciseId}`);
               }}
             >
-              See Details
+              See Detail
             </Button>
           </Paper>
         </Box>

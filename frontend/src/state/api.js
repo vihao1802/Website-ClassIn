@@ -537,6 +537,17 @@ export const api = createApi({
       }),
       invalidatesTags: ["MessageClass"],
     }),
+    postGroupChat: build.mutation({
+      query: ({ ten, ma_lopHoc }) => ({
+        headers: {
+          "Content-Type": "application/json",
+        },
+        url: `nhomChat/${ma_lopHoc}`,
+        method: "POST",
+        body: { ten: ten },
+      }),
+      invalidatesTags: ["MessageClass"],
+    }),
     deleteMessageClass: build.mutation({
       query: ({ messageId }) => ({
         url: `tin-nhan/${messageId}/delete-message`,
@@ -791,4 +802,5 @@ export const {
   useUpdateHomeworkWorkMutation,
   usePutDeleteClassMutation,
   usePutRestoreClassMutation,
+  usePostGroupChatMutation,
 } = api;
