@@ -39,11 +39,12 @@ import {
 import profileImage from "assets/profile.jpg";
 import ShowClassCode from "components/ModalShowClassCode";
 import AddStudentToClass from "components/ModalAddStudentToClass";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   useGetClassDetailsQuery,
   useGetStudentsByClassIdQuery,
   useDeleteUserFromClassMutation,
+  usePutDeleteClassMutation,
 } from "state/api";
 import Loading from "components/Loading";
 import AlertComponent from "components/AlertComponent";
@@ -63,6 +64,7 @@ const initialCommonValues = {
 
 const ClassDetail = () => {
   const { classId } = useParams();
+  const navigate = useNavigate();
   const [clickedAvatar, setClickedAvatar] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [value, setValue] = React.useState("1");
@@ -140,7 +142,7 @@ const ClassDetail = () => {
       editable: false,
       sortable: false,
     },
-    {
+    classes?.anLopHoc === 0 && {
       field: "remove",
       headerName: "Remove",
       width: 100,
@@ -162,6 +164,9 @@ const ClassDetail = () => {
       },
     },
   ];
+
+  const [deleteClass] = usePutDeleteClassMutation();
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   if (isClassDataLoading) return <Loading />;
 
@@ -405,6 +410,12 @@ const ClassDetail = () => {
                             Boolean(touched.classname) &&
                             Boolean(errors.classname)
                           }
+                          InputProps={
+                            classes.anLopHoc === 1 && {
+                              readOnly: true,
+                              style: { backgroundColor: "#f0f0f0" },
+                            }
+                          }
                           helperText={touched.classname && errors.classname}
                           fullWidth
                         />
@@ -435,25 +446,39 @@ const ClassDetail = () => {
                             Boolean(touched.description) &&
                             Boolean(errors.description)
                           }
+                          InputProps={
+                            classes.anLopHoc === 1 && {
+                              readOnly: true,
+                              style: { backgroundColor: "#f0f0f0" },
+                            }
+                          }
                           helperText={touched.description && errors.description}
                           fullWidth
                         />
                       </Box>
                     </Box>
-                    <FlexBetween mt="20px">
-                      <Button variant="outlined" color="error">
-                        Delete Class
-                      </Button>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#009265",
-                          "&:hover": { backgroundColor: "#007850" },
-                        }}
-                      >
-                        Update
-                      </Button>
-                    </FlexBetween>
+                    {classes.anLopHoc === 0 && (
+                      <FlexBetween mt="20px">
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => {
+                            setOpenConfirmDialog(true);
+                          }}
+                        >
+                          Archived Class
+                        </Button>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            backgroundColor: "#009265",
+                            "&:hover": { backgroundColor: "#007850" },
+                          }}
+                        >
+                          Update
+                        </Button>
+                      </FlexBetween>
+                    )}
                   </form>
                 )}
               </Formik>
@@ -499,21 +524,23 @@ const ClassDetail = () => {
                   getRowId={(row) => row.ma_taiKhoan}
                   rows={students || []}
                   columns={studentcolumns}
-                  slots={{
-                    toolbar: () => {
-                      return (
-                        <GridToolbarContainer>
-                          <Button
-                            color="primary"
-                            startIcon={<PersonAddAltRounded />}
-                            onClick={handleOpenAddStudentToClass}
-                          >
-                            Add student
-                          </Button>
-                        </GridToolbarContainer>
-                      );
-                    },
-                  }}
+                  slots={
+                    classes.anLopHoc === 0 && {
+                      toolbar: () => {
+                        return (
+                          <GridToolbarContainer>
+                            <Button
+                              color="primary"
+                              startIcon={<PersonAddAltRounded />}
+                              onClick={handleOpenAddStudentToClass}
+                            >
+                              Add student
+                            </Button>
+                          </GridToolbarContainer>
+                        );
+                      },
+                    }
+                  }
                   initialState={{
                     pagination: { paginationModel: { pageSize: 5 } },
                   }}
@@ -583,6 +610,41 @@ const ClassDetail = () => {
           </Box>
         </TabContext>
       </Box>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+      >
+        <DialogTitle>{"Archive Testing class?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <strong>
+              Archived classes can't be modified by teachers or students unless
+              they are restored.
+            </strong>
+            <br />
+            Are you sure you want to archive this class?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirmDialog(false)} color="success">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              deleteClass(classId);
+              setShowAlert({
+                message: "Delete class successfully",
+                state: true,
+              });
+              navigate("/classin");
+            }}
+            autoFocus
+            color="success"
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -20,9 +20,8 @@ import {
   HistoryEduRounded,
   Grade,
   RefreshRounded,
-
 } from "@mui/icons-material";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Tab,
   IconButton,
@@ -55,6 +54,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Alert,
 } from "@mui/material";
 
 import "react-chat-elements/dist/main.css";
@@ -70,6 +70,8 @@ import {
   useGetClassDetailsQuery,
   usePutDeleteUnitMutation,
   useGetTestWorksByUserIdQuery,
+  usePutDeleteTestMutation,
+  usePutRestoreClassMutation,
 } from "state/api";
 import AvatarName from "./AvatarName";
 import Loading from "./Loading";
@@ -157,6 +159,10 @@ const ClassWidget = ({ classItem, userId }) => {
   const [dialogTest, setDialogTest] = useState("");
   const { data: testWorksData, isLoading: testWorksDataLoading } =
     useGetTestWorksByUserIdQuery(userId);
+  const [deleteTest] = usePutDeleteTestMutation();
+
+  const [openRestoreDialog, setOpenRestoreDialog] = useState(false);
+  const [restoreClass] = usePutRestoreClassMutation();
 
   if (isUnitsLoading || testWorksDataLoading) {
     return <Loading />;
@@ -180,6 +186,26 @@ const ClassWidget = ({ classItem, userId }) => {
         severity={alert.severity}
         onClose={() => setAlert({ ...alert, open: false })}
       />
+      {classItem?.anLopHoc === 1 && (
+        <Alert
+          severity="info"
+          action={
+            classItem?.ma_giangVien === userId && (
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => setOpenRestoreDialog(true)}
+              >
+                Restore
+              </Button>
+            )
+          }
+        >
+          {classItem?.ma_giangVien === userId
+            ? "Class is archived. Restore it to add or edit anything."
+            : "Class has been archived by your teacher. You can't add or edit anything."}
+        </Alert>
+      )}
       <Box
         sx={{
           height: "50px",
@@ -314,104 +340,111 @@ const ClassWidget = ({ classItem, userId }) => {
                   <MenuItem value="hl">Document</MenuItem>
                 </Select>
               </FormControl>
-              {classItem?.ma_giangVien === userId && (
-                <FlexBetween>
-                  <Button
-                    onClick={handleClickCreateMenu}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      textTransform: "none",
-                      gap: "1rem",
-                      backgroundColor: "#009265",
-                      "&:hover": {
-                        backgroundColor: "#007850",
-                      },
-                      width: "100px",
-                      height: "40px",
-                    }}
-                  >
-                    <Box textAlign="left">
-                      <Typography
+              {classItem?.ma_giangVien === userId &&
+                classItem?.anLopHoc === 0 && (
+                  <FlexBetween>
+                    <Button
+                      onClick={handleClickCreateMenu}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        textTransform: "none",
+                        gap: "1rem",
+                        backgroundColor: "#009265",
+                        "&:hover": {
+                          backgroundColor: "#007850",
+                        },
+                        width: "100px",
+                        height: "40px",
+                      }}
+                    >
+                      <Box textAlign="left">
+                        <Typography
+                          sx={{
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: "14px",
+                            textAlign: "center",
+                            marginLeft: "5px",
+                          }}
+                        >
+                          Create
+                        </Typography>
+                      </Box>
+                      <Add
                         sx={{
                           color: "white",
-                          fontWeight: "bold",
-                          fontSize: "14px",
-                          textAlign: "center",
-                          marginLeft: "5px",
+                          fontSize: "18px",
+                          marginRight: "10px",
                         }}
-                      >
-                        Create
-                      </Typography>
-                    </Box>
-                    <Add
-                      sx={{
-                        color: "white",
-                        fontSize: "18px",
-                        marginRight: "10px",
-                      }}
-                    />
-                  </Button>
-                  <Menu
-                    anchorEl={anchorElCreateMenu}
-                    open={isOpenCreateMenu}
-                    onClose={handleCloseCreateMenu}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
-                  >
-                    <nav>
-                      <MenuItem
-                        onClick={
-                          (handleCloseCreateMenu, () => navigate("/tests/add"))
-                        }
-                      >
-                        <FlexBetween width="60%">
-                          <HistoryEduRounded />
-                          <Typography>Test</Typography>
-                        </FlexBetween>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={
-                          (handleCloseCreateMenu, handleOpenCreateHomework)
-                        }
-                      >
-                        <FlexBetween width="90%">
-                          <ArticleOutlined />
-                          <Typography>Exercise</Typography>
-                        </FlexBetween>
-                      </MenuItem>
-                      <MenuItem onClick={() =>{handleCloseCreateMenu();navigate("/document/create");} }>
-                        <FlexBetween>
-                          <BookOutlined />
-                          <Typography>Document</Typography>
-                        </FlexBetween>
-                      </MenuItem>
-                    </nav>
-                    <Divider color="#666666" />
-                    <nav>
-                      <MenuItem
-                        onClick={(handleCloseCreateMenu, handleOpenAddUnit)}
-                      >
-                        <FlexBetween width="60%">
-                          <ListAltRounded />
-                          <Typography>Unit</Typography>
-                        </FlexBetween>
-                      </MenuItem>
-                      <ModalAddUnit
-                        open={openAddUnit}
-                        handleClose={handleCloseAddUnit}
-                        classId={classItem?.ma_lopHoc}
-                        refetch={refetchUnits}
-                        mode="add"
-                        alert={setAlert}
                       />
-                    </nav>
-                  </Menu>
-                </FlexBetween>
-              )}
+                    </Button>
+                    <Menu
+                      anchorEl={anchorElCreateMenu}
+                      open={isOpenCreateMenu}
+                      onClose={handleCloseCreateMenu}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                    >
+                      <nav>
+                        <MenuItem
+                          onClick={
+                            (handleCloseCreateMenu,
+                            () => navigate("/tests/add"))
+                          }
+                        >
+                          <FlexBetween width="60%">
+                            <HistoryEduRounded />
+                            <Typography>Test</Typography>
+                          </FlexBetween>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={
+                            (handleCloseCreateMenu, handleOpenCreateHomework)
+                          }
+                        >
+                          <FlexBetween width="90%">
+                            <ArticleOutlined />
+                            <Typography>Exercise</Typography>
+                          </FlexBetween>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            handleCloseCreateMenu();
+                            navigate("/document/create");
+                          }}
+                        >
+                          <FlexBetween>
+                            <BookOutlined />
+                            <Typography>Document</Typography>
+                          </FlexBetween>
+                        </MenuItem>
+                      </nav>
+                      <Divider color="#666666" />
+                      <nav>
+                        <MenuItem
+                          onClick={(handleCloseCreateMenu, handleOpenAddUnit)}
+                        >
+                          <FlexBetween width="60%">
+                            <ListAltRounded />
+                            <Typography>Unit</Typography>
+                          </FlexBetween>
+                        </MenuItem>
+                        <ModalAddUnit
+                          open={openAddUnit}
+                          handleClose={handleCloseAddUnit}
+                          classId={classItem?.ma_lopHoc}
+                          refetch={refetchUnits}
+                          mode="add"
+                          alert={setAlert}
+                        />
+                      </nav>
+                    </Menu>
+                  </FlexBetween>
+                )}
               <IconButton
                 sx={{
                   color: "#666666",
@@ -473,228 +506,266 @@ const ClassWidget = ({ classItem, userId }) => {
                     >
                       {unit.chuong.ten}
                     </AccordionSummary>
-                    {classItem?.ma_giangVien === userId && (
-                      <IconButton
-                        sx={{
-                          color: "#009265",
-                          width: "40px",
-                          marginRight: "30px",
-                        }}
-                        onClick={(event) => {
-                          setAnchorElActivityMenu(event.currentTarget);
-                          setCurrentUnit({
-                            id: unit.chuong.ma_chuong,
-                            name: unit.chuong.ten,
-                          });
-                        }}
-                      >
-                        <MoreHorizOutlined />
-                      </IconButton>
-                    )}
+                    {classItem?.ma_giangVien === userId &&
+                      classItem?.anLopHoc === 0 && (
+                        <IconButton
+                          sx={{
+                            color: "#009265",
+                            width: "40px",
+                            marginRight: "30px",
+                          }}
+                          onClick={(event) => {
+                            setAnchorElActivityMenu(event.currentTarget);
+                            setCurrentUnit({
+                              id: unit.chuong.ma_chuong,
+                              name: unit.chuong.ten,
+                            });
+                          }}
+                        >
+                          <MoreHorizOutlined />
+                        </IconButton>
+                      )}
                   </FlexBetween>
 
                   <AccordionDetails sx={{ padding: "unset" }}>
                     <List>
-                      {unit.deKiemTra.map((test, testIndex) => (
-                        <ListItem key={testIndex} disablePadding>
-                          <ListItemButton
-                            sx={{ height: "80px" }}
-                            onClick={() => {
-                              if (classItem?.ma_giangVien === userId)
-                                navigate(`/tests/${test.ma_deKiemTra}/common`);
-                              else {
-                                if (dayjs().isBefore(test.thoiGianBatDau)) {
-                                  setAlert({
-                                    message: "Test is not started yet",
-                                    severity: "info",
-                                    open: true,
-                                  });
-                                } else {
-                                  const testWork = testWorksData?.find(
-                                    (item) =>
-                                      item.ma_deKiemTra === test.ma_deKiemTra,
+                      {unit.deKiemTra
+                        .filter((item) => item.daXoa === 0)
+                        .map((test, testIndex) => (
+                          <ListItem key={testIndex} disablePadding>
+                            <ListItemButton
+                              sx={{ height: "80px" }}
+                              onClick={() => {
+                                if (classItem?.ma_giangVien === userId)
+                                  navigate(
+                                    `/tests/${test.ma_deKiemTra}/common`,
                                   );
-                                  if (!testWork) {
-                                    if (
-                                      dayjs().isBefore(test.thoiGianKetThuc)
-                                    ) {
-                                      setOpenConfirmDialog(true);
-                                      setDialogTest(test.ma_deKiemTra);
-                                    } else
-                                      setAlert({
-                                        message: "Test is ended",
-                                        severity: "error",
-                                        open: true,
-                                      });
+                                else {
+                                  if (dayjs().isBefore(test.thoiGianBatDau)) {
+                                    setAlert({
+                                      message: "Test is not started yet",
+                                      severity: "info",
+                                      open: true,
+                                    });
                                   } else {
-                                    if (test.xemDapAn === 1)
-                                      navigate(
-                                        `/tests/${test.ma_deKiemTra}/work/${testWork.ma_baiLamKiemTra}`,
-                                      );
-                                    else
-                                      setAlert({
-                                        message:
-                                          "This test is not shown answer",
-                                        severity: "warning",
-                                        open: true,
-                                      });
+                                    const testWork = testWorksData?.find(
+                                      (item) =>
+                                        item.ma_deKiemTra === test.ma_deKiemTra,
+                                    );
+                                    if (!testWork) {
+                                      if (classItem?.anLopHoc === 0) {
+                                        if (
+                                          dayjs().isBefore(test.thoiGianKetThuc)
+                                        ) {
+                                          setOpenConfirmDialog(true);
+                                          setDialogTest(test.ma_deKiemTra);
+                                        } else
+                                          setAlert({
+                                            message: "Test is ended",
+                                            severity: "error",
+                                            open: true,
+                                          });
+                                      } else
+                                        setAlert({
+                                          message:
+                                            "This class is archived by teacher",
+                                          severity: "info",
+                                          open: true,
+                                        });
+                                    } else {
+                                      if (test.xemDapAn === 1)
+                                        navigate(
+                                          `/tests/${test.ma_deKiemTra}/work/${testWork.ma_baiLamKiemTra}`,
+                                        );
+                                      else
+                                        setAlert({
+                                          message:
+                                            "This test is not shown answer",
+                                          severity: "warning",
+                                          open: true,
+                                        });
+                                    }
                                   }
                                 }
-                              }
-                            }}
-                          >
-                            <ListItemIcon>
-                              <HistoryEduRounded />
-                            </ListItemIcon>
-                            <Box width="100%">
-                              <Box display="flex" flexDirection="row">
-                                <Typography variant="h6">
-                                  {test.tieuDe}
-                                </Typography>
-                                <Box p="3px 0 3px 10px">
-                                  <Chip
-                                    label={
-                                      dayjs().isBefore(test.thoiGianBatDau)
-                                        ? "Not started"
-                                        : dayjs().isBefore(test.thoiGianKetThuc)
-                                        ? "Ongoing"
-                                        : "Ended"
-                                    }
-                                    color={
-                                      dayjs().isBefore(test.thoiGianBatDau)
-                                        ? "primary"
-                                        : dayjs().isBefore(test.thoiGianKetThuc)
-                                        ? "success"
-                                        : "error"
-                                    }
-                                    size="small"
-                                  />
-                                </Box>
-                              </Box>
-                              <Typography color="#666666">
-                                Deadline:{" "}
-                                {dayjs(test.thoiGianBatDau).format(
-                                  "HH:mm - DD/MM/YYYY",
-                                ) +
-                                  " to " +
-                                  dayjs(test.thoiGianKetThuc).format(
-                                    "HH:mm - DD/MM/YYYY",
-                                  )}
-                              </Typography>
-                            </Box>
-                          </ListItemButton>
-                          {classItem?.ma_giangVien === userId && (
-                            <IconButton
-                              sx={{
-                                color: "#009265",
-                                width: "40px",
-                                marginRight: "30px",
-                              }}
-                              onClick={(event) => {
-                                setAnchorElTestMenu(event.currentTarget);
-                                setCurrentTest({
-                                  id: test.ma_deKiemTra,
-                                  title: test.tieuDe,
-                                });
                               }}
                             >
-                              <MoreHorizOutlined />
-                            </IconButton>
-                          )}
-                          <Menu
-                            anchorEl={anchorElTestMenu}
-                            open={isOpenTestMenu}
-                            onClose={handleCloseTestMenu}
-                            anchorOrigin={{
-                              vertical: "bottom",
-                              horizontal: "left",
-                            }}
-                          >
-                            <MenuItem
-                              onClick={
-                                (handleCloseTestMenu, handleOpenEditTest)
-                              }
-                            >
-                              <FlexBetween>
-                                <EditRounded color="primary" />
-                                <Typography color="primary">Edit</Typography>
-                              </FlexBetween>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseTestMenu}>
-                              <FlexBetween>
-                                <DeleteRounded color="error" />
-                                <Typography color="error">Delete</Typography>
-                              </FlexBetween>
-                            </MenuItem>
-                          </Menu>
-                        </ListItem>
-                      ))}
-                      {unit.baiTap.map((exercise, exerciseIndex) => (
-                        <ListItem
-                          key={exerciseIndex}
-                          onClick={() =>
-                            classItem?.ma_giangVien === userId
-                              ? navigate(
-                                  `/exercises/${exercise.ma_baiTap}/common`,
-                                )
-                              : navigate(`/dohomework/${exercise.ma_baiTap}/`)
-                          }
-                          disablePadding
-                        >
-                          <ListItemButton sx={{ height: "80px" }}>
-                            <ListItemIcon>
-                              <ArticleOutlined />
-                            </ListItemIcon>
-                            <Box width="100%">
-                              <Box display="flex" flexDirection="row">
-                                <Typography variant="h6">
-                                  {exercise.tieuDe}
-                                </Typography>
-                                <Box p="3px 0 3px 10px">
-                                  <Chip
-                                    label="Ongoing"
-                                    color="success"
-                                    size="small"
-                                  />
+                              <ListItemIcon>
+                                <HistoryEduRounded />
+                              </ListItemIcon>
+                              <Box width="100%">
+                                <Box display="flex" flexDirection="row">
+                                  <Typography variant="h6">
+                                    {test.tieuDe}
+                                  </Typography>
+                                  <Box p="3px 0 3px 10px">
+                                    <Chip
+                                      label={
+                                        dayjs().isBefore(test.thoiGianBatDau)
+                                          ? "Not started"
+                                          : dayjs().isBefore(
+                                              test.thoiGianKetThuc,
+                                            )
+                                          ? "Ongoing"
+                                          : "Ended"
+                                      }
+                                      color={
+                                        dayjs().isBefore(test.thoiGianBatDau)
+                                          ? "primary"
+                                          : dayjs().isBefore(
+                                              test.thoiGianKetThuc,
+                                            )
+                                          ? "success"
+                                          : "error"
+                                      }
+                                      size="small"
+                                    />
+                                  </Box>
                                 </Box>
+                                <Typography color="#666666">
+                                  Deadline:{" "}
+                                  {dayjs(test.thoiGianBatDau).format(
+                                    "HH:mm - DD/MM/YYYY",
+                                  ) +
+                                    " to " +
+                                    dayjs(test.thoiGianKetThuc).format(
+                                      "HH:mm - DD/MM/YYYY",
+                                    )}
+                                </Typography>
                               </Box>
-                              <Typography color="#666666">
-                                Deadline:{" "}
-                                {dayjs(exercise.thoiGianBatDau).format(
-                                  "HH:mm - DD/MM/YYYY",
-                                ) +
-                                  " to " +
-                                  dayjs(exercise.thoiGianKetThuc).format(
+                            </ListItemButton>
+                            {classItem?.ma_giangVien === userId &&
+                              classItem?.anLopHoc === 0 && (
+                                <IconButton
+                                  sx={{
+                                    color: "#009265",
+                                    width: "40px",
+                                    marginRight: "30px",
+                                  }}
+                                  onClick={(event) => {
+                                    setAnchorElTestMenu(event.currentTarget);
+                                    setCurrentTest({
+                                      id: test.ma_deKiemTra,
+                                      title: test.tieuDe,
+                                    });
+                                  }}
+                                >
+                                  <MoreHorizOutlined />
+                                </IconButton>
+                              )}
+                            <Menu
+                              anchorEl={anchorElTestMenu}
+                              open={isOpenTestMenu}
+                              onClose={handleCloseTestMenu}
+                              anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "left",
+                              }}
+                            >
+                              <MenuItem
+                                onClick={
+                                  (handleCloseTestMenu, handleOpenEditTest)
+                                }
+                              >
+                                <FlexBetween>
+                                  <EditRounded color="primary" />
+                                  <Typography color="primary">Edit</Typography>
+                                </FlexBetween>
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => {
+                                  deleteTest(currentTest.id);
+                                  refetchUnits();
+                                  setAlert({
+                                    message: "Delete Test successfully",
+                                    severity: "success",
+                                    open: true,
+                                  });
+                                  handleCloseTestMenu();
+                                }}
+                              >
+                                <FlexBetween>
+                                  <DeleteRounded color="error" />
+                                  <Typography color="error">Delete</Typography>
+                                </FlexBetween>
+                              </MenuItem>
+                            </Menu>
+                          </ListItem>
+                        ))}
+                      {unit.baiTap
+                        .filter((item) => item.daXoa === 0)
+                        .map((exercise, exerciseIndex) => (
+                          <ListItem
+                            key={exerciseIndex}
+                            onClick={() =>
+                              classItem?.ma_giangVien === userId
+                                ? navigate(
+                                    `/exercises/${exercise.ma_baiTap}/common`,
+                                  )
+                                : navigate(`/dohomework/${exercise.ma_baiTap}/`)
+                            }
+                            disablePadding
+                          >
+                            <ListItemButton sx={{ height: "80px" }}>
+                              <ListItemIcon>
+                                <ArticleOutlined />
+                              </ListItemIcon>
+                              <Box width="100%">
+                                <Box display="flex" flexDirection="row">
+                                  <Typography variant="h6">
+                                    {exercise.tieuDe}
+                                  </Typography>
+                                  <Box p="3px 0 3px 10px">
+                                    <Chip
+                                      label="Ongoing"
+                                      color="success"
+                                      size="small"
+                                    />
+                                  </Box>
+                                </Box>
+                                <Typography color="#666666">
+                                  Deadline:{" "}
+                                  {dayjs(exercise.thoiGianBatDau).format(
                                     "HH:mm - DD/MM/YYYY",
-                                  )}
-                              </Typography>
-                            </Box>
-                          </ListItemButton>
-                        </ListItem>
-                      ))}
-                      {unit.hocLieu.map((document, documentIndex) => (
-                        <ListItem key={documentIndex} disablePadding>
-                          <ListItemButton sx={{ height: "80px" }} onClick={()=> {                         
-                              navigate(`/document/edit/${document.ma_hocLieu}`);
-                          }}>
-                            <ListItemIcon>
-                              <BookOutlined />
-                            </ListItemIcon>
-                            <Box width="100%">
-                              <Typography variant="h6">
-                                {document.tieuDe}
-                              </Typography>
-                              <Typography color="#666666">
-                                Create at:
-                                {" " +
-                                  dayjs(document.thoiGianTao).format(
-                                    "HH:mm - DD/MM/YYYY",
-                                  )}
-                              </Typography>
-                            </Box>
-                          </ListItemButton>
-                        </ListItem>
-                      ))}
+                                  ) +
+                                    " to " +
+                                    dayjs(exercise.thoiGianKetThuc).format(
+                                      "HH:mm - DD/MM/YYYY",
+                                    )}
+                                </Typography>
+                              </Box>
+                            </ListItemButton>
+                          </ListItem>
+                        ))}
+                      {unit.hocLieu
+                        .filter((item) => item.daXoa === 0)
+                        .map((document, documentIndex) => (
+                          <ListItem key={documentIndex} disablePadding>
+                            <ListItemButton
+                              sx={{ height: "80px" }}
+                              onClick={() => {
+                                navigate(
+                                  `/document/edit/${document.ma_hocLieu}`,
+                                );
+                              }}
+                            >
+                              <ListItemIcon>
+                                <BookOutlined />
+                              </ListItemIcon>
+                              <Box width="100%">
+                                <Typography variant="h6">
+                                  {document.tieuDe}
+                                </Typography>
+                                <Typography color="#666666">
+                                  Create at:
+                                  {" " +
+                                    dayjs(document.thoiGianTao).format(
+                                      "HH:mm - DD/MM/YYYY",
+                                    )}
+                                </Typography>
+                              </Box>
+                            </ListItemButton>
+                          </ListItem>
+                        ))}
                     </List>
                   </AccordionDetails>
                 </Accordion>
@@ -717,18 +788,16 @@ const ClassWidget = ({ classItem, userId }) => {
                 </FlexBetween>
               </MenuItem>
               <MenuItem
-                onClick={
-                  (handleCloseActivityMenu,
-                  () => {
-                    deleteUnit(currentUnit.id);
-                    refetchUnits();
-                    setAlert({
-                      message: "Delete Unit successfully",
-                      severity: "success",
-                      open: true,
-                    });
-                  })
-                }
+                onClick={() => {
+                  deleteUnit(currentUnit.id);
+                  refetchUnits();
+                  setAlert({
+                    message: "Delete Unit successfully",
+                    severity: "success",
+                    open: true,
+                  });
+                  handleCloseActivityMenu();
+                }}
               >
                 <FlexBetween>
                   <DeleteRounded color="error" />
@@ -832,6 +901,45 @@ const ClassWidget = ({ classItem, userId }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      {classItem?.anLopHoc === 1 && (
+        <Dialog
+          open={openRestoreDialog}
+          onClose={() => setOpenRestoreDialog(false)}
+        >
+          <DialogTitle>{"Restore This Class ?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <strong>
+                You and your students will be able to interact with this class
+                again. The class will be shown in "Classes" and in the Classroom
+                menu.
+              </strong>
+              <br />
+              Are you sure you want to restore this class?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirmDialog(false)} color="success">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                restoreClass(classItem?.ma_lopHoc);
+                setOpenRestoreDialog(false);
+                setAlert({
+                  message: "Restore Class successfully",
+                  severity: "success",
+                  open: true,
+                });
+              }}
+              autoFocus
+              color="success"
+            >
+              Restore
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Box>
   );
 };

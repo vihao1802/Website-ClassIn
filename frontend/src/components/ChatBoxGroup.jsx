@@ -61,7 +61,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     class_id: classItem?.ma_lopHoc,
     acc_id: clientId,
   });
-  console.log(messageData);
+  // console.log(messageData);
 
   // scroll to bottom of chat box
   useEffect(() => {
@@ -69,7 +69,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
       if (maNhomChat.current !== classItem.ma_nhomChat) {
         // setMaNhomChat(messageData[0]?.ma_nhomChat);
         maNhomChat.current = classItem.ma_nhomChat;
-        console.log("maNhomChat: " + maNhomChat.current);
+        // console.log("maNhomChat: " + maNhomChat.current);
       }
     }
   }, [messageData, maNhomChat, classItem]);
@@ -128,7 +128,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   const handleSendMessageTF = async () => {
     messageTextField = messageTextField.trim();
     // console.log(messageTextField);
-    console.log("in TF " + maNhomChat.current);
+    // console.log("in TF " + maNhomChat.current);
     if (!messageTextField) return;
     const response = await postMessageClass({
       noiDung: messageTextField,
@@ -160,7 +160,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
   // delete message
   const [deleteMessageClass] = useDeleteMessageClassMutation();
   const handleDeleteMessage = async (messageIdDeleted) => {
-    console.log("Message delete" + messageIdDeleted);
+    // console.log("Message delete" + messageIdDeleted);
     const response = await deleteMessageClass({
       messageId: messageIdDeleted,
     });
@@ -194,7 +194,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
       ws.onmessage = (event) => {
         const messageContent = JSON.parse(event.data);
         refetchMessageData();
-        console.log("Message by id in websocket: " + messageContent.sendById);
+        // console.log("Message by id in websocket: " + messageContent.sendById);
         if (messageContent.type === "deleteMessage") {
         } else if (messageContent.type === "sendMessage") {
           const scrollContainer = boxRef.current;
@@ -234,7 +234,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
   const sendMessage = (id) => {
     if (webSocket.current && webSocket.current.readyState === WebSocket.OPEN) {
-      console.log("send by id: " + id);
+      // console.log("send by id: " + id);
       webSocket.current.send("sendMessage");
     }
   };
@@ -513,7 +513,11 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
                 </Box>
                 {item ? (
                   <MessageBox
-                    replyButton={item.ma_taiKhoan === clientId ? true : false}
+                    replyButton={
+                      item.ma_taiKhoan === clientId && classItem?.anLopHoc === 0
+                        ? true
+                        : false
+                    }
                     onReplyClick={
                       item.ma_taiKhoan === clientId
                         ? handleActionMenuMessage
@@ -724,70 +728,72 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
             )}
           </Box>
         )}
-        <FlexBetween
-          backgroundColor="white"
-          borderRadius="9px"
-          padding="0.1rem 1.5rem 0.1rem 0.5rem"
-        >
-          <TextField
-            id="text-field-message"
-            placeholder="Type a message..."
-            sx={{
-              width: "100%",
-              padding: "0",
-              color: "black",
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  border: "none",
-                },
-                "&:hover fieldset": {
-                  border: "none",
-                },
-                "&.Mui-focused fieldset": {
-                  border: "none",
-                },
-              },
-            }}
-            variant="outlined"
-            size="small"
-            InputProps={{
-              maxRows: 10,
-              multiline: true,
-            }}
-            inputProps={{
-              maxLength: 1000, // Add this line
-            }}
-            onChange={handleTextFieldChange}
-            onKeyDown={async (event) => {
-              const messageText = event.target.value.trim();
-              if (event.key === "Enter" && event.shiftKey) {
-                // allow new line
-                return;
-              } else if (event.key === "Enter" && messageText !== "") {
-                event.preventDefault(); // prevent new line
-                handleSendMessageTF();
-              } else if (event.key === "Enter" && messageText === "") {
-                event.preventDefault(); // prevent new line
-              }
-            }}
-          />
-          {loadingPostMessage ? (
-            <CircularProgress color="success" size={"26px"} />
-          ) : (
-            <IconButton
-              id="send-message-button"
+        {classItem?.anLopHoc === 0 && (
+          <FlexBetween
+            backgroundColor="white"
+            borderRadius="9px"
+            padding="0.1rem 1.5rem 0.1rem 0.5rem"
+          >
+            <TextField
+              id="text-field-message"
+              placeholder="Type a message..."
               sx={{
-                marginTop: "auto",
+                width: "100%",
+                padding: "0",
+                color: "black",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
+                  },
+                  "&:hover fieldset": {
+                    border: "none",
+                  },
+                  "&.Mui-focused fieldset": {
+                    border: "none",
+                  },
+                },
               }}
-              onClick={handleSendMessageTF}
-            >
-              <SendRounded
-                id="send-message-button-icon"
-                sx={{ color: "gray" }}
-              />
-            </IconButton>
-          )}
-        </FlexBetween>
+              variant="outlined"
+              size="small"
+              InputProps={{
+                maxRows: 10,
+                multiline: true,
+              }}
+              inputProps={{
+                maxLength: 1000, // Add this line
+              }}
+              onChange={handleTextFieldChange}
+              onKeyDown={async (event) => {
+                const messageText = event.target.value.trim();
+                if (event.key === "Enter" && event.shiftKey) {
+                  // allow new line
+                  return;
+                } else if (event.key === "Enter" && messageText !== "") {
+                  event.preventDefault(); // prevent new line
+                  handleSendMessageTF();
+                } else if (event.key === "Enter" && messageText === "") {
+                  event.preventDefault(); // prevent new line
+                }
+              }}
+            />
+            {loadingPostMessage ? (
+              <CircularProgress color="success" size={"26px"} />
+            ) : (
+              <IconButton
+                id="send-message-button"
+                sx={{
+                  marginTop: "auto",
+                }}
+                onClick={handleSendMessageTF}
+              >
+                <SendRounded
+                  id="send-message-button-icon"
+                  sx={{ color: "gray" }}
+                />
+              </IconButton>
+            )}
+          </FlexBetween>
+        )}
       </Box>
     </>
   );

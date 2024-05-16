@@ -206,7 +206,9 @@ const DoTestForm = ({ mode }) => {
     useGetWorkInfoByWorkIdQuery(workId, { skip: mode === "do" });
   return (
     <Box>
-      {mode === "work" && <HomeNavbar IsNotHomePage={true} />}
+      {mode === "work" && (
+        <HomeNavbar IsNotHomePage={true} title="Student's Test" />
+      )}
       <Box sx={{ display: "flex", flexDirection: "row", padding: "20px" }}>
         {testItem || !isTestLoading ? (
           <>

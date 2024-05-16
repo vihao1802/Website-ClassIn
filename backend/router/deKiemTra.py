@@ -1,8 +1,10 @@
 from datetime import date, datetime
 
 import database
+import load_env_global
 import models
 import schemas
+import yagmail
 from email_validator import EmailNotValidError, validate_email
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy import exists
@@ -49,6 +51,21 @@ async def update(
     if db_object.first() is None:
         raise HTTPException(status_code=400, detail="DeKiemTra not found")
     db_object.update(schema_object.dict())
+    db.commit()
+    return db_object.first()
+
+
+@router.put("/{ma_deKiemTra}/delete", status_code=status.HTTP_200_OK)
+async def delete(
+    ma_deKiemTra: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = db.query(models.DeKiemTra).filter(
+        models.DeKiemTra.ma_deKiemTra == ma_deKiemTra
+    )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="De kiem tra not found")
+    db_object.update({"daXoa": 1})
     db.commit()
     return db_object.first()
 
