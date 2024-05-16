@@ -57,7 +57,7 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
     acc_id: clientId,
     friend_id: friend.ma_taiKhoan,
   });
-  console.log(messageData);
+  // console.log(messageData);
 
   // scroll to bottom of chat box
   /*     useEffect(() => {
@@ -156,7 +156,7 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
   // delete message
   const [deleteMessageClass] = useDeleteMessageFriendMutation();
   const handleDeleteMessage = async (messageIdDeleted) => {
-    console.log("Message delete" + messageIdDeleted);
+    // console.log("Message delete" + messageIdDeleted);
     const response = await deleteMessageClass({
       messageId: messageIdDeleted,
     });
@@ -190,10 +190,10 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
       ws.onmessage = (event) => {
         const messageContent = JSON.parse(event.data);
         refetchMessageData();
-        console.log("In websocket" + friend.hoTen);
+        // console.log("In websocket" + friend.hoTen);
         refetchAllFriends();
         setActive(friend);
-        console.log("Message by id in websocket: " + messageContent.sendById);
+        // console.log("Message by id in websocket: " + messageContent.sendById);
         if (messageContent.type === "deleteMessage") {
         } else if (messageContent.type === "sendMessage") {
           const scrollContainer = boxRef.current;
@@ -233,7 +233,7 @@ const ChatBoxGroup = ({ clientId, friend, refetchAllFriends, setActive }) => {
 
   const sendMessage = (id) => {
     if (webSocket.current && webSocket.current.readyState === WebSocket.OPEN) {
-      console.log("send by id: " + id);
+      // console.log("send by id: " + id);
       webSocket.current.send("sendMessage");
     }
   };
