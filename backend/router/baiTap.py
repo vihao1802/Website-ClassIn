@@ -95,6 +95,7 @@ async def read(ma_baiTap: str, db: Session = Depends(database.get_db)):
     for baitap, chuong, lop, giangvien in query:
         baitap.tenChuong = chuong.ten
         baitap.tenLop = lop.ten
+        baitap.anLopHoc = lop.anLopHoc
         baitap.tenGV = giangvien.hoTen
         return baitap
 
