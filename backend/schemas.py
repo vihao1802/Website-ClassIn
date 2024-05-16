@@ -247,6 +247,10 @@ class BaiTapCreate(BaiTapBase):
     nopBu: int
 
 
+class BaiTapUpdate(BaiTapBase):
+    pass
+
+
 class BaiTap(BaiTapBase):
     ma_baiTap: UUID
     ma_chuong: UUID

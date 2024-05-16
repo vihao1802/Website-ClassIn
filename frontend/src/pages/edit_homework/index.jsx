@@ -48,18 +48,18 @@ import {
   usePostAccessTokenMutation,
   usePostHomeworkFileMutation,
   useDeleteHomeworkFileMutation,
-  usePostAddUnitMutation,
   useDeleteHomeworkMutation,
+  useGetHomeWorkByHomeworkIdQuery,
 } from "state/api";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 const PUBLIC_ANSWER_OPT = [
   { id: "1", label: "After student submited" },
   { id: "2", label: "After exam ended" },
   { id: "3", label: "Not public answer" },
 ];
-export default function CreateHomeWork() {
+export default function EditHomework() {
   const navigate = useNavigate();
-
+  const { homeworkId } = useParams();
   const [showAlert, setShowAlert] = useState({ message: "", state: false });
   const [message, setMessage] = useState("");
   const [dateMessage, setDateMessage] = useState("");
@@ -69,12 +69,13 @@ export default function CreateHomeWork() {
   const [currentUnitId, setCurrentUnitId] = useState("");
   const [valueAnswer, setValueAnswer] = useState(PUBLIC_ANSWER_OPT[0]);
   const [hasAnswer, setHasAnswer] = useState(false);
+  const [homework, setHomework] = useState({});
+
   const [postHomework, { isLoading: loadingPostHomework }] =
     usePostHomeworkMutation();
   const [postHomeworkFile, { isLoading: loadingPostHomeworkFile }] =
     usePostHomeworkFileMutation();
   const [accessToken] = usePostAccessTokenMutation();
-  const [createUnit] = usePostAddUnitMutation();
 
   const [DeleteHomework] = useDeleteHomeworkMutation();
   const [DeleteHomeworkFile] = useDeleteHomeworkFileMutation();
@@ -86,59 +87,14 @@ export default function CreateHomeWork() {
     useGetClassByInstructorIdQuery(getUserId_Cookie());
   const { data: UnitQuery, isLoading: isLoadingUnitQuery } =
     useGetUnitByClassIdQuery(classItem === null ? "" : classItem.id);
+  const { data: HomeworkQuery, isLoading: isLoadingHomeworkQuery } =
+    useGetHomeWorkByHomeworkIdQuery(homeworkId);
 
-  useEffect(() => {
-    if (!isLoadingClassQuery && ClassQuery) {
-      const list = ClassQuery.map((item) => {
-        return {
-          id: item.ma_lopHoc,
-          label: item.ten,
-        };
-      });
-      setValueClass(list);
-      setClassItem(list[0]);
-    }
-  }, [isLoadingClassQuery, ClassQuery]);
-
-  useEffect(() => {
-    if (!isLoadingUnitQuery && UnitQuery) {
-      // console.log(UnitQuery);
-      if (UnitQuery.length === 0) {
-        setValueUnit([{ id: null, label: "Default unit" }]);
-        return;
-      }
-      const list = UnitQuery.map((item) => {
-        return {
-          id: item?.ma_chuong,
-          label: item?.ten,
-        };
-      });
-      setValueUnit(list);
-      setCurrentUnitId(list[0]);
-    }
-  }, [isLoadingUnitQuery, UnitQuery]);
-
-  const validationSchema = yup.object({
-    homework_title: yup.string().required("Title is required"),
-    homework_content: yup.string().required("Content is required"),
-    homework_answer: yup.string(),
-    start_time: yup.date().min(new Date(), "Date cannot be in the pass"),
-  });
   const handleSubmit = async (values) => {
     let homework_id = "";
-    let newUnitId = "";
     try {
-      if (valueUnit[0].id === null) {
-        const newUnit = await createUnit({
-          ten: "New Unit",
-          ma_lopHoc: classItem.id,
-        });
-        newUnitId = newUnit.data.ma_chuong;
-      }
-      console.log(newUnitId);
-      console.log(currentUnitId.id);
       const res = await postHomework({
-        machuong: newUnitId === "" ? currentUnitId.id : newUnitId,
+        machuong: currentUnitId.id,
         tieuDe: values.homework_title,
         noiDungBaiTap: values.homework_content,
         noiDungDapAn: values.homework_answer,
@@ -147,8 +103,6 @@ export default function CreateHomeWork() {
         congKhaiDapAn: 1,
         nopBu: 1,
       });
-      if (res.error)
-        throw new Error("Create homework failed! Please try again.");
       const access_token = await accessToken();
       if (listAttachment.length !== 0) {
         listAttachment.forEach(async (attachment) => {
@@ -316,6 +270,12 @@ export default function CreateHomeWork() {
       });
     }
   };
+  const validationSchema = yup.object({
+    homework_title: yup.string().required("Title is required"),
+    homework_content: yup.string().required("Content is required"),
+    homework_answer: yup.string(),
+    start_time: yup.date().min(new Date(), "Date cannot be in the pass"),
+  });
   const formik = useFormik({
     initialValues: {
       homework_title: "",
@@ -325,9 +285,50 @@ export default function CreateHomeWork() {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       handleSubmit(values);
-      // console.log(classItem);
     },
   });
+
+  useEffect(() => {
+    if (!isLoadingClassQuery && ClassQuery) {
+      const list = ClassQuery.map((item) => {
+        return {
+          id: item.ma_lopHoc,
+          label: item.ten,
+        };
+      });
+      setValueClass(list);
+      setClassItem(list[0]);
+    }
+  }, [isLoadingClassQuery, ClassQuery]);
+
+  useEffect(() => {
+    if (!isLoadingUnitQuery && UnitQuery) {
+      if (UnitQuery.length === 0) {
+        setValueUnit([]);
+        return;
+      }
+      const list = UnitQuery.map((item) => {
+        return {
+          id: item.ma_chuong,
+          label: item.ten,
+        };
+      });
+      setValueUnit(list);
+      setCurrentUnitId(list[0]);
+    }
+  }, [isLoadingUnitQuery, UnitQuery]);
+  useEffect(() => {
+    if (!isLoadingHomeworkQuery && HomeworkQuery) {
+      formik.setValues({
+        homework_title: HomeworkQuery.tieuDe,
+        homework_content: HomeworkQuery.noiDungBaiTap,
+        homework_answer: HomeworkQuery.noiDungDapAn,
+      });
+
+      setHomework(HomeworkQuery);
+    }
+  }, [HomeworkQuery, isLoadingHomeworkQuery]);
+
   const handleAddAnswer = () => {
     const answerBtn = document.getElementById("add-answer-button");
     if (hasAnswer) {
@@ -407,6 +408,7 @@ export default function CreateHomeWork() {
               variant="filled"
               size="normal"
               color="success"
+              value={formik.values.homework_title}
               fullWidth
               error={
                 formik.touched.homework_title
@@ -423,6 +425,7 @@ export default function CreateHomeWork() {
               variant="filled"
               size="normal"
               color="success"
+              value={formik.values.homework_content}
               fullWidth
               multiline
               rows={5}
@@ -523,6 +526,7 @@ export default function CreateHomeWork() {
                 label="Homework Answer"
                 variant="filled"
                 size="normal"
+                value={formik.values.homework_answer}
                 color="success"
                 sx={{
                   width: "100%",
@@ -612,12 +616,12 @@ export default function CreateHomeWork() {
           <Typography color="#009265" variant="h6" fontWeight="bold">
             Information
           </Typography>
-          {/* <Autocomplete
+          <Autocomplete
             id="class-select"
             name="class_select"
             inputValue={classItem.label}
             disablePortal
-            // disableClearable
+            disableClearable
             getOptionLabel={(option) => option.label}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             onChange={(event, newValue) => {
@@ -633,31 +637,9 @@ export default function CreateHomeWork() {
                 size="small"
               />
             )}
-          /> */}
-          <Autocomplete
-            value={classItem}
-            onChange={(event, newValue) => {
-              setClassItem(newValue);
-            }}
-            disableClearable
-            isOptionEqualToValue={(option, value) => {
-              return option.id === value.id;
-            }}
-            id="class-select"
-            name="class_select"
-            options={valueClass}
-            sx={{ width: 280, marginTop: "10px" }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Class"
-                color="success"
-                size="small"
-              />
-            )}
           />
           <Autocomplete
-            value={valueUnit[0].label || null}
+            inputValue={valueUnit[0].label}
             id="unit-select"
             name="unit_select"
             disablePortal
@@ -665,7 +647,8 @@ export default function CreateHomeWork() {
             onChange={(event, newValue) => {
               setCurrentUnitId(newValue);
             }}
-            isOptionEqualToValue={(option, value) => option?.id === value?.id}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            getOptionLabel={(option) => option.label}
             options={valueUnit}
             sx={{ width: 280 }}
             renderInput={(params) => (
@@ -779,7 +762,7 @@ export default function CreateHomeWork() {
               {loadingPostHomework || loadingPostHomeworkFile ? (
                 <CircularProgress sx={{ color: "white" }} size="1.5rem" />
               ) : (
-                "Create homework"
+                "Save"
               )}
             </Button>
           </Box>
