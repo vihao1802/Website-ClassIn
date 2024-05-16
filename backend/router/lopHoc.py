@@ -80,6 +80,36 @@ def update(
     return db_object
 
 
+@router.put("/{ma_lopHoc}/delete", status_code=status.HTTP_200_OK)
+async def delete(
+    ma_lopHoc: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = db.query(models.LopHoc).filter(
+        models.LopHoc.ma_lopHoc == ma_lopHoc
+    )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="Lop Hoc not found")
+    db_object.update({"anLopHoc": 1})
+    db.commit()
+    return db_object
+
+
+@router.put("/{ma_lopHoc}/restore", status_code=status.HTTP_200_OK)
+async def restore(
+    ma_lopHoc: str,
+    db: Session = Depends(database.get_db),
+):
+    db_object = db.query(models.LopHoc).filter(
+        models.LopHoc.ma_lopHoc == ma_lopHoc
+    )
+    if not db_object:
+        raise HTTPException(status_code=400, detail="Lop Hoc not found")
+    db_object.update({"anLopHoc": 0})
+    db.commit()
+    return db_object
+
+
 @router.get(
     "/", response_model=list[schemas.LopHoc], status_code=status.HTTP_200_OK
 )

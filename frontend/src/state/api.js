@@ -686,6 +686,20 @@ export const api = createApi({
       }),
       invalidatesTags: ["Tests"],
     }),
+    putDeleteClass: build.mutation({
+      query: (cid) => ({
+        url: `lopHoc/${cid}/delete`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Class"],
+    }),
+    putRestoreClass: build.mutation({
+      query: (cid) => ({
+        url: `lopHoc/${cid}/restore`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Class"],
+    }),
     DeleteFileDocument: build.mutation({
       query: ({ ma_hocLieu, ma_file }) => ({
         url: `fileHocLieu/${ma_hocLieu}/${ma_file}`,
@@ -775,4 +789,6 @@ export const {
   useDeleteDocumentMutation,
   useChangePasswordWithLinkMutation,
   useUpdateHomeworkWorkMutation,
+  usePutDeleteClassMutation,
+  usePutRestoreClassMutation,
 } = api;
