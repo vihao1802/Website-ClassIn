@@ -15,7 +15,9 @@
 
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
 
-### 📄 PDF file: [BaoCaoDoAn_Nhom7]()
+### 📄 PDF: <a href="" target="_blank">BaoCaoDoAn_Nhom7_PTPMMaNguonMo</a>
+
+### 📄 Google Slides: <a href="https://docs.google.com/presentation/d/1O3w8enWdViNA_mb9UN14ebD8CZW3sGc9qqyelSkavUs/edit?usp=sharing" target="_blank">SlideTrinhBay_Nhom7_PTPMMaNguonMo</a>
 
 <!-- GETTING STARTED -->
 
@@ -55,38 +57,26 @@ source ./venv/bin/activate
 pip install -r ./requirements.txt
 ```
 
-5. (Optional) Init `pre-commit`
-
-- This is for development
-
-```
-pre-commit install
-```
-
-```
-pre-commit run --all-files
-```
-
-6. Move to `frontend` directory
+5. Move to `frontend` directory
 
 ```
 cd frontend
 ```
 
-7. Install all required packages in `packages.json`
+6. Install all required packages in `packages.json`
 
 ```
 npm i
 ```
 
-8. Create file `.env.local` in folder `frontend` and fill out with format:
+7. Create file `.env.local` in folder `frontend` and fill out with format:
 
 ```env
 REACT_APP_BASE_URL=http://localhost:8000/api
 REACT_APP_WEBSOCKET_URL=ws://localhost:8000/api/ws
 ```
 
-9. Create file `.env` in folder `backend` and fill out with format:
+8. Create file `.env` in folder `backend` and fill out with format:
 
 ```env
 URL_DATABASE="sqlite:///./classin_database.db"
@@ -97,11 +87,12 @@ JWT_ALGORITHM=HS256
 JWT_SECRET=#use_generate_UUID_tool_for_this
 EMAIL=#email_for_upload_file_feature
 PASSWORD_EMAIL=#password_email_for_upload_file_feature
+SERVICE_ACCOUNT_FILE=#use_absolute_path_to_backend/config/xenon-timer.json_file
 ```
 
 ## 🚀 Usage
 
-⚠️ Should use two terminals when run app
+⚠️ Use two terminals for running this web application
 
 ### Frontend(First termnial):
 
