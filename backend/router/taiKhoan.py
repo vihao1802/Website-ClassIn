@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/tai-khoan", tags=["TaiKhoan"])
 
-
 @router.post(
     "/{ma_nhomQuyen}",
     status_code=status.HTTP_201_CREATED,

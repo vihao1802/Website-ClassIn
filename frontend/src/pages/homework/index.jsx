@@ -135,15 +135,13 @@ export default function CreateHomeWork() {
         });
         newUnitId = newUnit.data.ma_chuong;
       }
-      console.log(newUnitId);
-      console.log(currentUnitId.id);
       const res = await postHomework({
         machuong: newUnitId === "" ? currentUnitId.id : newUnitId,
         tieuDe: values.homework_title,
         noiDungBaiTap: values.homework_content,
         noiDungDapAn: values.homework_answer,
-        thoiGianBatDau: new Date().toISOString(),
-        thoiGianKetThuc: new Date().toISOString(),
+        thoiGianBatDau: startTime.format("YYYY-MM-DD HH:mm:ss"),
+        thoiGianKetThuc: endtime.format("YYYY-MM-DD HH:mm:ss"),
         congKhaiDapAn: 1,
         nopBu: 1,
       });
@@ -324,6 +322,9 @@ export default function CreateHomeWork() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      // console.log(startTime.toISOString());
+      // console.log(endtime.toISOString());
+
       handleSubmit(values);
       // console.log(classItem);
     },
@@ -715,6 +716,8 @@ export default function CreateHomeWork() {
                 disablePast
                 defaultValue={startTime}
                 onChange={(value) => {
+                  // console.log(value.format("YYYY-MM-DD HH:mm:ss"));
+                  // console.log(value.toISOString());
                   if (value < dayjs()) {
                     setDateMessage("Start time must be in the future");
                   } else {
@@ -773,10 +776,10 @@ export default function CreateHomeWork() {
                 alignSelf: "flex-end",
               }}
               type="submit"
-              disable={loadingPostHomework || loadingPostHomeworkFile}
+              disabled={loadingPostHomework || loadingPostHomeworkFile}
               // onClick={(e) => formik.handleSubmit(e)}
             >
-              {loadingPostHomework || loadingPostHomeworkFile ? (
+              {loadingPostHomework && loadingPostHomeworkFile ? (
                 <CircularProgress sx={{ color: "white" }} size="1.5rem" />
               ) : (
                 "Create homework"
