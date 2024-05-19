@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   Box,
@@ -7,7 +7,7 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import { CloseRounded, ContentCopyRounded } from "@mui/icons-material";
+import { CloseRounded } from "@mui/icons-material";
 import FlexBetween from "./FlexBetween";
 import { useFormik } from "formik";
 import * as yup from "yup";

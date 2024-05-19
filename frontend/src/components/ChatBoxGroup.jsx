@@ -16,7 +16,6 @@ import {
 import "react-chat-elements/dist/main.css";
 import { MessageBox } from "react-chat-elements";
 import FlexBetween from "./FlexBetween";
-import profileImage from "assets/profile.jpg";
 import {
   usePostMessageClassMutation,
   useGetMessageClassQuery,

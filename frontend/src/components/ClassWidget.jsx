@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
@@ -6,28 +6,19 @@ import {
   MoreHorizOutlined,
   ListAltRounded,
   ExpandMore,
-  PersonOffRounded,
-  PeopleRounded,
-  StarHalfRounded,
-  EmojiEventsRounded,
-  ThumbDownRounded,
-  SentimentDissatisfiedRounded,
   ArticleOutlined,
   BookOutlined,
   SettingsRounded,
   EditRounded,
   DeleteRounded,
   HistoryEduRounded,
-  Grade,
   RefreshRounded,
 } from "@mui/icons-material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Tab,
   IconButton,
   Box,
   Typography,
-  InputBase,
   TextField,
   FormControl,
   Select,
@@ -41,14 +32,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemButton,
-  Autocomplete,
-  Paper,
-  Grid,
   Divider,
   Chip,
-  Modal,
-  Avatar,
-  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -59,15 +44,11 @@ import {
 
 import "react-chat-elements/dist/main.css";
 import dayjs from "dayjs";
-import { MessageBox } from "react-chat-elements";
 import FlexBetween from "./FlexBetween";
-import profileImage from "assets/profile.jpg";
 
-import { DataGrid } from "@mui/x-data-grid";
 import ModalAddUnit from "components/ModalAddUnit";
 import {
   useGetUnitActivitiesQuery,
-  useGetClassDetailsQuery,
   usePutDeleteUnitMutation,
   useGetTestWorksByUserIdQuery,
   usePutDeleteTestMutation,
@@ -101,9 +82,9 @@ const ClassWidget = ({ classItem, userId }) => {
 
   const [anchorElActivityMenu, setAnchorElActivityMenu] = useState(null);
   const isOpenActivityMenu = Boolean(anchorElActivityMenu);
-  const handleClickActivityMenu = (event) => {
+  /*   const handleClickActivityMenu = (event) => {
     setAnchorElActivityMenu(event.currentTarget);
-  };
+  }; */
   const handleCloseActivityMenu = () => setAnchorElActivityMenu(null);
 
   const [openAddUnit, setOpenAddUnit] = useState(false);
@@ -289,7 +270,10 @@ const ClassWidget = ({ classItem, userId }) => {
             display: "flex",
             flexDirection: "column",
             padding: "unset",
-            height: "calc(100% - 98.8px)",
+            height:
+              classItem?.anLopHoc === 1
+                ? "calc(100% - 146.9px)"
+                : "calc(100% - 98.8px)",
           }}
         >
           {classItem && userId && (
@@ -302,7 +286,10 @@ const ClassWidget = ({ classItem, userId }) => {
           value="2"
           sx={{
             padding: "0 20px 10px",
-            height: "calc(100% - 98.8px)",
+            height:
+              classItem?.anLopHoc === 1
+                ? "calc(100% - 146.9px)"
+                : "calc(100% - 98.8px)",
             display: "flex",
             flexDirection: "column",
           }}

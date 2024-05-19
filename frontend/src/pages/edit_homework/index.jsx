@@ -1,30 +1,21 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
-  Modal,
   Typography,
-  Tab,
-  IconButton,
   Box,
   TextField,
   Button,
-  Grid,
   Autocomplete,
   FormGroup,
   FormControlLabel,
   Switch,
-  Link,
-  Avatar,
   CircularProgress,
 } from "@mui/material";
-import { Input } from "@mui/joy";
 import {
   YouTube,
   FileUploadOutlined,
   InsertLinkRounded,
   QuestionAnswerOutlined,
   DoNotDisturbOnOutlined,
-  AddLink,
-  Today,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
@@ -51,7 +42,7 @@ import {
   useDeleteHomeworkMutation,
   useGetHomeWorkByHomeworkIdQuery,
 } from "state/api";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 const PUBLIC_ANSWER_OPT = [
   { id: "1", label: "After student submited" },
   { id: "2", label: "After exam ended" },

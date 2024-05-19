@@ -14,7 +14,6 @@ import {
   Skeleton,
 } from "@mui/material";
 
-import profileImage from "assets/profile.jpg";
 import { useGetUserQuery } from "state/api";
 import { getUserId_Cookie } from "utils/handleCookies";
 import AvatarName from "./AvatarName";

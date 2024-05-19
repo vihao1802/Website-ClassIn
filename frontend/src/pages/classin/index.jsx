@@ -391,7 +391,7 @@ const Classin = () => {
               )}
             </Collapse>
           </Box>
-          <Box>
+          <Box sx={{ marginRight: "10px" }}>
             {/* Archived Classes*/}
             <ListItemButton
               onClick={handleClickArchived}

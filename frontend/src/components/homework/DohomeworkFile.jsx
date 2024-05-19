@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from "react";
-import { Link, Button, Box, Avatar, Typography } from "@mui/material";
-import { Modal, Sheet, ModalClose, MenuItem } from "@mui/joy";
+import React, { useCallback } from "react";
+import { Box } from "@mui/material";
+import { Modal, Sheet, ModalClose } from "@mui/joy";
 import { v4 as uuidv4 } from "uuid";
 
 import { useDropzone } from "react-dropzone";

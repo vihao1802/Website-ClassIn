@@ -1,10 +1,7 @@
-import { useParams, Navigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import React, { useEffect } from "react";
 import HomeNavbar from "../../components/HomeNavbar";
-import {
-  useGetHomeWorkByHomeworkIdQuery,
-  useGetFileHomeworkByHomeworkIdQuery,
-} from "state/api";
+import { useGetHomeWorkByHomeworkIdQuery } from "state/api";
 import {
   Typography,
   Box,
@@ -19,12 +16,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { Add, AttachFile, PictureAsPdf } from "@mui/icons-material";
-import { MenuItem, Menu } from "@mui/joy";
 import { useState } from "react";
-import AttachmentLink from "components/homework/AttachmentLink";
-import DohomeworkFile from "components/homework/DohomeworkFile";
-import DohomeworkLink from "components/homework/DohomeworkLink";
 import {
   useGetUserQuery,
   useUpdateHomeworkWorkMutation,
@@ -36,9 +28,6 @@ import FileItem from "components/homework/FileItem";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import AlertComponent from "../../components/AlertComponent";
-
-import { deleteFileFromDrive } from "utils/google_ulti";
-import { getUserId_Cookie } from "../../utils/handleCookies";
 
 export default function ScoreHomework() {
   const { homeworkId, studentId } = useParams();

@@ -23,7 +23,7 @@ const validationSchema = yup.object({
     .required("Email is required"),
   password: yup
     .string()
-    .min(8, "Password should be of minimum 8 characters length")
+    .min(8, "Password needs 8 characters minimum")
     .required("Password is required"),
 });
 
@@ -94,8 +94,7 @@ const Siginform = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          width: "100% !important",
-          maxWidth: "500px",
+          width: "500px",
         }}
       >
         <Paper elevation={3} sx={{ padding: "30px" }}>

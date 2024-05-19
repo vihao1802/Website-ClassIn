@@ -43,6 +43,6 @@ async function deleteFileFromDrive2(fileIdList) {
   }
   console.log("Id cua file xoa:", "-", fileIdList);
 }
-async function uploadFile(listFile) {}
+// async function uploadFile(listFile) {}
 export { deleteFileFromDrive };
 export { deleteFileFromDrive2 };

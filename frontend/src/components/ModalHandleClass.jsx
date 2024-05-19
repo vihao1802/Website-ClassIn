@@ -6,6 +6,7 @@ import {
   TextField,
   Button,
   Snackbar,
+  CircularProgress,
 } from "@mui/material";
 import Dropzone from "react-dropzone";
 import FlexBetween from "./FlexBetween";
@@ -21,7 +22,6 @@ import {
   usePostGroupChatMutation,
 } from "state/api";
 import AlertComponent from "components/AlertComponent";
-import { getUserId_Cookie } from "../utils/handleCookies";
 
 const schemaJoin = yup.object({
   code: yup.string().required("Code is required"),
@@ -49,12 +49,11 @@ const schemaCreate = yup.object({
 
 const ModalHandleClass = (props) => {
   const [accessToken] = usePostAccessTokenMutation();
-  const [PostCreateClass, { isLoading: isLoadingCreateClass }] =
-    usePostCreateClassMutation();
-  const [PostGroupChat, { isLoading: isLoadingPostGroupChat }] =
-    usePostGroupChatMutation();
+  const [PostCreateClass] = usePostCreateClassMutation();
+  const [PostGroupChat] = usePostGroupChatMutation();
   const [PostJoinClass, { isLoading: isLoadingJoinClass }] =
     usePostUserResigeterMutation();
+
   const forMikJoin = useFormik({
     initialValues: {
       code: "",
@@ -159,6 +158,13 @@ const ModalHandleClass = (props) => {
       }
     },
   });
+  const [isLoadingCreateClass, setIsLoadingCreateClass] = useState(false);
+
+  const handleClick = async () => {
+    setIsLoadingCreateClass(true); // Set loading to true before the async operation
+    await forMikCreate.submitForm();
+    setIsLoadingCreateClass(false); // Set loading back to false after the async operation
+  };
   const { errors } = forMikCreate;
   const [open, setOpen] = useState(false);
 
@@ -506,20 +512,23 @@ const ModalHandleClass = (props) => {
                   backgroundColor: "#007850",
                 },
               }}
-              onClick={() => {
+              onClick={async () => {
                 if (props.title === "Join class") {
                   forMikJoin.submitForm();
                 } else {
-                  forMikCreate.submitForm();
+                  // forMikCreate.submitForm();
+                  handleClick();
                 }
               }}
-              disabled={isLoadingCreateClass || isLoadingPostGroupChat}
+              disabled={isLoadingCreateClass}
             >
-              {props.title === "Join class"
-                ? "Join"
-                : isLoadingCreateClass || isLoadingPostGroupChat
-                ? "Creating..."
-                : "Create"}
+              {isLoadingCreateClass ? (
+                <CircularProgress color="success" size={"22px"} />
+              ) : props.title === "Join class" ? (
+                "Join"
+              ) : (
+                "Create"
+              )}
             </Button>
           </Box>
         </Box>

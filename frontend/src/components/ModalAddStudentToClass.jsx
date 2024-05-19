@@ -15,8 +15,6 @@ import {
   useGetUnregisteredUsersQuery,
   usePostUserResigeterMutation,
 } from "state/api";
-import AlertComponent from "./AlertComponent";
-import state from "state";
 
 const AddStudentToClass = ({
   open,

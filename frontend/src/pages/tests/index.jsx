@@ -1,15 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField, Paper } from "@mui/material";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import {
-  DeleteRounded,
-  AddRounded,
-  CloseRounded,
-  EditRounded,
-  CheckCircleRounded,
-} from "@mui/icons-material";
-import { Radio, RadioGroup, Sheet, FormLabel, radioClasses } from "@mui/joy";
+import { DeleteRounded, AddRounded, EditRounded } from "@mui/icons-material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -89,10 +81,9 @@ const rows = [
 
 const Tests = () => {
   const navigate = useNavigate();
-  const [value, setValue] = React.useState("1");
-  const handleChangeTab = (event, newValue) => {
+  /* const handleChangeTab = (event, newValue) => {
     setValue(newValue);
-  };
+  }; */
   return (
     <Box sx={{ margin: "0 50px", padding: "30px" }}>
       <Header title="Tests" subtitle="List of tests" />

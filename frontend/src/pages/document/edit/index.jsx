@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  Autocomplete,
   Button,
   Typography,
   IconButton,
-  AppBar,
-  Toolbar,
-  Box,
   Grid,
-  Container,
   TextField,
   List,
   ListItem,
@@ -19,14 +14,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import Dropzone from "react-dropzone";
 import ImageIcon from "@mui/icons-material/Image";
 import DescriptionIcon from "@mui/icons-material/Description";
-import DownloadIcon from "@mui/icons-material/Download";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import { useParams } from "react-router-dom";
 import {
   useGetDocumentsByDocumentIdQuery,
   useGetFileDocumentsByUnitsIdQuery,
-  useGetClassDetailsQuery,
-  useGetUnitsQuery,
   usePutDocumentMutation,
   usePostAccessTokenMutation,
   useDeleteFileDocumentMutation,
@@ -42,7 +34,7 @@ const EditDocument = () => {
   const userId = getUserId_Cookie();
   let { documentId } = useParams();
   const [teacherId, setTeacherId] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Thêm trạng thái để lưu trữ thông báo lỗi
+  // const [errorMessage, setErrorMessage] = useState(""); // Thêm trạng thái để lưu trữ thông báo lỗi
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [SigningIn, setSigningIn] = useState(false);

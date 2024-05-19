@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import HomeNavbar from "../../components/HomeNavbar";
 
 import { Typography, Box, Button, CircularProgress } from "@mui/material";
-import { Add, AttachFile, InsertLink, Work } from "@mui/icons-material";
+import { Add, AttachFile, InsertLink } from "@mui/icons-material";
 import { MenuItem, Menu } from "@mui/joy";
 import { useState } from "react";
 import AttachmentLink from "components/homework/AttachmentLink";
