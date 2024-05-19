@@ -135,6 +135,9 @@ const Siginform = () => {
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email}
                   sx={{ margin: "8px 0" }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
                 <TextField
                   fullWidth
@@ -152,6 +155,9 @@ const Siginform = () => {
                   }
                   helperText={formik.touched.password && formik.errors.password}
                   sx={{ margin: "8px 0" }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
                 <Button
                   variant="contained"
