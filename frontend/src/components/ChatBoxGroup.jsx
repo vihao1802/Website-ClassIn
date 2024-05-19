@@ -16,7 +16,6 @@ import {
 import "react-chat-elements/dist/main.css";
 import { MessageBox } from "react-chat-elements";
 import FlexBetween from "./FlexBetween";
-import profileImage from "assets/profile.jpg";
 import {
   usePostMessageClassMutation,
   useGetMessageClassQuery,
@@ -61,7 +60,7 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
     class_id: classItem?.ma_lopHoc,
     acc_id: clientId,
   });
-  // console.log(messageData);
+  console.log(messageData);
 
   // scroll to bottom of chat box
   useEffect(() => {
@@ -193,7 +192,9 @@ const ChatBoxGroup = ({ classItem, clientId }) => {
 
       ws.onmessage = (event) => {
         const messageContent = JSON.parse(event.data);
-        refetchMessageData();
+        if (messageData) {
+          refetchMessageData();
+        }
         // console.log("Message by id in websocket: " + messageContent.sendById);
         if (messageContent.type === "deleteMessage") {
         } else if (messageContent.type === "sendMessage") {

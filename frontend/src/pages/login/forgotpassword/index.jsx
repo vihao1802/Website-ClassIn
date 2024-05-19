@@ -1,22 +1,9 @@
 import React, { useState } from "react";
-import {
-  Container,
-  AppBar,
-  Toolbar,
-  Typography,
-  TextField,
-  Button,
-  IconButton,
-  Grid,
-  Link,
-  Box,
-} from "@mui/material";
+import { Typography, TextField, Button, Box } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
 import AlertComponent from "../../../components/AlertComponent";
-import Loading from "../../../components/Loading";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import return_icon from "../../../assets/return.png";
 import { useNavigate } from "react-router-dom";
 import { usePostForgotPasswordMutation } from "../../../state/api";
 import HomeNavbar from "components/HomeNavbar";

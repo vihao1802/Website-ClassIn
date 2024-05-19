@@ -174,6 +174,7 @@ const AddTestForm = () => {
   const [creatTestDetail] = usePostCreatTestDetailMutation();
   const [createUnit] = usePostAddUnitMutation();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [search, setSearch] = useState("");
   const [alert, setAlert] = useState({
     open: false,
     severity: "",
@@ -337,6 +338,7 @@ const AddTestForm = () => {
             variant="outlined"
             size="small"
             color="success"
+            onChange={(e) => setSearch(e.target.value)}
             sx={{ marginTop: "10px" }}
           />
           {questionDetailsData || !isQuestionDetailsLoading ? (
@@ -358,7 +360,13 @@ const AddTestForm = () => {
               }}
             >
               {questionDetailsData
-                .filter((question) => question.cauHoi.daXoa === 0)
+                .filter(
+                  (question) =>
+                    question.cauHoi.daXoa === 0 &&
+                    question.cauHoi.noiDung
+                      .toLowerCase()
+                      .includes(search.toLowerCase()),
+                )
                 .map((item, index) => {
                   const labelId = `checkbox-list-label-${item.cauHoi}`;
 

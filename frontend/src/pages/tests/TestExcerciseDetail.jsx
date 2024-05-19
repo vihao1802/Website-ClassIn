@@ -4,9 +4,7 @@ import {
   Typography,
   Divider,
   Button,
-  Grid,
   Tab,
-  TextField,
   Chip,
 } from "@mui/material";
 import {
@@ -17,25 +15,13 @@ import {
   SchoolRounded,
   ArticleRounded,
   LocalLibraryRounded,
-  PeopleRounded,
-  PersonOffRounded,
-  StarHalfRounded,
-  EmojiEventsRounded,
-  ThumbDownRounded,
-  SentimentDissatisfiedRounded,
-  VisibilityOffRounded,
   VisibilityRounded,
   EditRounded,
 } from "@mui/icons-material";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridToolbarContainer,
-} from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import HomeNavbar from "components/HomeNavbar";
 import FlexBetween from "components/FlexBetween";
-import profileImage from "assets/profile.jpg";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";

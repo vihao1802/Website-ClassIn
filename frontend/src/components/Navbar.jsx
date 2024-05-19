@@ -14,9 +14,9 @@ import {
   Skeleton,
 } from "@mui/material";
 
-import profileImage from "assets/profile.jpg";
 import { useGetUserQuery } from "state/api";
 import { getUserId_Cookie } from "utils/handleCookies";
+import AvatarName from "./AvatarName";
 
 const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const userId = getUserId_Cookie();
@@ -94,7 +94,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 height: "40px",
               }}
             >
-              <Box
+              {/* <Box
                 component="img"
                 alt="profile"
                 src={profileImage}
@@ -102,7 +102,8 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 width="32px"
                 borderRadius="50%"
                 sx={{ objectFit: "cover" }}
-              />
+              /> */}
+              <AvatarName name={userData && userData.hoTen} />
               <Box textAlign="left">
                 <Typography
                   fontWeight="bold"

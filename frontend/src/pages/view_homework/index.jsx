@@ -9,7 +9,6 @@ import HomeNavbar from "components/HomeNavbar";
 import { Box, Typography } from "@mui/material";
 import AlertComponent from "components/AlertComponent";
 import dayjs from "dayjs";
-import { format, parseISO } from "date-fns";
 export default function ViewHomework() {
   const { homeworkId } = useParams();
   const [homework, setHomework] = useState({});
@@ -81,9 +80,9 @@ export default function ViewHomework() {
       });
     }
   }, [FileQuery, isLoadingFileQuery]);
-  const formatDateTime = (dateTime) => {
+  /* const formatDateTime = (dateTime) => {
     return format(parseISO(dateTime), "dd/MM/yyyy HH:mm");
-  };
+  }; */
   return (
     <Box
       id="container"
