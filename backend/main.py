@@ -36,7 +36,7 @@ from router import (
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 main_route = APIRouter()
-""" origins = [
+origins = [
     "http://localhost:3000",
     "localhost:3000",
     "http://192.168.110.46:3000",
@@ -44,8 +44,9 @@ main_route = APIRouter()
     "http://192.168.235.220:8000",
     "http://192.168.224.1:3000",
     "http://192.168.140.46:3000",
-] """
-origins = ["*"]
+    "'https://website-classin-hu7l.onrender.com"
+] 
+# origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
