@@ -37,15 +37,8 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 main_route = APIRouter()
 origins = [
-    "http://localhost:3000",
-    "localhost:3000",
-    "http://192.168.110.46:3000",
-    "http://192.168.1.103:3000",
-    "http://192.168.235.220:8000",
-    "http://192.168.224.1:3000",
-    "http://192.168.140.46:3000",
-    "'https://website-classin-hu7l.onrender.com"
-] 
+    load_env_global.get_DOMAIN_CLIENT(),
+]
 # origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
