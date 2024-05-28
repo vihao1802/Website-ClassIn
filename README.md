@@ -39,44 +39,50 @@ sudo apt install python3.10-venv
 git clone https://github.com/vihao1802/Website-ClassIn.git
 ```
 
-2. Init and Set up venv(Virtual Environment) folder
+2. From `root` directory, move to `backend`
+
+```
+cd backend
+```
+
+4. Init and Set up venv(Virtual Environment) folder
 
 ```
 python3 -m venv venv
 ```
 
-3. Activate `venv`
+5. Activate `venv`
 
 ```
 source ./venv/bin/activate
 ```
 
-4. Install all packages in `requirements.txt`
+6. Install all packages in `requirements.txt`
 
 ```
 pip install -r ./requirements.txt
 ```
 
-5. Move to `frontend` directory
+7. From `root` directory, move to `frontend`
 
 ```
 cd frontend
 ```
 
-6. Install all required packages in `packages.json`
+8. Install all required packages in `packages.json`
 
 ```
 npm i
 ```
 
-7. Create file `.env.local` in folder `frontend` and fill out with format:
+9. Create file `.env.local` in folder `frontend` with format:
 
 ```env
 REACT_APP_BASE_URL=http://localhost:8000/api
 REACT_APP_WEBSOCKET_URL=ws://localhost:8000/api/ws
 ```
 
-8. Create file `.env` in folder `backend` and fill out with format:
+10. Create file `.env` in folder `backend` with format:
 
 ```env
 URL_DATABASE="sqlite:///./classin_database.db"
@@ -85,9 +91,9 @@ DOMAIN_URL=http://localhost:8000
 DOMAIN_CLIENT=http:localhost:3000
 JWT_ALGORITHM=HS256
 JWT_SECRET=#use_generate_UUID_tool_for_this
-EMAIL=#email_for_upload_file_feature
-PASSWORD_EMAIL=#password_email_for_upload_file_feature
-SERVICE_ACCOUNT_FILE=#use_absolute_path_to_backend/config/xenon-timer.json_file
+EMAIL=#email-for-upload-file-feature
+PASSWORD_EMAIL=#password-email-for-upload-file-feature
+SERVICE_ACCOUNT_FILE=#use-absolute-path-to-backend/config/xenon-timer.json_file
 ```
 
 ## 🚀 Usage
@@ -96,7 +102,7 @@ SERVICE_ACCOUNT_FILE=#use_absolute_path_to_backend/config/xenon-timer.json_file
 
 ### Frontend(First termnial):
 
-- In `root` directory
+- From `root` directory
 
 ```
 cd frontend
@@ -110,7 +116,7 @@ npm start
 
 ### Backend(Second termnial):
 
-- In `root` directory
+- From `root` directory
 
 ```
 cd backend
