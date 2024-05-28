@@ -66,70 +66,70 @@ async def verify_token_middleware(request: Request):
 
 
 main_route.include_router(
-    nhomQuyen.router, dependencies=[Depends(verify_token_middleware)]
+    nhomQuyen.router
 )
 main_route.include_router(
-    google_auth.router, dependencies=[Depends(verify_token_middleware)]
+    google_auth.router
 )
 main_route.include_router(
-    taiKhoan.router, dependencies=[Depends(verify_token_middleware)]
+    taiKhoan.router
 )
 main_route.include_router(
-    thamGiaLopHoc.router, dependencies=[Depends(verify_token_middleware)]
+    thamGiaLopHoc.router
 )
 main_route.include_router(
-    nhomChat.router, dependencies=[Depends(verify_token_middleware)]
+    nhomChat.router
 )
 main_route.include_router(
-    tinNhan.router, dependencies=[Depends(verify_token_middleware)]
+    tinNhan.router
 )
 main_route.include_router(
-    chuong.router, dependencies=[Depends(verify_token_middleware)]
+    chuong.router
 )
 main_route.include_router(
-    hocLieu.router, dependencies=[Depends(verify_token_middleware)]
+    hocLieu.router
 )
 main_route.include_router(
-    fileHocLieu.router, dependencies=[Depends(verify_token_middleware)]
+    fileHocLieu.router
 )
 main_route.include_router(
-    banBe.router, dependencies=[Depends(verify_token_middleware)]
+    banBe.router
 )
 main_route.include_router(
-    tinNhanBanBe.router, dependencies=[Depends(verify_token_middleware)]
+    tinNhanBanBe.router
 )
 main_route.include_router(
-    baiTap.router, dependencies=[Depends(verify_token_middleware)]
+    baiTap.router
 )
 main_route.include_router(
-    fileBaiTap.router, dependencies=[Depends(verify_token_middleware)]
+    fileBaiTap.router
 )
 main_route.include_router(
-    baiLamBaiTap.router, dependencies=[Depends(verify_token_middleware)]
+    baiLamBaiTap.router
 )
 main_route.include_router(
-    fileBaiLamBaiTap.router, dependencies=[Depends(verify_token_middleware)]
+    fileBaiLamBaiTap.router
 )
 main_route.include_router(
-    deKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+    deKiemTra.router
 )
 main_route.include_router(
-    cauHoi.router, dependencies=[Depends(verify_token_middleware)]
+    cauHoi.router
 )
 main_route.include_router(
-    cauTraLoi.router, dependencies=[Depends(verify_token_middleware)]
+    cauTraLoi.router
 )
 main_route.include_router(
-    chiTietBaiKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+    chiTietBaiKiemTra.router
 )
 main_route.include_router(
-    baiLamKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+    baiLamKiemTra.router
 )
 main_route.include_router(
-    chiTietBaiLamKiemTra.router, dependencies=[Depends(verify_token_middleware)]
+    chiTietBaiLamKiemTra.router
 )
 main_route.include_router(
-    lopHoc.router, dependencies=[Depends(verify_token_middleware)]
+    lopHoc.router
 )
 main_route.include_router(auth.auth, prefix="/auth")
 main_route.include_router(webSocket.router)
