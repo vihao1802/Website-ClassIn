@@ -142,8 +142,8 @@ async def hello():
 
 
 print(
-    "\nNotice:\t Server is running at http://localhost:"
-    + load_env_global.get_PORT()
+    "\nNotice:\t Server is running at "
+    + load_env_global.get_DOMAIN_CLIENT()
     + "/docs\n"
 )
 # if __name__ == "__main__":
