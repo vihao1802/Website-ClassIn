@@ -4,8 +4,7 @@
     <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow.svg" target="_blank" />
   </a>
   <a href="https://github.com/vihao1802/Website-ClassIn/watchers">
-    <img alt="GitHub" src="https://img.shields.io/github/watchers/vihao1802/Website-Classin
-    " target="_blank" />
+    <img alt="GitHub" src="https://img.shields.io/github/watchers/vihao1802/Website-Classin" target="_blank" />
   </a>
 </p>
 
@@ -23,7 +22,7 @@
 
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
 
-<img src="/docs/screenshot.png" width="800" height="400">
+<img src="/docs/screenshot.png" width="100%" height="500">
 
 ### 📄 PDF: <a href="https://drive.google.com/file/d/1Pvjr9B78tV--IPXqhCbZ0vaf-bS7UrsV/view?usp=sharing" target="_blank">Link</a>
 
