@@ -138,12 +138,12 @@ app.include_router(main_route, prefix="/api")
 
 @app.get("/")
 async def hello():
-    return {"message": "Hello world"}
+    return {"message": "Welcome to Website Classin","API-Docs": load_env_global.get_DOMAIN_URL() + "/docs"}
 
 
 print(
     "\nNotice:\t Server is running at "
-    + load_env_global.get_DOMAIN_CLIENT()
+    + load_env_global.get_DOMAIN_URL()
     + "/docs\n"
 )
 # if __name__ == "__main__":
