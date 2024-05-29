@@ -3,17 +3,27 @@
   <a href="https://github.com/vihao1802/Website-ClassIn/blob/main/LICENSE">
     <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow.svg" target="_blank" />
   </a>
+  <a href="https://github.com/vihao1802/Website-ClassIn/watchers">
+    <img alt="GitHub" src="https://img.shields.io/github/watchers/vihao1802/Website-Classin
+    " target="_blank" />
+  </a>
 </p>
 
-<!--
-[![GitHub Watches](https://img.shields.io/github/watchers/vihao1802/Website-ClassIn.svg?style=social&label=Watch&maxAge=2592000)](https://github.com/vihao1802/Website-ClassIn/watchers)
-[![Contributors](https://img.shields.io/github/contributors/vihao1802/Website-ClassIn.svg)](https://github.com/vihao1802/Website-ClassIn/graphs/contributors)
- <a href="https://github.com/vihao1802/pharmacy-management">
-    <img src="https://img.shields.io/github/contributors/vihao1802/pharmacy-management.svg" alt="Contributors">
-  </a>
--->
+<p align="center">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/></a>&nbsp
+  <img src="https://img.shields.io/badge/Material%20UI-007FFF?style=for-the-badge&logo=mui&logoColor=white"/></a>&nbsp 
+  <img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white"/></a>&nbsp
+  <br>
+  <img src="https://img.shields.io/badge/fastapi-109989?style=for-the-badge&logo=FASTAPI&logoColor=white"/></a>&nbsp 
+  <img src="https://img.shields.io/badge/Sqlite-003B57?style=for-the-badge&logo=sqlite&logoColor=white"/></a>&nbsp
+  <br>
+  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"/></a>&nbsp 
+  <img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E"/></a>&nbsp 
+</p>
 
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
+
+<img src="/docs/screenshot.png" width="800" height="400">
 
 ### 📄 PDF: <a href="https://drive.google.com/file/d/1Pvjr9B78tV--IPXqhCbZ0vaf-bS7UrsV/view?usp=sharing" target="_blank">Link</a>
 
@@ -45,44 +55,44 @@ git clone https://github.com/vihao1802/Website-ClassIn.git
 cd backend
 ```
 
-4. Init and Set up venv(Virtual Environment) folder
+3. Init and Set up venv(Virtual Environment) folder
 
 ```
 python3 -m venv venv
 ```
 
-5. Activate `venv`
+4. Activate `venv`
 
 ```
 source ./venv/bin/activate
 ```
 
-6. Install all packages in `requirements.txt`
+5. Install all packages in `requirements.txt`
 
 ```
 pip install -r ./requirements.txt
 ```
 
-7. From `root` directory, move to `frontend`
+6. From `root` directory, move to `frontend`
 
 ```
 cd frontend
 ```
 
-8. Install all required packages in `packages.json`
+7. Install all required packages in `packages.json`
 
 ```
 npm i
 ```
 
-9. Create file `.env.local` in folder `frontend` with format:
+8. Create file `.env.local` in folder `frontend` with format:
 
 ```env
 REACT_APP_BASE_URL=http://localhost:8000/api
 REACT_APP_WEBSOCKET_URL=ws://localhost:8000/api/ws
 ```
 
-10. Create file `.env` in folder `backend` with format:
+9. Create file `.env` in folder `backend` with format:
 
 ```env
 URL_DATABASE="sqlite:///./classin_database.db"
@@ -108,7 +118,7 @@ SERVICE_ACCOUNT_FILE=#use-absolute-path-to-backend/config/xenon-timer.json_file
 cd frontend
 ```
 
-- Run frontend app
+- Run `frontend`
 
 ```
 npm start
@@ -122,7 +132,7 @@ npm start
 cd backend
 ```
 
-- Run backend app
+- Run `backend`
 
 ```
 uvicorn main:app --reload
