@@ -22,7 +22,7 @@
 
 > `Website CLassin` that provides an optimzed UI with various features in classroom management.
 
-<img src="/docs/screenshot.png" width="100%" height="500">
+<img src="/docs/screenshot.png" width="100%">
 
 ### 📄 PDF: <a href="https://drive.google.com/file/d/1Pvjr9B78tV--IPXqhCbZ0vaf-bS7UrsV/view?usp=sharing" target="_blank">Link</a>
 
