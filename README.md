@@ -143,6 +143,11 @@ cd backend
 uvicorn main:app --reload
 ```
 
+## Testing web application
+Login
+- Email: tuanhaomach@gmail.com
+- Password: Abcd@123
+
 ## ✨ Code Contributors
 
 This project exists thanks to all the people who contribute.
