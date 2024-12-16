@@ -28,7 +28,7 @@
 
 ### 📄 Slide: <a href="https://docs.google.com/presentation/d/1O3w8enWdViNA_mb9UN14ebD8CZW3sGc9qqyelSkavUs/edit?usp=sharing" target="_blank">Link</a>
 
-## 🔧 Render Deployment (In progress)
+## 🔧 Render Deployment
 
 ### Frontend: <a href="https://website-classin-hu7l.onrender.com/" target="_blank">https://website-classin-hu7l.onrender.com/</a>
 
