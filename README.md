@@ -34,6 +34,13 @@
 
 ### Backend: <a href="https://website-classin.onrender.com" target="_blank">https://website-classin.onrender.com</a>
 
+## 👤 Testing web application
+Login
+```json
+  "email": "tuanhaomach@gmail.com"
+  "password": "Abcd@123"
+```
+
 <!-- GETTING STARTED -->
 
 ## 🎯 Getting Started
@@ -142,11 +149,6 @@ cd backend
 ```
 uvicorn main:app --reload
 ```
-
-## Testing web application
-Login
-- Email: tuanhaomach@gmail.com
-- Password: Abcd@123
 
 ## ✨ Code Contributors
 
