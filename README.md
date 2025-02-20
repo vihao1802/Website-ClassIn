@@ -76,7 +76,10 @@ python3 -m venv venv
 4. Activate `venv`
 
 ```
-source ./venv/bin/activate
+source ./venv/bin/activate // bashshell
+```
+```
+./venv/Scripts/activate // powershell
 ```
 
 5. Install all packages in `requirements.txt`
